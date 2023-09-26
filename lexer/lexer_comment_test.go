@@ -3,8 +3,8 @@ package lexer
 import (
 	"testing"
 
-	"alex.peters/yew/lexer"
-	itoken "alex.peters/yew/token"
+	"github.com/petersalex27/yew-packages/lexer"
+	itoken "github.com/petersalex27/yew-packages/token"
 	"yew.lang/main/errors"
 	"yew.lang/main/token"
 )
@@ -47,49 +47,49 @@ func TestAnalyzeComment(t *testing.T) {
 		{
 			[]string{"-------",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("-----").SetLineChar(1,1),
+				token.Comment.Make().AddValue("-----").SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{"-**-",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("").SetLineChar(1,1),
+				token.Comment.Make().AddValue("").SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{"-*****-",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("***").SetLineChar(1,1),
+				token.Comment.Make().AddValue("***").SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{"-*-*-",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("-").SetLineChar(1,1),
+				token.Comment.Make().AddValue("-").SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{"-*--*-",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("--").SetLineChar(1,1),
+				token.Comment.Make().AddValue("--").SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{"-*-**-",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("-*").SetLineChar(1,1),
+				token.Comment.Make().AddValue("-*").SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{"-*a comment*-",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("a comment").SetLineChar(1,1),
+				token.Comment.Make().AddValue("a comment").SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{"-* a comment *-",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("a comment").SetLineChar(1,1),
+				token.Comment.Make().AddValue("a comment").SetLineChar(1,1),
 			},
 		},
 		{
@@ -98,7 +98,7 @@ func TestAnalyzeComment(t *testing.T) {
 				"*-",
 			},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("").SetLineChar(1,1),
+				token.Comment.Make().AddValue("").SetLineChar(1,1),
 			},
 		},
 		{
@@ -108,7 +108,7 @@ func TestAnalyzeComment(t *testing.T) {
 				"   \t*-",
 			},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("").SetLineChar(1,1),
+				token.Comment.Make().AddValue("").SetLineChar(1,1),
 			},
 		},
 		{
@@ -118,7 +118,7 @@ func TestAnalyzeComment(t *testing.T) {
 				"line comment *-",
 			},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("this is a multi- line comment").SetLineChar(1,1),
+				token.Comment.Make().AddValue("this is a multi- line comment").SetLineChar(1,1),
 			},
 		},
 		{
@@ -128,7 +128,7 @@ func TestAnalyzeComment(t *testing.T) {
 				"line comment *-",
 			},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("this is a multi- line comment").SetLineChar(1,1),
+				token.Comment.Make().AddValue("this is a multi- line comment").SetLineChar(1,1),
 			},
 		},
 	}

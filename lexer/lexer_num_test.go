@@ -3,8 +3,8 @@ package lexer
 import (
 	"testing"
 
-	"alex.peters/yew/lexer"
-	itoken "alex.peters/yew/token"
+	"github.com/petersalex27/yew-packages/lexer"
+	itoken "github.com/petersalex27/yew-packages/token"
 	"yew.lang/main/errors"
 	"yew.lang/main/token"
 )

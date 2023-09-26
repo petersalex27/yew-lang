@@ -14,6 +14,13 @@ const (
 	Wildcard
 	Empty
 	Comment
+	At
+	Typing
+	Assign
+	Bar
+	Arrow
+	Backslash
+	DotDot
 	// grouping
 	LeftParen
 	RightParen
@@ -28,22 +35,26 @@ const (
 	SymbolType
 	IdType
 	Infixed
-	// keywords
+	/*keywords*/ _keyword_start_ // do not use!
 	Let
 	Of
 	Class
 	Import
 	Use
+	Family
 	Forall
+	From
+	In
 	Mapall
 	Where
 	Module
-	Hide
+	Qualified
 	Derives
+	/*end of keywords*/ _keyword_end_ // do not use!
 )
 
 func (t TokenType) IsKeyword() bool {
-	return t >= Let && t <= Derives
+	return t > _keyword_start_ && t < _keyword_end_
 }
 
 var builtinMap = map[TokenType]string{
@@ -56,8 +67,11 @@ var builtinMap = map[TokenType]string{
 	Mapall:       "mapall",
 	Where:        "where",
 	Module:       "module",
-	Hide:         "hide",
 	Derives:      "derives",
+	Family:       "family",
+	Qualified:    "qualified",
+	From:         "from",
+	In:           "in",
 	Wildcard:     "_",
 	LeftParen:    "(",
 	RightParen:   ")",
@@ -67,7 +81,14 @@ var builtinMap = map[TokenType]string{
 	RightBrace:   "}",
 	SemiColon:    ";",
 	Comma:        ",",
-	Empty:	      "()",
+	At:           "@",
+	Typing:       ":",
+	Empty:        "()",
+	Assign:       "=",
+	Bar:          "|",
+	Arrow:        "->",
+	Backslash:    `\`,
+	DotDot:       `..`,
 }
 
 func (t TokenType) Make() Token {
@@ -76,9 +97,17 @@ func (t TokenType) Make() Token {
 		value = ""
 	}
 	return Token{
-		ty:    byte(t),
+		ty:    t,
 		value: value,
 	}
+}
+
+// only adds value when token is not keyword, else just returns token
+func (t Token) MaybeAddValue(value string) Token {
+	if t.ty.IsKeyword() {
+		return t
+	}
+	return t.AddValue(value)
 }
 
 func (t Token) AddValue(value string) Token {

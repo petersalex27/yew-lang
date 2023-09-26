@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"alex.peters/yew/lexer"
-	"alex.peters/yew/source"
-	"alex.peters/yew/errors"
+	"github.com/petersalex27/yew-packages/lexer"
+	"github.com/petersalex27/yew-packages/source"
+	"github.com/petersalex27/yew-packages/errors"
 )
 
 const LexErrorHead string = " Error (Lexical Analysis): "
@@ -14,13 +14,14 @@ const LexErrorHead string = " Error (Lexical Analysis): "
 const UnknownSymbol string = "unknown symbol"
 const UnexpectedSymbol string = "unexpected symbol"
 const IllegalEscape string = "illegal escape sequence"
+const IllegalChar string = "illegal character literal"
 
 func Lexical(lex *lexer.Lexer, msg string, args ...any) errors.Err {
 	line, char := lex.GetLineChar()
 	path := lex.GetPath()
 	msg = fmt.Sprintf(msg, args...)
 	src, stat := lex.SourceLine(line)
-	format := "tplcm"
+	format := "tflcm"
 	if stat.Is(source.Ok) {
 		format = format + "s"
 	}

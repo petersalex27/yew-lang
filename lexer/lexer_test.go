@@ -8,63 +8,78 @@ import (
 	"yew.lang/main/errors"
 )
 
-func TestAnalyzeId(t *testing.T) {
+func TestLexer(t *testing.T) {
 	tests := []struct{
 		source []string
 		expect []itoken.Token
 	}{
 		{
-			[]string{`a`,},
+			[]string{`Maybe a = Just a | Nothing`,},
 			[]itoken.Token{
-				token.IdType.Make().AddValue(`a`).SetLineChar(1,1),
+				token.IdType.Make().AddValue(`Maybe`).SetLineChar(1,1),
+				token.IdType.Make().AddValue(`a`).SetLineChar(1,7),
+				token.Assign.Make().AddValue(`=`).SetLineChar(1,9),
+				token.IdType.Make().AddValue(`Maybe`).SetLineChar(1,1),
 			},
 		},
 		{
-			[]string{`var`,},
+			[]string{`[`,},
 			[]itoken.Token{
-				token.IdType.Make().AddValue(`var`).SetLineChar(1,1),
+				token.LeftBracket.Make().SetLineChar(1,1),
 			},
 		},
 		{
-			[]string{`a1`,},
+			[]string{`{`,},
 			[]itoken.Token{
-				token.IdType.Make().AddValue(`a1`).SetLineChar(1,1),
+				token.LeftBrace.Make().SetLineChar(1,1),
 			},
 		},
 		{
-			[]string{`a_`,},
+			[]string{`;`,},
 			[]itoken.Token{
-				token.IdType.Make().AddValue(`a_`).SetLineChar(1,1),
+				token.SemiColon.Make().SetLineChar(1,1),
 			},
 		},
 		{
-			[]string{`a__`,},
+			[]string{`,`,},
 			[]itoken.Token{
-				token.IdType.Make().AddValue(`a__`).SetLineChar(1,1),
+				token.Comma.Make().SetLineChar(1,1),
 			},
 		},
 		{
-			[]string{`a_a`,},
+			[]string{`}`,},
 			[]itoken.Token{
-				token.IdType.Make().AddValue(`a_a`).SetLineChar(1,1),
+				token.RightBrace.Make().SetLineChar(1,1),
 			},
 		},
 		{
-			[]string{`a'`,},
+			[]string{`]`,},
 			[]itoken.Token{
-				token.IdType.Make().AddValue(`a'`).SetLineChar(1,1),
+				token.RightBracket.Make().SetLineChar(1,1),
 			},
 		},
 		{
-			[]string{`a''`,},
+			[]string{`)`,},
 			[]itoken.Token{
-				token.IdType.Make().AddValue(`a''`).SetLineChar(1,1),
+				token.RightParen.Make().SetLineChar(1,1),
 			},
 		},
 		{
-			[]string{`a'a`,},
+			[]string{`@`,},
 			[]itoken.Token{
-				token.IdType.Make().AddValue(`a'a`).SetLineChar(1,1),
+				token.At.Make().SetLineChar(1,1),
+			},
+		},
+		{
+			[]string{`()`,},
+			[]itoken.Token{
+				token.Empty.Make().SetLineChar(1,1),
+			},
+		},
+		{
+			[]string{`:`,},
+			[]itoken.Token{
+				token.Typing.Make().SetLineChar(1,1),
 			},
 		},
 	}
@@ -72,19 +87,13 @@ func TestAnalyzeId(t *testing.T) {
 	for i, test := range tests {
 		lex := lexer.NewLexer(lexerWhitespace, 0, 0, 1)
 		lex.SetSource(test.source)
-		lex.SetPath("./test-lex-id.yew")
-		stat := analyzeIdentifier(lex)
+		lex.SetPath("./test-lex-run.yew")
+		actuals, es := runLexer(lex)
 
-		if es := lex.GetErrors(); len(es) != 0 {
+		if len(es) != 0 {
 			errors.PrintErrors(lex.GetErrors()...)
 			t.Fatalf("failed test #%d: see above errors\n", i+1)
 		}
-		
-		if stat.NotOk() {
-			t.Fatalf("failed test #%d: analyzeIdentifier(lex).NotOk() == true\n", i+1)
-		}
-
-		actuals := lex.GetTokens()
 
 		if len(test.expect) != len(actuals) {
 			t.Fatalf("failed test #%d: expected len(actuals)==%d but got len(actuals)==%d\n", i+1,

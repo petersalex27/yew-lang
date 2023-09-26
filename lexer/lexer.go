@@ -5,9 +5,9 @@ import (
 	"strings"
 	"unicode"
 
-	"alex.peters/yew/lexer"
-	"alex.peters/yew/source"
-	itoken "alex.peters/yew/token"
+	"github.com/petersalex27/yew-packages/lexer"
+	"github.com/petersalex27/yew-packages/source"
+	itoken "github.com/petersalex27/yew-packages/token"
 	"yew.lang/main/errors"
 	"yew.lang/main/token"
 )
@@ -39,14 +39,15 @@ const (
 	identifier
 	underscore
 	comment
+	char
 )
 
-// ( ) [ ] { } ! @ # $ % ^ & * ~ , < > . ? / ; : | - + = `
-const symbolRegexClassRaw string = `[\(\)\[\]\{\}!@#\$%\^\&\*~,<>\.\?/;:\|\-\+=` + "`]"
+// ( ) [ ] { } ! @ # $ % ^ & * ~ , < > . ? / ; : | - + = \ `
+const symbolRegexClassRaw string = `[\(\)\[\]\{\}!@#\$%\^\&\*~,<>\.\?/;:\|\-\+=\\` + "`]"
 
 var symbolRegex = regexp.MustCompile(symbolRegexClassRaw)
 
-const freeSymbolRegexClassRaw string = `[!@#\$%\^\&\*~,<>\.\?/:\|\-\+=` + "`]"
+const freeSymbolRegexClassRaw string = `[!#\$%\^\&\*~,<>\.\?/:\|\-\+=\\` + "`]"
 
 var freeSymbolRegex = regexp.MustCompile(freeSymbolRegexClassRaw)
 
@@ -61,6 +62,8 @@ func determineClass(lex *lexer.Lexer, c byte) (class symbolClass, e error) {
 		class = identifier
 	} else if unicode.IsDigit(r) {
 		class = number
+	} else if c == '\'' {
+		class = char
 	} else if c == '"' {
 		class = string_
 	} else if c == '_' {
@@ -426,7 +429,11 @@ func tokenizeSymbol(line string) (tok token.Token, numChars int, efunc func(*lex
 		res = res[:loc[0]] // remove comment
 	}
 	numChars = len(res)
-	tok = token.SymbolType.Make().AddValue(res)
+	if ty, found := builtinSymbols[res]; found {
+		tok = ty.Make()
+	} else {
+		tok = token.SymbolType.Make().AddValue(res)
+	}
 	return
 }
 
@@ -459,6 +466,8 @@ func analyzeSymbol(lex *lexer.Lexer) source.Status {
 		tok = token.SemiColon.Make()
 	case ',':
 		tok = token.Comma.Make()
+	case '@':
+		tok = token.At.Make()
 	default:
 		var efunc func(*lexer.Lexer)errors.LexError
 		tok, numChars, efunc = tokenizeSymbol(remainingLine)
@@ -538,6 +547,48 @@ func updateEscape(s string, escapeString bool) (string, bool, int) {
 	return builder.String(), true, out
 }
 
+func analyzeChar(lex *lexer.Lexer) source.Status {
+	line, char := lex.GetLineChar()
+	c, stat := lex.AdvanceChar()
+	if stat.NotOk() || c != '\'' {
+		if c != '\'' {
+			stat = source.Bad
+			lexError(lex, errors.UnexpectedSymbol)
+		} else {
+			statError(lex, stat)
+		}
+	}
+
+	var res string
+	res, stat = source.ReadThrough(lex, '\'')
+	tot := len(res)
+	if stat.NotOk() {
+		statError(lex, stat)
+	} else {
+		var ok bool
+		var index int
+		res, ok, index = updateEscape(res, false)
+		if !ok {
+			lex.SetLineChar(line, char+index+1)
+			lexError(lex, errors.IllegalEscape)
+			return source.Bad
+		}
+		if len(res) != 1 {
+			lex.SetLineChar(line, char)
+			lexError(lex, errors.IllegalChar)
+			return source.Bad
+		}
+		tok := token.CharValue.
+			Make().
+			AddValue(res).
+			SetLineChar(line, char)
+		lex.PushToken(tok)
+	}
+
+	lex.SetLineChar(line, char+tot)
+	return stat
+}
+
 func analyzeString(lex *lexer.Lexer) source.Status {
 	line, char := lex.GetLineChar()
 	c, stat := lex.AdvanceChar()
@@ -594,7 +645,7 @@ func analyzeString(lex *lexer.Lexer) source.Status {
 			lexError(lex, errors.IllegalEscape)
 			return source.Bad
 		}
-		_, _ = lex.AdvanceChar() // eat `"`
+		//_, _ = lex.AdvanceChar() // eat `"`
 		tok := token.StringValue.
 			Make().
 			AddValue(res).
@@ -611,46 +662,9 @@ func analyzeString(lex *lexer.Lexer) source.Status {
 
 // assumes len(s) >= 1
 func resolveType(s string) token.TokenType {
-	switch s[0] {
-	case 'l':
-		if s == "let" {
-			return token.Let
-		}
-	case 'c':
-		if s == "class" {
-			return token.Class
-		}
-	case 'o':
-		if s == "of" {
-			return token.Of
-		}
-	case 'm':
-		if s == "module" {
-			return token.Module
-		}
-	case 'w':
-		if s == "where" {
-			return token.Where
-		}
-	case 'u':
-		if s == "use" {
-			return token.Use
-		}
-	case 'i':
-		if s == "import" {
-			return token.Import
-		}
-	case 'h':
-		if s == "hide" {
-			return token.Hide
-		}
-	case 'd':
-		if s == "derives" {
-			return token.Derives
-		}
-	case 'f':
-		if s == "forall" {
-			return token.Forall
+	if keySelect, found := keywordTrie[s[0]]; found {
+		if ty, found := keySelect[s]; found {
+			return ty
 		}
 	}
 	return token.IdType
@@ -674,13 +688,11 @@ func analyzeIdentifier(lex *lexer.Lexer) source.Status {
 		return stat
 	}
 
-	ty := resolveType(res)
-
 	// add token
-	tok, _ := (token.Token{}).
-		SetLineChar(line, char).
-		SetType(uint(ty)).
-		SetValue(res)
+	tok := resolveType(res).
+		Make().
+		MaybeAddValue(res).
+		SetLineChar(line, char)
 	lex.PushToken(tok)
 
 	// set lexer's char num
@@ -707,6 +719,8 @@ func (class symbolClass) analyze(lex *lexer.Lexer) source.Status {
 		return analyzeNumber(lex)
 	case symbol:
 		return analyzeSymbol(lex)
+	case char:
+		return analyzeChar(lex)
 	case string_:
 		return analyzeString(lex)
 	case identifier:
@@ -743,15 +757,19 @@ func analyze(lex *lexer.Lexer) source.Status {
 
 var lexerWhitespace = regexp.MustCompile(`\t| `)
 
-func runLexer(path string) ([]itoken.Token, []error) {
-	lex, e := lexer.Lex(path, lexerWhitespace)
-	if e != nil {
-		return nil, []error{errors.MkSystemError(e.Error())}
-	}
-
+func runLexer(lex *lexer.Lexer) ([]itoken.Token, []error) {
 	stat := analyze(lex)
 	for stat.IsOk() {
 		stat = analyze(lex)
 	}
 	return lex.GetTokens(), lex.GetErrors()
+}
+
+func lexPath(path string) ([]itoken.Token, []error) {
+	lex, e := lexer.Lex(path, lexerWhitespace)
+	if e != nil {
+		return nil, []error{errors.MkSystemError(e.Error())}
+	}
+
+	return runLexer(lex)
 }

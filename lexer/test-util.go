@@ -1,6 +1,6 @@
 package lexer
 
-import "alex.peters/yew/token"
+import "github.com/petersalex27/yew-packages/token"
 
 func tokensEqual(a, b token.Token) bool {
 	lineA, charA := a.GetLineChar()

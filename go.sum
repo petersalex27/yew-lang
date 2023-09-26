@@ -1,0 +1,12 @@
+github.com/petersalex27/yew-packages/errors v0.0.0-20230925215619-97c2354587e2 h1:KOuCes0UNgTOvzuI02c+ayPZQlBiQeeji4Bk5PLzLcI=
+github.com/petersalex27/yew-packages/errors v0.0.0-20230925215619-97c2354587e2/go.mod h1:YOIWSM4k0UY2NBha7205oVuHl2B0a+6R3k2W7qyRKGE=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20230924234246-6a45a1def054 h1:YGl9PSTrlNqDn+JFWcuBgdTBIzOjr6L5jlHo/F/z1C0=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20230924234246-6a45a1def054/go.mod h1:E8/qfbmsCpPpfQ/9NBlKQHX1gOxCvaZBfxYbEEHh7Yo=
+github.com/petersalex27/yew-packages/source v0.0.0-20230924224811-54cf29ebeee4 h1:eJ8WMVCTN95/j6BDDLhNDwaPgIt1mrp769Im00X35mo=
+github.com/petersalex27/yew-packages/source v0.0.0-20230924224811-54cf29ebeee4/go.mod h1:Kqf+tQSWdIsH+ss0SWIZxUhsGGMAxe+zbLf9Iz8SgQU=
+github.com/petersalex27/yew-packages/stringable v0.0.0-20230925192751-a649288ee782 h1:9O3IgbAbNvNhb51yopWmGGd0sgPrMNTHaPZirURggWc=
+github.com/petersalex27/yew-packages/stringable v0.0.0-20230925192751-a649288ee782/go.mod h1:SR30aaaPS4DBu/akw9QURHNdnw0tT9/dliWjUyIatKs=
+github.com/petersalex27/yew-packages/token v0.0.0-20230924224811-54cf29ebeee4 h1:0+xYQxokxLJay86cNJqbBqAmPY/cevZQ8nMrvDDQEjI=
+github.com/petersalex27/yew-packages/token v0.0.0-20230924224811-54cf29ebeee4/go.mod h1:P1WuiSyoOleawWvEzWT3ZRWg/nQrv9AEXBn4DEWwgqQ=
+github.com/petersalex27/yew-packages/util v0.0.0-20230925192751-a649288ee782 h1:FssYutDF5ExZttI/OO76u2TTY9joBZRkgOBEk7ZvL0k=
+github.com/petersalex27/yew-packages/util v0.0.0-20230925192751-a649288ee782/go.mod h1:zDtG3xFP3nukNZ1tVun7j5q9FhLediwYFLlXC/zTu0c=

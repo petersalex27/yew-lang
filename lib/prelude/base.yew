@@ -1,0 +1,46 @@
+module prelude (
+    var,
+    panic,
+    if, for,
+    Int, Bool, Char, String, Float,
+    (;),
+    str, eq, ord, control,
+)
+
+import (
+    yewlang.ast
+    yewlang.ir
+)
+
+family Context = 
+  Identifier @(token Id)
+  | Variable @(token Id) Size_t
+
+Addressable a = Addressed ast.VirtualRegister
+load: Addressable a -> a
+load (Addressed vr) = ir.load vr
+store: Addressable a -> a -> Addressable a
+store (Addressed vr) x = ir.store vr x; Addressed vr
+
+var: ast.Id -> Context
+var x = 
+  let vr = ast.register x in
+  Addressed vr
+
+
+if {cond} {then} {else} = cond of 
+  True -> then
+  False -> else
+
+-- ignores result of first argument;
+-- this is useful for forcing an expression to evaluate
+-- without needing to use the value of it
+(;): a -> (b -> c)
+_; f = f
+
+for: Iterable f => ((some a) in f a) -> (a in b) -> ()
+for (newvar e in elems) (e in {do}) = 
+  if hasNext elems then
+    e, elems' = next elems in 
+    do; for (e in elems') (e in do)
+  else ()
