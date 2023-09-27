@@ -16,7 +16,7 @@ const UnexpectedSymbol string = "unexpected symbol"
 const IllegalEscape string = "illegal escape sequence"
 const IllegalChar string = "illegal character literal"
 
-func Lexical(lex *lexer.Lexer, msg string, args ...any) errors.Err {
+func Lex(lex *lexer.Lexer, msg string, args ...any) errors.Err {
 	line, char := lex.GetLineChar()
 	path := lex.GetPath()
 	msg = fmt.Sprintf(msg, args...)
@@ -28,11 +28,13 @@ func Lexical(lex *lexer.Lexer, msg string, args ...any) errors.Err {
 	return errors.Ferr(format, "Lexical Analysis", path, line, char, msg, src)
 }
 
-func MkLexError(lex *lexer.Lexer, msg string, args ...any) LexError {
-	return MkLazyLexError(msg, args...)(lex)
+func LazyLex(msg string, args ...any) LazyErrorFn {
+	return func(lex *lexer.Lexer) errors.Err {
+		return Lex(lex, msg, args...)
+	}
 }
 
-type LazyErrorFn func(*lexer.Lexer) LexError
+type LazyErrorFn func(*lexer.Lexer) errors.Err
 
 func makePadding(n int) string {
 	bs := make([]byte, n)
@@ -59,25 +61,6 @@ func getLineNumber(line, lastLine int) string {
 	return string(bs)
 }
 
-func MkLazyLexError(msg string, args ...any) LazyErrorFn {
-	return func(lex *lexer.Lexer) LexError {
-		out := LexError{}
-		line, char := lex.GetLineChar()
-		out.loc = locInfo(lex.GetPath(), line, char)
-		out.msg = fmt.Sprintf(msg, args...)
-		ln, stat := lex.SourceLine(line)
-		if stat.IsOk() {
-			// Error (<type>): <msg>
-			//   <#> | <source>
-			//         <ptr>
-			lnNum := getLineNumber(line, lex.NumLines())
-			pad := makePadding(char-1)
-			out.msg = fmt.Sprintf("%s\n  %s | %s\n     %s^", out.msg, lnNum, ln, pad)
-		}
-		return out
-	}
-}
-
 func MessageFromStatus(stat source.Status) string {
 	switch stat {
 	case source.Eof:
@@ -89,13 +72,4 @@ func MessageFromStatus(stat source.Status) string {
 	default:
 		return "bug in messageFromStatus(status=#" + strconv.Itoa(int(stat)) + ")"
 	}
-}
-
-type LexError struct {
-	loc string
-	msg string
-}
-
-func (e LexError) Error() string {
-	return e.loc + LexErrorHead + e.msg
 }

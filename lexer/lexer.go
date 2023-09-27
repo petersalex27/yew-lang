@@ -16,7 +16,7 @@ func indentation(lex *lexer.Lexer) bool {
 	line, char := lex.GetLineChar()
 	ws, statWs := source.GetLeadingWhitespace(lex)
 	if statWs.NotOk() {
-		lex.AddError(errors.MkLexError(lex, errors.MessageFromStatus(statWs)))
+		lex.AddError(errors.Lex(lex, errors.MessageFromStatus(statWs)))
 	}
 
 	if ws != "" { // found leading whitespace
@@ -87,7 +87,7 @@ func determineClass(lex *lexer.Lexer, c byte) (class symbolClass, e error) {
 	} else if isSymbol(c) {
 		class = symbol
 	} else {
-		e = errors.MkLexError(lex, errors.UnknownSymbol)
+		e = errors.Lex(lex, errors.UnknownSymbol)
 	}
 	return
 }
@@ -200,7 +200,7 @@ func stripChar(s string, strip byte) string {
 func analyzeNon10(num, line string) (tok token.Token, numChars int, efunc errors.LazyErrorFn) {
 	numChars, efunc = len(num), nil
 	if !checkNumTail(line, len(num)) {
-		efunc = errors.MkLazyLexError(errors.UnexpectedSymbol)
+		efunc = errors.LazyLex(errors.UnexpectedSymbol)
 	} else {
 		num = stripChar(num, '_')
 		tok = token.IntValue.Make().AddValue(num)
@@ -243,13 +243,13 @@ func maybeFractional(num, line string) (tok token.Token, numChars int, efunc err
 	if dotNum {
 		numChars = numChars + 1
 		if len(line) <= numChars { // <integer>.EOL
-			efunc = errors.MkLazyLexError(errors.MessageFromStatus(source.Eol))
+			efunc = errors.LazyLex(errors.MessageFromStatus(source.Eol))
 			return
 		}
 
 		frac, ok := locateAtStart(line[numChars:], intRegex)
 		if !ok { // <integer>.<non-integer>
-			efunc = errors.MkLazyLexError(errors.UnexpectedSymbol)
+			efunc = errors.LazyLex(errors.UnexpectedSymbol)
 			return
 		}
 
@@ -259,7 +259,7 @@ func maybeFractional(num, line string) (tok token.Token, numChars int, efunc err
 		if len(line) > numChars {
 			eNum = isE(line, numChars)
 			if !eNum && !checkNumTail(line, numChars) { // <integer>.<integer><illegal-char>
-				efunc = errors.MkLazyLexError(errors.UnexpectedSymbol)
+				efunc = errors.LazyLex(errors.UnexpectedSymbol)
 				return
 			}
 		}
@@ -269,7 +269,7 @@ func maybeFractional(num, line string) (tok token.Token, numChars int, efunc err
 		e := line[numChars] // 'e' or 'E'
 		numChars = numChars + 1
 		if len(line) <= numChars { // <float>eEOL
-			efunc = errors.MkLazyLexError(errors.MessageFromStatus(source.Eol))
+			efunc = errors.LazyLex(errors.MessageFromStatus(source.Eol))
 			return
 		}
 
@@ -281,19 +281,19 @@ func maybeFractional(num, line string) (tok token.Token, numChars int, efunc err
 		}
 
 		if len(line) <= numChars { // <float>e<sign>EOL
-			efunc = errors.MkLazyLexError(errors.MessageFromStatus(source.Eol))
+			efunc = errors.LazyLex(errors.MessageFromStatus(source.Eol))
 			return
 		}
 		
 		frac, ok := locateAtStart(line[numChars:], intRegex)
 		if !ok { // <float>e[sign]<illegal-char>
-			efunc = errors.MkLazyLexError(errors.UnexpectedSymbol)
+			efunc = errors.LazyLex(errors.UnexpectedSymbol)
 			return
 		}
 
 		numChars = numChars + len(frac)
 		if !checkNumTail(line, numChars) { // <float>e[sign]<integer><illegal-char>
-			efunc = errors.MkLazyLexError(errors.UnexpectedSymbol)
+			efunc = errors.LazyLex(errors.UnexpectedSymbol)
 			return
 		}
 
@@ -334,7 +334,7 @@ func analyzeNumber(lex *lexer.Lexer) source.Status {
 		tok, numChars, efunc = maybeFractional(num, line)
 	} else {
 		numChars = 0
-		efunc = errors.MkLazyLexError(errors.UnexpectedSymbol)
+		efunc = errors.LazyLex(errors.UnexpectedSymbol)
 	}
 
 	lex.SetLineChar(lineNum, charNum+numChars)
@@ -411,11 +411,11 @@ func handleLParen(line string) (tok token.Token, numChars int) {
 }
 
 var freeSymbolFullRegex = regexp.MustCompile(freeSymbolRegexClassRaw + "+")
-func tokenizeSymbol(line string) (tok token.Token, numChars int, efunc func(*lexer.Lexer)errors.LexError) {
+func tokenizeSymbol(line string) (tok token.Token, numChars int, efunc errors.LazyErrorFn) {
 	efunc = nil
 	res, ok := locateAtStart(line, freeSymbolFullRegex)
 	if !ok {
-		efunc = errors.MkLazyLexError(errors.UnexpectedSymbol)
+		efunc = errors.LazyLex(errors.UnexpectedSymbol)
 		return
 	}
 	// check for comment
@@ -469,7 +469,7 @@ func analyzeSymbol(lex *lexer.Lexer) source.Status {
 	case '@':
 		tok = token.At.Make()
 	default:
-		var efunc func(*lexer.Lexer)errors.LexError
+		var efunc errors.LazyErrorFn
 		tok, numChars, efunc = tokenizeSymbol(remainingLine)
 		if efunc != nil {
 			efunc(lex)
@@ -482,11 +482,11 @@ func analyzeSymbol(lex *lexer.Lexer) source.Status {
 }
 
 func statError(lex *lexer.Lexer, stat source.Status) {
-	lex.AddError(errors.MkLexError(lex, errors.MessageFromStatus(stat)))
+	lex.AddError(errors.Lex(lex, errors.MessageFromStatus(stat)))
 }
 
 func lexError(lex *lexer.Lexer, msg string, args ...any) {
-	lex.AddError(errors.MkLexError(lex, msg, args...))
+	lex.AddError(errors.Lex(lex, msg, args...))
 }
 
 func getEscape(r rune, escapeString bool) (c byte, ok bool) {
@@ -573,14 +573,14 @@ func analyzeChar(lex *lexer.Lexer) source.Status {
 			lexError(lex, errors.IllegalEscape)
 			return source.Bad
 		}
-		if len(res) != 1 {
+		if len(res) != 2 {
 			lex.SetLineChar(line, char)
 			lexError(lex, errors.IllegalChar)
 			return source.Bad
 		}
 		tok := token.CharValue.
 			Make().
-			AddValue(res).
+			AddValue(res[:1]).
 			SetLineChar(line, char)
 		lex.PushToken(tok)
 	}
@@ -731,7 +731,7 @@ func (class symbolClass) analyze(lex *lexer.Lexer) source.Status {
 		return analyzeComment(lex)
 	}
 
-	e := errors.MkLexError(lex, errors.UnknownSymbol)
+	e := errors.Lex(lex, errors.UnknownSymbol)
 	lex.AddError(e)
 	return source.Bad
 }
