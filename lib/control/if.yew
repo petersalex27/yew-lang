@@ -1,3 +1,0 @@
-module control
-
-if: Bool -> a -> a -> a

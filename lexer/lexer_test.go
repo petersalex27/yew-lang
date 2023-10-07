@@ -2,84 +2,88 @@ package lexer
 
 import (
 	"testing"
+
 	"github.com/petersalex27/yew-packages/lexer"
 	itoken "github.com/petersalex27/yew-packages/token"
-	"yew.lang/main/token"
 	"yew.lang/main/errors"
+	"yew.lang/main/token"
 )
 
 func TestLexer(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		source []string
 		expect []itoken.Token
 	}{
 		{
-			[]string{`Maybe a = Just a | Nothing`,},
+			[]string{`Maybe a = Just a | Nothing`},
 			[]itoken.Token{
-				token.IdType.Make().AddValue(`Maybe`).SetLineChar(1,1),
-				token.IdType.Make().AddValue(`a`).SetLineChar(1,7),
-				token.Assign.Make().AddValue(`=`).SetLineChar(1,9),
-				token.IdType.Make().AddValue(`Maybe`).SetLineChar(1,1),
+				token.TypeId.Make().AddValue(`Maybe`).SetLineChar(1, 1),
+				token.Id.Make().AddValue(`a`).SetLineChar(1, 7),
+				token.Assign.Make().AddValue(`=`).SetLineChar(1, 9),
+				token.TypeId.Make().AddValue(`Just`).SetLineChar(1, 11),
+				token.Id.Make().AddValue(`a`).SetLineChar(1, 16),
+				token.Bar.Make().AddValue(`|`).SetLineChar(1, 18),
+				token.TypeId.Make().AddValue(`Nothing`).SetLineChar(1, 20),
 			},
 		},
 		{
-			[]string{`[`,},
+			[]string{`[`},
 			[]itoken.Token{
-				token.LeftBracket.Make().SetLineChar(1,1),
+				token.LeftBracket.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`{`,},
+			[]string{`{`},
 			[]itoken.Token{
-				token.LeftBrace.Make().SetLineChar(1,1),
+				token.LeftBrace.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`;`,},
+			[]string{`;`},
 			[]itoken.Token{
-				token.SemiColon.Make().SetLineChar(1,1),
+				token.SemiColon.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`,`,},
+			[]string{`,`},
 			[]itoken.Token{
-				token.Comma.Make().SetLineChar(1,1),
+				token.Comma.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`}`,},
+			[]string{`}`},
 			[]itoken.Token{
-				token.RightBrace.Make().SetLineChar(1,1),
+				token.RightBrace.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`]`,},
+			[]string{`]`},
 			[]itoken.Token{
-				token.RightBracket.Make().SetLineChar(1,1),
+				token.RightBracket.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`)`,},
+			[]string{`)`},
 			[]itoken.Token{
-				token.RightParen.Make().SetLineChar(1,1),
+				token.RightParen.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`@`,},
+			[]string{`@`},
 			[]itoken.Token{
-				token.At.Make().SetLineChar(1,1),
+				token.At.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`()`,},
+			[]string{`()`},
 			[]itoken.Token{
-				token.Empty.Make().SetLineChar(1,1),
+				token.Empty.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`:`,},
+			[]string{`:`},
 			[]itoken.Token{
-				token.Typing.Make().SetLineChar(1,1),
+				token.Typing.Make().SetLineChar(1, 1),
 			},
 		},
 	}
@@ -88,7 +92,7 @@ func TestLexer(t *testing.T) {
 		lex := lexer.NewLexer(lexerWhitespace, 0, 0, 1)
 		lex.SetSource(test.source)
 		lex.SetPath("./test-lex-run.yew")
-		actuals, es := runLexer(lex)
+		actuals, es := RunLexer(lex)
 
 		if len(es) != 0 {
 			errors.PrintErrors(lex.GetErrors()...)

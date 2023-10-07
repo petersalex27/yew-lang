@@ -46,7 +46,7 @@ func TestAnalyzeChar(t *testing.T) {
 		{
 			[]string{`'\a'`,},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\n").SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\a").SetLineChar(1,1),
 			},
 		},
 		{
@@ -82,7 +82,7 @@ func TestAnalyzeChar(t *testing.T) {
 		{
 			[]string{`'\\'`,},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\n").SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\\").SetLineChar(1,1),
 			},
 		},
 	}

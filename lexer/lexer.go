@@ -20,7 +20,7 @@ func indentation(lex *lexer.Lexer) bool {
 	}
 
 	if ws != "" { // found leading whitespace
-		tok := token.IndentType.Make().AddValue(ws)
+		tok := token.Indent.Make().AddValue(ws)
 		lex.PushToken(tok.SetLineChar(line, char))
 		return true
 	}
@@ -158,7 +158,7 @@ func analyzeComment(lex *lexer.Lexer) source.Status {
 				return source.Eol
 			}
 			next = line
-			
+
 			// check for '*-'
 			loc = endMultiCommentRegex.FindStringIndex(line)
 		}
@@ -182,8 +182,7 @@ func checkNumTail(line string, numEnd int) bool {
 		return true
 	}
 
-	return '_' != line[numEnd] && (
-		' ' == line[numEnd] || '\t' == line[numEnd] || isSymbol(line[numEnd]))
+	return '_' != line[numEnd] && (' ' == line[numEnd] || '\t' == line[numEnd] || isSymbol(line[numEnd]))
 }
 
 func stripChar(s string, strip byte) string {
@@ -284,7 +283,7 @@ func maybeFractional(num, line string) (tok token.Token, numChars int, efunc err
 			efunc = errors.LazyLex(errors.MessageFromStatus(source.Eol))
 			return
 		}
-		
+
 		frac, ok := locateAtStart(line[numChars:], intRegex)
 		if !ok { // <float>e[sign]<illegal-char>
 			efunc = errors.LazyLex(errors.UnexpectedSymbol)
@@ -317,8 +316,8 @@ func analyzeNumber(lex *lexer.Lexer) source.Status {
 	var numChars int
 	var efunc errors.LazyErrorFn = nil
 
-	// 0x, 0b, and 0o must be checked first, else the lexer might falsely think 
-	// '0' is the number 
+	// 0x, 0b, and 0o must be checked first, else the lexer might falsely think
+	// '0' is the number
 	if num, ok := locateAtStart(line, hexRegex); ok {
 		tok, numChars, efunc = analyzeNon10(num, line)
 	} else if num, ok := locateAtStart(line, octRegex); ok {
@@ -347,22 +346,30 @@ func analyzeNumber(lex *lexer.Lexer) source.Status {
 	return source.Ok
 }
 
+func analyzeThunk(id string) (tok token.Token, numChars int) {
+	fixed, unfixedLen := fixEnclosedId(id)
+	numChars = unfixedLen
+	tok = token.Thunked.Make().AddValue(fixed)
+	return
+}
+
 func analyzeInfix(id string) (tok token.Token, numChars int) {
-	fixed, unfixedLen := fixInfixId(id)
+	fixed, unfixedLen := fixEnclosedId(id)
 	numChars = unfixedLen
 	tok = token.Infixed.Make().AddValue(fixed)
 	return
 }
 
-// does not check for '(' and ')'--assumes the id is enclosed within and w/o spaces
-func fixInfixId(infixId string) (fixed string, unfixedLen int) {
-	unfixedLen = len(infixId)
-	fixed = infixId[1 : unfixedLen-1]
+// does not check for '(' and ')' (or '{' and '}')--assumes the id is enclosed within and w/o spaces
+func fixEnclosedId(enclosedId string) (fixed string, unfixedLen int) {
+	unfixedLen = len(enclosedId)
+	fixed = enclosedId[1 : unfixedLen-1]
 	return
 }
 
 // \([a-zA-Z][a-zA-Z0-9'_]+\)
 var infixIdRegex = regexp.MustCompile(`\(` + idRegexClassRaw + `*\)`)
+var thunkIdRegex = regexp.MustCompile(`\{` + idRegexClassRaw + `*\}`)
 
 // \([!@#\$%\^\&\*~,<>\.\?/:\|-\+=`]+\)
 var infixSymbolRegex = regexp.MustCompile(`\(` + freeSymbolRegexClassRaw + `+\)`)
@@ -397,7 +404,7 @@ func enclosesComment(infixedId string) bool {
 }
 
 func handleLParen(line string) (tok token.Token, numChars int) {
-	if len(line) > 1 && ')' == line[1] {
+	if len(line) > 1 && line[1] == ')' {
 		tok, numChars = token.Empty.Make(), 2
 	} else {
 		id, isInfix := maybeInfixId(line)
@@ -410,7 +417,27 @@ func handleLParen(line string) (tok token.Token, numChars int) {
 	return
 }
 
+func maybeThunkId(s string) (id string, isThunk bool) {
+	id, isThunk = locateAtStart(s, thunkIdRegex)
+	return
+}
+
+func handleLBrace(line string) (tok token.Token, numChars int) {
+	if len(line) > 1 && line[1] == '}' {
+		tok, numChars = token.Empty.Make(), 2
+	} else {
+		id, isThunk := maybeThunkId(line)
+		if isThunk {
+			tok, numChars = analyzeThunk(id)
+		} else {
+			tok, numChars = token.LeftBrace.Make(), 1
+		}
+	}
+	return
+}
+
 var freeSymbolFullRegex = regexp.MustCompile(freeSymbolRegexClassRaw + "+")
+
 func tokenizeSymbol(line string) (tok token.Token, numChars int, efunc errors.LazyErrorFn) {
 	efunc = nil
 	res, ok := locateAtStart(line, freeSymbolFullRegex)
@@ -421,7 +448,7 @@ func tokenizeSymbol(line string) (tok token.Token, numChars int, efunc errors.La
 	// check for comment
 	loc := commentEmbededRegex.FindStringIndex(res)
 	if loc != nil {
-		// sanity check--if comments are checked for before here, then 
+		// sanity check--if comments are checked for before here, then
 		// this should be impossible
 		if loc[0] == 0 {
 			panic("bug: comment not scanned for before scanning symbol")
@@ -432,7 +459,7 @@ func tokenizeSymbol(line string) (tok token.Token, numChars int, efunc errors.La
 	if ty, found := builtinSymbols[res]; found {
 		tok = ty.Make()
 	} else {
-		tok = token.SymbolType.Make().AddValue(res)
+		tok = token.Symbol.Make().AddValue(res)
 	}
 	return
 }
@@ -459,7 +486,7 @@ func analyzeSymbol(lex *lexer.Lexer) source.Status {
 	case ']':
 		tok = token.RightBracket.Make()
 	case '{':
-		tok = token.LeftBrace.Make()
+		tok, numChars = handleLBrace(remainingLine)
 	case '}':
 		tok = token.RightBrace.Make()
 	case ';':
@@ -526,10 +553,27 @@ func getEscape(r rune, escapeString bool) (c byte, ok bool) {
 	return
 }
 
+func readEscapable(line string, end byte) (string, int, source.Status) {
+	index := 0
+	escaped := false
+	for _, c := range line {
+		if escaped {
+			escaped = false
+		} else if byte(c) == end {
+			return line[:index], index, source.Ok
+		} else if byte(c) == '\\' {
+			escaped = true
+		}
+		index = index + 1
+	}
+	// `end` not found
+	return "", index, source.Eol
+}
+
 func updateEscape(s string, escapeString bool) (string, bool, int) {
 	var builder strings.Builder
 	var next bool = false
-	out := len(s)-1
+	out := len(s) - 1
 	for i, r := range s {
 		if next {
 			next = false
@@ -557,35 +601,46 @@ func analyzeChar(lex *lexer.Lexer) source.Status {
 		} else {
 			statError(lex, stat)
 		}
+		return stat
 	}
 
-	var res string
-	res, stat = source.ReadThrough(lex, '\'')
-	tot := len(res)
+	remainingLine, eof := lex.RemainingLine()
+	if eof {
+		statError(lex, source.Eof)
+		return source.Eof
+	}
+
+	res, length, stat := readEscapable(remainingLine, '\'')
 	if stat.NotOk() {
 		statError(lex, stat)
-	} else {
-		var ok bool
-		var index int
-		res, ok, index = updateEscape(res, false)
-		if !ok {
-			lex.SetLineChar(line, char+index+1)
-			lexError(lex, errors.IllegalEscape)
-			return source.Bad
-		}
-		if len(res) != 2 {
-			lex.SetLineChar(line, char)
-			lexError(lex, errors.IllegalChar)
-			return source.Bad
-		}
-		tok := token.CharValue.
-			Make().
-			AddValue(res[:1]).
-			SetLineChar(line, char)
-		lex.PushToken(tok)
+		return stat
 	}
 
-	lex.SetLineChar(line, char+tot)
+	lex.SetLineChar(line, char+length)
+	if _, stat = lex.AdvanceChar(); stat.NotOk() { // remove closing `'`
+		statError(lex, stat)
+		return stat
+	}
+
+	var ok bool
+	var index int
+	res, ok, index = updateEscape(res, false)
+	if !ok {
+		lex.SetLineChar(line, char+index+1)
+		lexError(lex, errors.IllegalEscape)
+		return source.Bad
+	}
+	if len(res) != 1 {
+		lex.SetLineChar(line, char)
+		lexError(lex, errors.IllegalChar)
+		return source.Bad
+	}
+	tok := token.CharValue.
+		Make().
+		AddValue(res).
+		SetLineChar(line, char)
+	lex.PushToken(tok)
+
 	return stat
 }
 
@@ -603,7 +658,7 @@ func analyzeString(lex *lexer.Lexer) source.Status {
 	}
 
 	res := ""
-	for section := ""; true ; {
+	for section := ""; true; {
 		section, stat = source.ReadThrough(lex, '"')
 		if stat.NotOk() {
 			break
@@ -615,11 +670,11 @@ func analyzeString(lex *lexer.Lexer) source.Status {
 			resHead := section[:secLen-2]
 			isQuoteEsc := true // \"=t \\"=f \\\"=t \\\\"=f ... flips b/w t and f
 			// search from right to left to see if it's an escaped quote or end of string
-			for i := len(resHead)-1; i >= 0; i-- {
+			for i := len(resHead) - 1; i >= 0; i-- {
 				if resHead[i] != '\\' {
 					break
 				}
-		
+
 				isQuoteEsc = !isQuoteEsc
 			}
 
@@ -662,12 +717,16 @@ func analyzeString(lex *lexer.Lexer) source.Status {
 
 // assumes len(s) >= 1
 func resolveType(s string) token.TokenType {
+	if unicode.IsUpper(rune(s[0])) {
+		return token.TypeId
+	}
+
 	if keySelect, found := keywordTrie[s[0]]; found {
 		if ty, found := keySelect[s]; found {
 			return ty
 		}
 	}
-	return token.IdType
+	return token.Id
 }
 
 var idRegexClassRaw = `[a-zA-Z][a-zA-Z0-9'_]`
@@ -696,7 +755,7 @@ func analyzeIdentifier(lex *lexer.Lexer) source.Status {
 	lex.PushToken(tok)
 
 	// set lexer's char num
-	lex.SetLineChar(line, char+length+1)
+	lex.SetLineChar(line, char+length)
 	return stat
 }
 
@@ -757,7 +816,7 @@ func analyze(lex *lexer.Lexer) source.Status {
 
 var lexerWhitespace = regexp.MustCompile(`\t| `)
 
-func runLexer(lex *lexer.Lexer) ([]itoken.Token, []error) {
+func RunLexer(lex *lexer.Lexer) ([]itoken.Token, []error) {
 	stat := analyze(lex)
 	for stat.IsOk() {
 		stat = analyze(lex)
@@ -765,11 +824,38 @@ func runLexer(lex *lexer.Lexer) ([]itoken.Token, []error) {
 	return lex.GetTokens(), lex.GetErrors()
 }
 
-func lexPath(path string) ([]itoken.Token, []error) {
+func CastTokens(ts []itoken.Token) []token.Token {
+	out := make([]token.Token, len(ts))
+	for i, tok := range ts {
+		out[i] = tok.(token.Token)
+	}
+	return out
+}
+
+func NewLexer(path string) *lexer.Lexer {
+	lex, e := lexer.Lex(path, lexerWhitespace)
+	if e != nil {
+		errors.PrintErrors(errors.MkSystemError(e.Error()))
+		return nil
+	}
+	return lex
+}
+
+func GetSourceRaw(lex *lexer.Lexer) []string {
+	n := lex.NumLines()
+	out := make([]string, n)
+	for i := range out {
+		line, _ := lex.SourceLine(i+1)
+		out[i] = line
+	}
+	return out
+}
+
+func LexPath(path string) ([]itoken.Token, []error) {
 	lex, e := lexer.Lex(path, lexerWhitespace)
 	if e != nil {
 		return nil, []error{errors.MkSystemError(e.Error())}
 	}
 
-	return runLexer(lex)
+	return RunLexer(lex)
 }

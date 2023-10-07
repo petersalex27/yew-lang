@@ -1,0 +1,1 @@
+mapall (a: A) (b: B) . C; a b

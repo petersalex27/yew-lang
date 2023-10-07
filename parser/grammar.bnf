@@ -1,0 +1,32 @@
+val           ::= INT_VALUE 
+                  | CHAR_VALUE 
+                  | STRING_VALUE 
+                  | FLOAT_VALUE
+name          ::= SYMBOL 
+                  | ID 
+                  | INFIXED 
+                  | THUNKED
+type          ::= polytype 
+                  | monotype 
+                  | dependent
+freeVars      ::= var
+                  | freeVars var
+polyHead      ::= 'forall' freeVars
+polytype      ::= polyHead '.' dependent
+                  | polyHead '.' monotype
+dependentHead ::= 'mapall' varJudgement
+dependent     ::=
+groundType    ::= TYPE_ID 
+                  | TYPE_ID groundType
+arrayType     ::= '[' monotype ']'
+                  | '[' monotype ';' expr ']'
+namedApp      ::= TYPE_ID monotype
+appType       ::= monotype monotype
+                  | namedApp
+monotype      ::= groundType 
+                  | arrayType 
+                  | appType 
+                  | freeVars
+var
+varJudgement  ::= var ':' groundType
+                  | '(' varJudgement ')'

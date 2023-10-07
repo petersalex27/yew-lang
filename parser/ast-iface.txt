@@ -1,0 +1,5 @@
+func () Equals(a ast.Ast) bool
+
+func () NodeType() ast.Type
+
+func () InOrderTraversal(func(token.Token))

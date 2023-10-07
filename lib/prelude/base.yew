@@ -1,32 +1,25 @@
 module prelude (
-    var,
-    panic,
-    if, for,
-    Int, Bool, Char, String, Float,
-    (;),
-    str, eq, ord, control,
 )
 
 import (
-    yewlang.ast
-    yewlang.ir
+  yewlang.ir
 )
 
-family Context = 
-  Identifier @(token Id)
-  | Variable @(token Id) Size_t
+Context a = _internal Context
+Contextualized a b = (in) a b
 
-Addressable a = Addressed ast.VirtualRegister
-load: Addressable a -> a
-load (Addressed vr) = ir.load vr
-store: Addressable a -> a -> Addressable a
-store (Addressed vr) x = ir.store vr x; Addressed vr
+Addr a = struct (
+  vr: ir.Register a
+)
+load: Addr a -> a
+load addr = ir.load addr.vr
+store: Addr a -> a -> Addr a
+store addr x = 
+  ir.store addr.vr x; 
+  Addr (vr = addr.vr)
 
-var: ast.Id -> Context
-var x = 
-  let vr = ast.register x in
-  Addressed vr
-
+var: a -> Context a
+var newvar x = Addr (vr = ir.newRegister x)
 
 if {cond} {then} {else} = cond of 
   True -> then
@@ -38,9 +31,17 @@ if {cond} {then} {else} = cond of
 (;): a -> (b -> c)
 _; f = f
 
-for: Iterable f => ((some a) in f a) -> (a in b) -> ()
-for (newvar e in elems) (e in {do}) = 
-  if hasNext elems then
-    e, elems' = next elems in 
-    do; for (e in elems') (e in do)
-  else ()
+for: Iterable f => (Contextualized (Contextualized (Addr a) (f a)) b) -> ()
+-*
+ * --param e: iteration variable
+ * --param elems: iterable value
+ * --param {} 
+*-
+for e in elems do action =
+  if hasNext elems then                  -- check iterator
+    let e', elems' = next elems in       -- iterate
+    let action' = (\x -> action x) in    -- create thunk
+    e = e';                              -- update state
+    action e;                            -- force thunk
+    for e in elems' do action'           -- tail recursive call
+  else ()                                -- base case

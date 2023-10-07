@@ -6,15 +6,19 @@ import (
 
 type Token struct {
 	line_char
-	ty TokenType
+	ty    TokenType
 	value string
+}
+
+func (t Token) GetName() string {
+	return t.value
 }
 
 func (t Token) SetLineChar(line, char int) token.Token {
 	return Token{
 		line_char: line_char{line, char},
-		ty: t.ty,
-		value: t.value,
+		ty:        t.ty,
+		value:     t.value,
 	}
 }
 
@@ -39,4 +43,3 @@ func (t Token) SetValue(value string) (token.Token, error) {
 func (t Token) GetValue() string {
 	return t.value
 }
-

@@ -1,17 +1,17 @@
 # Keywords
 The following words are reserved by the compiler and serve specific syntatic roles described below.
 ```
-┌─────────┬─────────┬─────────┐
-│  class  │ import  │   of    │
-├─────────┼─────────┼─────────┤
-│ derives │   in    │qualified│
-├─────────├─────────┼─────────┤
-│ family  │   let   │   use   │
-├─────────┼─────────┼─────────┤
-│ forall  │ mapall  │  where  │
-├─────────┼─────────┼─────────┤
-│  from   │ module  │         │
-└─────────┴─────────┴─────────┘
+┌─────────┬─────────┬─────────┬─────────┐
+│  class  │  from   │ module  │  where  │
+├─────────┼─────────┼─────────┼─────────┤
+│ derives │ import  │   of    │         │
+├─────────├─────────┼─────────┼─────────┤
+│   do    │   in    │qualified│         │
+├─────────┼─────────┼─────────┼─────────┤
+│ family  │   let   │   use   │         │
+├─────────┼─────────┼─────────┼─────────┤
+│ forall  │ mapall  │ struct  │         │
+└─────────┴─────────┴─────────┴─────────┘
 ```
 ### `class`
 denotes the start of a type class definition

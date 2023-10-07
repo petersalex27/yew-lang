@@ -22,6 +22,10 @@ func TestKey(t *testing.T) {
 			[]itoken.Token{token.Derives.Make().SetLineChar(1,1),},
 		},
 		{
+			[]string{`do`},
+			[]itoken.Token{token.Do.Make().SetLineChar(1,1),},
+		},
+		{
 			[]string{`family`},
 			[]itoken.Token{token.Family.Make().SetLineChar(1,1),},
 		},
@@ -60,6 +64,10 @@ func TestKey(t *testing.T) {
 		{
 			[]string{`qualified`},
 			[]itoken.Token{token.Qualified.Make().SetLineChar(1,1),},
+		},
+		{
+			[]string{`struct`},
+			[]itoken.Token{token.Struct.Make().SetLineChar(1,1),},
 		},
 		{
 			[]string{`use`},

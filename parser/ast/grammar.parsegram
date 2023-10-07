@@ -1,0 +1,70 @@
+val         <- IntValue 
+               | CharValue 
+               | StringValue 
+               | FloatValue
+type.free   <- Id 
+               | app.id
+polytype    <- Forall type.free Dot dependtype
+dependtype  <- MapAll typing.free Dot monotype
+               | Mapall app.tfree Dot monotype
+typing.free <- Id Colon monotype 
+               | LeftParen typing.free RightParen
+typing      <- name Colon type 
+               | LeftParen typing RightParen
+app.tfree   <- typing.free typing.free 
+               | app.tfree typing.free
+type        <- monotype | polytype | dependtype
+dependtype  <-
+monotype    <- TypeId 
+               | monotype Arrow monotype 
+               | type.free
+               | TypeId monotype
+               | LeftParen typem.tail RightParen
+               | LeftParen monotype RightParen
+               | monotype SemiColon expr
+typem.tail  <- monotype 
+               | monotype Comma 
+               | monotype Comma typem.tail
+expr        <- val 
+               | group 
+               | app 
+               | name
+app         <- name expr 
+               | app expr
+               | app.id
+app.id      <- Id Id 
+               | Id app.id
+name        <- Id 
+               | Infixed 
+               | Symbol 
+               | TypeId 
+               | Thunked
+cnstr       <- TypeId Id FatArrow
+               | TypeId app.id FatArrow
+type.cnstr  <- cnstr typing
+decl.cls    <- class TypeId 
+decl.inst   <-
+decl.mod    <-
+decl.let    <-
+def.cls     <-
+def.inst    <-
+def.mod     <-
+def.fn      <-
+def.infix   <-
+def.struct  <-
+def.cons    <-
+def.type    <-
+annot       <-
+import      <-
+list.use    <- 
+list.qual   <-
+namespace   <-
+list.export <-
+anon <-
+case <-
+pattern <-
+array <-
+group <-
+block <-
+cxt <-
+union <-

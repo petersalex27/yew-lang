@@ -9,7 +9,7 @@ const (
 	CharValue
 	FloatValue
 	// spacing
-	IndentType
+	Indent
 	// other
 	Wildcard
 	Empty
@@ -20,6 +20,7 @@ const (
 	Bar
 	Arrow
 	Backslash
+	Dot
 	DotDot
 	// grouping
 	LeftParen
@@ -32,9 +33,11 @@ const (
 	SemiColon
 	Comma
 	// names
-	SymbolType
-	IdType
+	Symbol
+	Id
+	TypeId
 	Infixed
+	Thunked
 	/*keywords*/ _keyword_start_ // do not use!
 	Let
 	Of
@@ -49,8 +52,11 @@ const (
 	Where
 	Module
 	Qualified
+	Struct
 	Derives
+	Do
 	/*end of keywords*/ _keyword_end_ // do not use!
+	LAST_TYPE__ // for use with ast node type
 )
 
 func (t TokenType) IsKeyword() bool {
@@ -68,10 +74,12 @@ var builtinMap = map[TokenType]string{
 	Where:        "where",
 	Module:       "module",
 	Derives:      "derives",
+	Do:           "do",
 	Family:       "family",
 	Qualified:    "qualified",
 	From:         "from",
 	In:           "in",
+	Struct:       "struct",
 	Wildcard:     "_",
 	LeftParen:    "(",
 	RightParen:   ")",
@@ -88,6 +96,7 @@ var builtinMap = map[TokenType]string{
 	Bar:          "|",
 	Arrow:        "->",
 	Backslash:    `\`,
+	Dot:					`.`,
 	DotDot:       `..`,
 }
 

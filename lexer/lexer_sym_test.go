@@ -2,111 +2,118 @@ package lexer
 
 import (
 	"testing"
+
 	"github.com/petersalex27/yew-packages/lexer"
 	itoken "github.com/petersalex27/yew-packages/token"
-	"yew.lang/main/token"
 	"yew.lang/main/errors"
+	"yew.lang/main/token"
 )
 
 func TestAnalyzeBuiltinSymbols(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		source []string
 		expect []itoken.Token
 	}{
 		{
-			[]string{`(`,},
+			[]string{`(`},
 			[]itoken.Token{
-				token.LeftParen.Make().SetLineChar(1,1),
+				token.LeftParen.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`[`,},
+			[]string{`[`},
 			[]itoken.Token{
-				token.LeftBracket.Make().SetLineChar(1,1),
+				token.LeftBracket.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`{`,},
+			[]string{`{`},
 			[]itoken.Token{
-				token.LeftBrace.Make().SetLineChar(1,1),
+				token.LeftBrace.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`;`,},
+			[]string{`;`},
 			[]itoken.Token{
-				token.SemiColon.Make().SetLineChar(1,1),
+				token.SemiColon.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`,`,},
+			[]string{`,`},
 			[]itoken.Token{
-				token.Comma.Make().SetLineChar(1,1),
+				token.Comma.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`}`,},
+			[]string{`}`},
 			[]itoken.Token{
-				token.RightBrace.Make().SetLineChar(1,1),
+				token.RightBrace.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`]`,},
+			[]string{`]`},
 			[]itoken.Token{
-				token.RightBracket.Make().SetLineChar(1,1),
+				token.RightBracket.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`)`,},
+			[]string{`)`},
 			[]itoken.Token{
-				token.RightParen.Make().SetLineChar(1,1),
+				token.RightParen.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`@`,},
+			[]string{`@`},
 			[]itoken.Token{
-				token.At.Make().SetLineChar(1,1),
+				token.At.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`()`,},
+			[]string{`()`},
 			[]itoken.Token{
-				token.Empty.Make().SetLineChar(1,1),
+				token.Empty.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`:`,},
+			[]string{`:`},
 			[]itoken.Token{
-				token.Typing.Make().SetLineChar(1,1),
+				token.Typing.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`=`,},
+			[]string{`=`},
 			[]itoken.Token{
-				token.Assign.Make().SetLineChar(1,1),
+				token.Assign.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`|`,},
+			[]string{`|`},
 			[]itoken.Token{
-				token.Bar.Make().SetLineChar(1,1),
+				token.Bar.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`->`,},
+			[]string{`->`},
 			[]itoken.Token{
-				token.Arrow.Make().SetLineChar(1,1),
+				token.Arrow.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`\`,},
+			[]string{`\`},
 			[]itoken.Token{
-				token.Backslash.Make().SetLineChar(1,1),
+				token.Backslash.Make().SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`..`,},
+			[]string{`..`},
 			[]itoken.Token{
-				token.DotDot.Make().SetLineChar(1,1),
+				token.DotDot.Make().SetLineChar(1, 1),
+			},
+		},
+		{
+			[]string{`.`},
+			[]itoken.Token{
+				token.Dot.Make().SetLineChar(1, 1),
 			},
 		},
 	}
@@ -121,7 +128,7 @@ func TestAnalyzeBuiltinSymbols(t *testing.T) {
 			errors.PrintErrors(lex.GetErrors()...)
 			t.Fatalf("failed test #%d: see above errors\n", i+1)
 		}
-		
+
 		if stat.NotOk() {
 			t.Fatalf("failed test #%d: analyzeSymbol(lex).NotOk() == true\n", i+1)
 		}
@@ -143,44 +150,50 @@ func TestAnalyzeBuiltinSymbols(t *testing.T) {
 }
 
 func TestAnalyzeSymbol(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		source []string
 		expect []itoken.Token
 	}{
 		{
-			[]string{`+`,},
+			[]string{`+`},
 			[]itoken.Token{
-				token.SymbolType.Make().AddValue("+").SetLineChar(1,1),
+				token.Symbol.Make().AddValue("+").SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`+{`,},
+			[]string{`+{`},
 			[]itoken.Token{
-				token.SymbolType.Make().AddValue("+").SetLineChar(1,1),
+				token.Symbol.Make().AddValue("+").SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`+=`,},
+			[]string{`+=`},
 			[]itoken.Token{
-				token.SymbolType.Make().AddValue("+=").SetLineChar(1,1),
+				token.Symbol.Make().AddValue("+=").SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`(+)`,},
+			[]string{`(+)`},
 			[]itoken.Token{
-				token.Infixed.Make().AddValue("+").SetLineChar(1,1),
+				token.Infixed.Make().AddValue("+").SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`(>>=)`,},
+			[]string{`(>>=)`},
 			[]itoken.Token{
-				token.Infixed.Make().AddValue(">>=").SetLineChar(1,1),
+				token.Infixed.Make().AddValue(">>=").SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`(mod)`,},
+			[]string{`(mod)`},
 			[]itoken.Token{
-				token.Infixed.Make().AddValue("mod").SetLineChar(1,1),
+				token.Infixed.Make().AddValue("mod").SetLineChar(1, 1),
+			},
+		},
+		{
+			[]string{`{thunk}`},
+			[]itoken.Token{
+				token.Thunked.Make().AddValue("thunk").SetLineChar(1, 1),
 			},
 		},
 	}
@@ -195,7 +208,7 @@ func TestAnalyzeSymbol(t *testing.T) {
 			errors.PrintErrors(lex.GetErrors()...)
 			t.Fatalf("failed test #%d: see above errors\n", i+1)
 		}
-		
+
 		if stat.NotOk() {
 			t.Fatalf("failed test #%d: analyzeSymbol(lex).NotOk() == true\n", i+1)
 		}
