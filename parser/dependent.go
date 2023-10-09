@@ -32,8 +32,8 @@ func freeJudgement(ex expr.Expression[token.Token]) types.ExpressionJudgement[to
 }
 
 // dependTyped <- dependInstance
-var dependTyped__dependInstance_r = parser. 
-	Get(dependTyped__dependInstance). 
+var dependTyped__dependInstance_r = parser.
+	Get(dependTyped__dependInstance).
 	From(DependInstance)
 
 func dependTyped__dependInstance(nodes ...ast.Ast) ast.Ast {
@@ -41,8 +41,8 @@ func dependTyped__dependInstance(nodes ...ast.Ast) ast.Ast {
 }
 
 // dependTyped <- depend
-var dependTyped__depend_r = parser. 
-	Get(dependTyped__depend). 
+var dependTyped__depend_r = parser.
+	Get(dependTyped__depend).
 	From(Dependtype)
 
 func dependTyped__depend(nodes ...ast.Ast) ast.Ast {
@@ -50,9 +50,9 @@ func dependTyped__depend(nodes ...ast.Ast) ast.Ast {
 }
 
 // dependInstance <- dependIndexHead expr
-var dependInstance__dependIndexHead_expr_r = parser. 
-	Get(dependInstance__dependIndexHead_expr). 
-	From(DependIndexHead, Expression)
+var dependInstance__dependIndexHead_expr_r = parser.
+	Get(dependInstance__dependIndexHead_expr).
+	From(DependIndexHead, Expr)
 
 func dependInstance__dependIndexHead_expr(nodes ...ast.Ast) ast.Ast {
 	ty := getDependIndex(nodes[0])
@@ -66,8 +66,8 @@ func dependInstance__dependIndexHead_expr(nodes ...ast.Ast) ast.Ast {
 }
 
 // dependInstance <- dependIndexHead judgement
-var dependTyped__dependIndexHead_judge_r = parser. 
-	Get(dependTyped__dependIndexHead_judge). 
+var dependTyped__dependIndexHead_judge_r = parser.
+	Get(dependTyped__dependIndexHead_judge).
 	From(DependIndexHead, TypeJudgement)
 
 func dependTyped__dependIndexHead_judge(nodes ...ast.Ast) ast.Ast {
@@ -80,8 +80,8 @@ func dependTyped__dependIndexHead_judge(nodes ...ast.Ast) ast.Ast {
 }
 
 // dependInstance <- arrayHead RightBracket
-var dependInstance__arrayHead_RightBracket_r = parser. 
-	Get(dependInstance__arrayHead_RightBracket). 
+var dependInstance__arrayHead_RightBracket_r = parser.
+	Get(dependInstance__arrayHead_RightBracket).
 	From(ArrayHead, RightBracket)
 
 func dependInstance__arrayHead_RightBracket(nodes ...ast.Ast) ast.Ast {
@@ -90,8 +90,8 @@ func dependInstance__arrayHead_RightBracket(nodes ...ast.Ast) ast.Ast {
 }
 
 // arrayHead <- LeftBracket typeApp
-var arrayHead__LeftBracket_typeApp_r = parser. 
-	Get(arrayHead__LeftBracket_typeApp). 
+var arrayHead__LeftBracket_typeApp_r = parser.
+	Get(arrayHead__LeftBracket_typeApp).
 	From(LeftBracket, TypeApp)
 
 func arrayHead__LeftBracket_typeApp(nodes ...ast.Ast) ast.Ast {
@@ -108,8 +108,8 @@ func arrayHead__LeftBracket_typeApp(nodes ...ast.Ast) ast.Ast {
 }
 
 // arrayHead <- LeftBracket TypeId
-var arrayHead__LeftBracket_TypeId_r = parser. 
-	Get(arrayHead__LeftBracket_TypeId). 
+var arrayHead__LeftBracket_TypeId_r = parser.
+	Get(arrayHead__LeftBracket_TypeId).
 	From(LeftBracket, TypeId)
 
 func arrayHead__LeftBracket_TypeId(nodes ...ast.Ast) ast.Ast {
@@ -126,8 +126,8 @@ func arrayHead__LeftBracket_TypeId(nodes ...ast.Ast) ast.Ast {
 }
 
 // arrayHead <- LeftBracket var
-var arrayHead__LeftBracket_var_r = parser. 
-	Get(arrayHead__LeftBracket_var). 
+var arrayHead__LeftBracket_var_r = parser.
+	Get(arrayHead__LeftBracket_var).
 	From(LeftBracket, FreeVar)
 
 func arrayHead__LeftBracket_var(nodes ...ast.Ast) ast.Ast {
@@ -144,9 +144,9 @@ func arrayHead__LeftBracket_var(nodes ...ast.Ast) ast.Ast {
 }
 
 // arrayHead <- LeftBracket dependIndexHead expr
-var arrayHead__LeftBracket_dependIndexHead_expr_r = parser. 
-	Get(arrayHead__LeftBracket_dependIndexHead_expr). 
-	From(LeftBracket, DependIndexHead, Expression)
+var arrayHead__LeftBracket_dependIndexHead_expr_r = parser.
+	Get(arrayHead__LeftBracket_dependIndexHead_expr).
+	From(LeftBracket, DependIndexHead, Expr)
 
 func arrayHead__LeftBracket_dependIndexHead_expr(nodes ...ast.Ast) ast.Ast {
 	ty := getDependIndex(nodes[1])
@@ -162,8 +162,8 @@ func arrayHead__LeftBracket_dependIndexHead_expr(nodes ...ast.Ast) ast.Ast {
 }
 
 // arrayHead <- LeftBracket dependIndexHead judgement
-var arrayHead__LeftBracket_dependIndexHead_judge_r = parser. 
-	Get(arrayHead__LeftBracket_dependIndexHead_judge). 
+var arrayHead__LeftBracket_dependIndexHead_judge_r = parser.
+	Get(arrayHead__LeftBracket_dependIndexHead_judge).
 	From(LeftBracket, DependIndexHead, TypeJudgement)
 
 func arrayHead__LeftBracket_dependIndexHead_judge(nodes ...ast.Ast) ast.Ast {
@@ -178,8 +178,8 @@ func arrayHead__LeftBracket_dependIndexHead_judge(nodes ...ast.Ast) ast.Ast {
 }
 
 // dependIndexHead <- typeApp SemiColon
-var dependIndexHead__typeApp_SemiColon_r = parser. 
-	Get(dependIndexHead__typeApp_SemiColon). 
+var dependIndexHead__typeApp_SemiColon_r = parser.
+	Get(dependIndexHead__typeApp_SemiColon).
 	From(TypeApp, SemiColon)
 
 func dependIndexHead__typeApp_SemiColon(nodes ...ast.Ast) ast.Ast {
@@ -194,8 +194,8 @@ func dependIndexHead__typeApp_SemiColon(nodes ...ast.Ast) ast.Ast {
 }
 
 // dependIndexHead <- TypeId SemiColon
-var dependIndexHead__TypeId_SemiColon_r = parser. 
-	Get(dependIndexHead__TypeId_SemiColon). 
+var dependIndexHead__TypeId_SemiColon_r = parser.
+	Get(dependIndexHead__TypeId_SemiColon).
 	From(TypeId, SemiColon)
 
 func dependIndexHead__TypeId_SemiColon(nodes ...ast.Ast) ast.Ast {
@@ -212,8 +212,8 @@ func dependIndexHead__TypeId_SemiColon(nodes ...ast.Ast) ast.Ast {
 }
 
 // dependIndexHead <- var SemiColon
-var dependIndexHead__var_SemiColon_r = parser. 
-	Get(dependIndexHead__var_SemiColon). 
+var dependIndexHead__var_SemiColon_r = parser.
+	Get(dependIndexHead__var_SemiColon).
 	From(FreeVar, SemiColon)
 
 func dependIndexHead__var_SemiColon(nodes ...ast.Ast) ast.Ast {
@@ -249,7 +249,6 @@ func dependTyped__var(nodes ...ast.Ast) ast.Ast {
 	return TypeNode{Dependtyped, getVariable(nodes[0])}
 }
 */
-
 
 // depend <- Mapall typing.var Dot monotype
 

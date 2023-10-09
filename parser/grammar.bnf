@@ -1,32 +1,80 @@
-val           ::= INT_VALUE 
+literal       ::= INT_VALUE 
                   | CHAR_VALUE 
                   | STRING_VALUE 
                   | FLOAT_VALUE
-name          ::= SYMBOL 
-                  | ID 
-                  | INFIXED 
+                  | literalArray
+val           ::= literal
+                  | array
+                  | INTERPOLATED_STRING
+arrayValHead  ::= '[' expr
+                  | arrayValHead ',' expr
+                  | litArrHead ',' expr
+array         ::= arrayValHead ',' ']'
+                  | arrayValHead ']'
+litArrHead    ::= '[' literal
+                  | litArrHead ',' literal
+literalArray  ::= literalArray ',' ']'
+                  | literalArray ']'
+name          ::= ID
+                  | TYPE_ID
+funcName      ::= SYMBOL 
+                  | INFIXED
+                  | ID
+param         ::= ID
                   | THUNKED
+anyName       ::= name
+                  | funcName 
+                  | paramName
+constructor   ::= TYPE_ID
+                  | constructor name
+                  | constructor constructor
+                  | '(' constructor ')'
+expr          ::= val
+                  | data
+                  | funcName
+                  | letIn
+                  | application
+                  | pattern
+                  | exprWhere
+                  | judgement
+                  | '(' expr ')'
+application   ::= expr expr
+pattern       ::= expr 'of' cases
+case          ::= constructor '->' expr
+cases         ::= case 
+                  | cases '|' case
+letIn         ::= 'let' function 'in' expr
+exprWhere     ::= expr 'where' function
+data          ::= constructor
+                  | data expr
+                  | '(' data ')'
+judgement     ::= expr ':' type
+functionDecl  ::= funcName param
+                  | funcName constructor
+                  | functionDecl param
+                  | functionDecl constructor
+functionDef   ::= functionDecl ':' type
+function      ::= functionDef '=' expr
+                  | functionDecl '=' expr
+typeDecl      ::= TYPE_ID
+                  | typeDeclHead ID
+typeDef       ::= typeDecl '=' constrDefs
+constrDefs    ::= constructor
+                  | constrDefs '|' constructor
 type          ::= polytype 
                   | monotype 
                   | dependent
-freeVars      ::= var
-                  | freeVars var
 polyHead      ::= 'forall' freeVars
 polytype      ::= polyHead '.' dependent
                   | polyHead '.' monotype
 dependentHead ::= 'mapall' varJudgement
-dependent     ::=
-groundType    ::= TYPE_ID 
-                  | TYPE_ID groundType
-arrayType     ::= '[' monotype ']'
-                  | '[' monotype ';' expr ']'
-namedApp      ::= TYPE_ID monotype
+                  | dependentHead varJudgement
+dependent     ::= dependentHead '.' monotype
+dependInst    ::= arrayHead ']'
+arrayHead     ::= '[' monotype
+                  | '[' monotype ';' expr
 appType       ::= monotype monotype
                   | namedApp
-monotype      ::= groundType 
-                  | arrayType 
-                  | appType 
-                  | freeVars
-var
-varJudgement  ::= var ':' groundType
+monotype      ::=
+varJudgement  ::= ID ':' monotype
                   | '(' varJudgement ')'

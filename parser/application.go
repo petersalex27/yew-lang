@@ -5,17 +5,18 @@ import (
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	itoken "github.com/petersalex27/yew-packages/token"
+	"github.com/petersalex27/yew-packages/types"
 	"yew.lang/main/token"
 )
 
 type applicant struct {
 	isApplication bool
-	node ast.Ast
+	node          ast.Ast
 }
 
 type ApplicationNode struct {
-	ty ast.Type
-	left applicant
+	ty    ast.Type
+	left  applicant
 	right applicant
 }
 
@@ -39,76 +40,88 @@ func (t ApplicationNode) InOrderTraversal(f func(itoken.Token)) {
 	t.right.node.InOrderTraversal(f)
 }
 
-// appId <- Id Id
-var appId__Id_Id_r = parser. 
-	Get(appId__Id_Id). 
-	From(Id, Id)
-
-func appId__Id_Id(nodes ...ast.Ast) ast.Ast {
-	return ApplicationNode{ApplicationId, applicant{false, nodes[0]}, applicant{false, nodes[1]}}
-}
-
-// addId <- appId Id
-var appId__appId_Id_r = parser. 
-	Get(appId__appId_Id). 
-	From(ApplicationId, Id)
-
-func appId__appId_Id(nodes ...ast.Ast) ast.Ast {
-	return ApplicationNode{ApplicationId, applicant{true, nodes[0]}, applicant{false, nodes[1]}}
-}
-
-// addId <- appId appId
-var appId__appId_appId_r = parser. 
-	Get(appId__appId_appId). 
-	From(ApplicationId, ApplicationId)
-
-func appId__appId_appId(nodes ...ast.Ast) ast.Ast {
-	return ApplicationNode{ApplicationId, applicant{true, nodes[0]}, applicant{true, nodes[1]}}
-}
-
-// addId <- Id appId
-var appId__Id_appId_r = parser. 
-	Get(appId__Id_appId). 
-	From(Id, ApplicationId)
-
-func appId__Id_appId(nodes ...ast.Ast) ast.Ast {
-	return ApplicationNode{ApplicationId, applicant{false, nodes[0]}, applicant{true, nodes[1]}}
-}
-
-// addId <- LeftParen appId RightParen
-var appId__enclosed_r = parser.Get(grab_enclosed).From(LeftParen, ApplicationId, RightParen)
-
-// app <- appId
-var app__appId_r = parser. 
-	Get(app__appId). 
-	From(ApplicationId)
-
-func app__appId(nodes ...ast.Ast) ast.Ast {
-	ids := nodes[0].(ApplicationNode)
-	var left, right expr.Expression[token.Token]
-
-	if ids.left.isApplication {
-		left = app__appId(ids.left.node).(SomeExpression).Expression
-	} else {
-		left = expr.Const[token.Token]{Name: GetToken(ids.left.node)}
+func (a ApplicationNode) toTypeApp() types.Application[token.Token] {
+	panic("TODO: implement")
+	if a.ty != Constructor {
+		panic("not a constructor")
 	}
 
-	if ids.right.isApplication {
-		right = app__appId(ids.right.node).(SomeExpression).Expression
+	prev := a.right
+	curr := a.left
+	//var left, right types.Type[token.Token]
+	if a.right.isApplication {
+		//right = a.right.node.(ApplicationNode).toTypeApp()
 	} else {
-		right = expr.Const[token.Token]{Name: GetToken(ids.right.node)}
+
 	}
 
-	return SomeExpression{
-		Application,
-		expr.Apply[token.Token](left, right),
+	if a.left.isApplication {
+		//left = a.left.node.(ApplicationNode).toTypeApp()
+	}
+
+	var tok *token.Token
+	/*grabToken */_ = func(t itoken.Token) {
+		*tok = t.(token.Token)
+	}
+
+	for curr.isApplication {
+		//var left, right types.Application[token.Token]
+		if prev.isApplication {
+		//	right = prev.node.(ApplicationNode).toTypeApp()
+		}
+		//left
+	}
+	return types.Application[token.Token]{}
+}
+
+// constr <- TypeId name
+var constr__TypeId_name_r = parser.
+	Get(constr__false_false).
+	From(TypeId, Name)
+
+// constr <- constr name
+var constr__constr_name_r = parser.
+	Get(constr__true_false).
+	From(Constructor, Name)
+
+// constr <- constr constr
+var constr__constr_constr_r = parser.
+	Get(constr__true_true).
+	From(Constructor, Constructor)
+
+// constr <- LeftParen constr RightParen
+var constr__LeftParen_constr_RightParen_r = parser.
+	Get(grab_enclosed).
+	From(LeftParen, Constructor, RightParen)
+
+func constr__false_false(nodes ...ast.Ast) ast.Ast {
+	return ApplicationNode{
+		Constructor,
+		applicant{false, nodes[0]},
+		applicant{false, nodes[1]},
+	}
+}
+
+func constr__true_true(nodes ...ast.Ast) ast.Ast {
+	return ApplicationNode{
+		Constructor,
+		applicant{true, nodes[0]},
+		applicant{true, nodes[1]},
+	}
+}
+
+func constr__true_false(nodes ...ast.Ast) ast.Ast {
+	return ApplicationNode{
+		Constructor,
+		applicant{true, nodes[0]},
+		applicant{false, nodes[1]},
 	}
 }
 
 // app <- expr expr
-var app__expr_expr_r = parser. 
-	Get(app__expr_expr). 
-	From(Expression, Expression)
+var app__expr_expr_r = parser.
+	Get(app__expr_expr).
+	From(Expr, Expr)
 
 func app__expr_expr(nodes ...ast.Ast) ast.Ast {
 	return SomeExpression{

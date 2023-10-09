@@ -1,25 +1,25 @@
 module prelude (
+  __array__,
+  if, for,
+  Int, Uint, Char, String, Bool, Float
+  (;)
 )
 
 import (
   yewlang.ir
 )
 
-Context a = _internal Context
-Contextualized a b = (in) a b
+Int = __int__
 
-Addr a = struct (
-  vr: ir.Register a
-)
-load: Addr a -> a
-load addr = ir.load addr.vr
-store: Addr a -> a -> Addr a
-store addr x = 
-  ir.store addr.vr x; 
-  Addr (vr = addr.vr)
+Float = __float__
 
-var: a -> Context a
-var newvar x = Addr (vr = ir.newRegister x)
+Char = __char__
+
+String = __string__
+
+Uint = __int__
+
+Bool = True | False
 
 if {cond} {then} {else} = cond of 
   True -> then
@@ -28,10 +28,10 @@ if {cond} {then} {else} = cond of
 -- ignores result of first argument;
 -- this is useful for forcing an expression to evaluate
 -- without needing to use the value of it
-(;): a -> (b -> c)
-_; f = f
+(;): _ -> a -> a
+(;) _ f = f
 
-for: Iterable f => (Contextualized (Contextualized (Addr a) (f a)) b) -> ()
+for: Iterable f => (@action (@context a (f a)) (a -> ()))
 -*
  * --param e: iteration variable
  * --param elems: iterable value
@@ -39,7 +39,7 @@ for: Iterable f => (Contextualized (Contextualized (Addr a) (f a)) b) -> ()
 *-
 for e in elems do action =
   if hasNext elems then                  -- check iterator
-    let e', elems' = next elems in       -- iterate
+    let e, elems' = next elems in        -- iterate
     let action' = (\x -> action x) in    -- create thunk
     e = e';                              -- update state
     action e;                            -- force thunk

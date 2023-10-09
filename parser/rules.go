@@ -10,7 +10,7 @@ var typeReduceTable = parser.
 		parser.
 			LA(TypeId).
 			ForN(1, Id).
-				Then(qualifier_rules.Union(apptype_rules, var_rules, monotype_singlesRules)).
+				Then(parser.Union(qualifier_rules, apptype_rules, var_rules, monotype_singlesRules)).
 				ElseShift(),
 
 		parser.LA(Forall).
@@ -25,7 +25,7 @@ var typeReduceTable = parser.
 				Shift(),
 
 		parser.LA(RightParen).
-			Then(all_mono_rules.Union(monoList_rules)),
+			Then(parser.Union(all_mono_rules, monoList_rules)),
 
 		parser.LA(RightBracket).
 			Then(array_rules),
@@ -37,17 +37,17 @@ var typeReduceTable = parser.
 			Then(all_mono_rules_no_close),
 
 		parser.LA(Dot). 
-			Then(var_rules.Union(qualifier_rules)),
+			Then(parser.Union(var_rules, qualifier_rules)),
 	).
 	Finally(alltypes_rules)
 
 	// v0.0.0-20231003031741-ea929e3ab360
 	// v0.0.0-20231003185600-667c1eb14677
 
-var qualifier_rules = forall_rules.Union(mapall_rules)
+var qualifier_rules = parser.Union(forall_rules, mapall_rules)
 
-var alltypes_rules = 
-	qualifier_rules.Union(
+var alltypes_rules = parser.Union(
+	qualifier_rules,
 	//dependTyped_rules,
 	polytype_rules,
 	depend_rules,
@@ -55,10 +55,10 @@ var alltypes_rules =
 )
 
 var all_mono_rules = 
-	all_mono_rules_no_function.Union(monotype_function_rules)
+	parser.Union(all_mono_rules_no_function, monotype_function_rules)
 
-var all_mono_rules_no_close = 
-	apptype_rules.Union(
+var all_mono_rules_no_close = parser.Union(
+	apptype_rules,
 	var_rules,
 	monotype_singlesRules,
 	array_rules,
@@ -68,8 +68,8 @@ var all_mono_rules_no_close =
 	//monoList_rules,
 )
 
-var all_mono_rules_no_function = 
-	apptype_rules.Union(
+var all_mono_rules_no_function = parser.Union(
+	apptype_rules,
 	var_rules,
 	monotype_singlesRules,
 	monotype_close_rules,

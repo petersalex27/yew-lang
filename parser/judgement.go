@@ -169,7 +169,7 @@ func makeSomeJudgement[E expr.Expression[token.Token]](ty ast.Type, e E, type_ T
 // judgement <- expr Colon type
 var judgement__expr_Colon_type_r = parser.
 	Get(judgement__expr_Colon_type).
-	From(Expression, Colon, Type)
+	From(Expr, Colon, Type)
 
 func judgement__expr_Colon_type(nodes ...ast.Ast) ast.Ast {
 	// expr

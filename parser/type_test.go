@@ -405,9 +405,9 @@ func TestTypeRules(t *testing.T) {
 		//toks := lexer.CastTokens(tmp)
 		src := parser.MakeSource(pth, lexer.GetSourceRaw(lex)...)
 		p := parser.
-			New().
+			NewParser().
 			LA(1).
-			Ruleset(typeReduceTable).
+			UsingReductionTable(typeReduceTable).
 			Load(toks, src, nil, nil)//.LogActions()
 
 		root := p.Parse()

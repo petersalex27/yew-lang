@@ -7,7 +7,7 @@ import (
 	"yew.lang/main/token"
 )
 
-type ExpressionNode struct{expr.Expression[token.Token]}
+type ExpressionNode struct{ expr.Expression[token.Token] }
 
 type SomeExpression struct {
 	ty ast.Type
@@ -35,7 +35,7 @@ func (e1 ExpressionNode) Equals(a ast.Ast) bool {
 	return e1.Expression.Equals(glb_cxt.exprCxt, e2.Expression)
 }
 
-func (e ExpressionNode) NodeType() ast.Type { return Expression }
+func (e ExpressionNode) NodeType() ast.Type { return Expr }
 
 func (e ExpressionNode) InOrderTraversal(f func(itoken.Token)) {
 	elems := e.Expression.Collect()

@@ -39,6 +39,12 @@ github.com/petersalex27/yew-packages/parser v0.0.0-20231003211931-6352ac6d9c0b h
 github.com/petersalex27/yew-packages/parser v0.0.0-20231003211931-6352ac6d9c0b/go.mod h1:r5uL+cTwk4owI9MkLEmhb9lLbI7nzKSupOI1I4xxRBM=
 github.com/petersalex27/yew-packages/parser v0.0.0-20231006180127-c244a4b49251 h1:Cvpx7TjWnjtbrepz0eaR6KkbJtO0zQoGYnZtnygxrCk=
 github.com/petersalex27/yew-packages/parser v0.0.0-20231006180127-c244a4b49251/go.mod h1:r5uL+cTwk4owI9MkLEmhb9lLbI7nzKSupOI1I4xxRBM=
+github.com/petersalex27/yew-packages/parser v0.0.0-20231007230645-f92b2c0c6f88 h1:Njrq6RFLl6jclKeyF/cdMOx3kqCRvUUNJuvOnoujj/E=
+github.com/petersalex27/yew-packages/parser v0.0.0-20231007230645-f92b2c0c6f88/go.mod h1:r5uL+cTwk4owI9MkLEmhb9lLbI7nzKSupOI1I4xxRBM=
+github.com/petersalex27/yew-packages/parser v0.0.0-20231009182414-6355bce057dc h1:1IOTeqZiubrOA+Dbw6XRBfcB7rida/T28p3Z3x+6mS8=
+github.com/petersalex27/yew-packages/parser v0.0.0-20231009182414-6355bce057dc/go.mod h1:r5uL+cTwk4owI9MkLEmhb9lLbI7nzKSupOI1I4xxRBM=
+github.com/petersalex27/yew-packages/parser v0.0.0-20231009185257-7472e2864f46 h1:pjt1PLOS15Izm9jFfTcYuicjqxCW4VswBkYFJXqW5BI=
+github.com/petersalex27/yew-packages/parser v0.0.0-20231009185257-7472e2864f46/go.mod h1:r5uL+cTwk4owI9MkLEmhb9lLbI7nzKSupOI1I4xxRBM=
 github.com/petersalex27/yew-packages/source v0.0.0-20231003031741-ea929e3ab360 h1:ZQb+EAalR5qHQWRQ0JD8Fvsn+sGzYrF7RKMS1IXvu9w=
 github.com/petersalex27/yew-packages/source v0.0.0-20231003031741-ea929e3ab360/go.mod h1:Kqf+tQSWdIsH+ss0SWIZxUhsGGMAxe+zbLf9Iz8SgQU=
 github.com/petersalex27/yew-packages/source v0.0.0-20231005234018-86372fe4a5de h1:3g4E0QdbfQTsGpzyqYsSUoJ8qqJo1rD2BDGDM3QmiMg=

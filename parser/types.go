@@ -70,7 +70,7 @@ const (
 	Do                   = ast.Type(token.Do)
 	LAST_TERMINAL_TYPE__ = ast.Type(token.LAST_TYPE__)
 	// non-terminal types
-	Expression ast.Type = iota + LAST_TERMINAL_TYPE__
+	Expr ast.Type = iota + LAST_TERMINAL_TYPE__
 	Application
 	ApplicationId
 	FreeApplication
@@ -82,8 +82,10 @@ const (
 	InstanceDefinition
 	StructDefinition
 	ConstructorDefinition
+	Constructor
 	UnionPair
 	FunctionDefinition
+	FunctionDecl
 	InfixedDefinition
 	TypeDefinition
 	Annotation
@@ -98,8 +100,17 @@ const (
 	Case
 	Pattern
 	Array
+	LiteralArray
+	ArrayValHead
+	LitArrHead
+	Data
 	Block
 	Group
+	Name
+	Param
+	FuncName
+	AnyName
+	Literal
 	TypeJudgement // e: (T ..)
 	FreeTyping
 	Polytype    // (forall a ..) . (T ..)
