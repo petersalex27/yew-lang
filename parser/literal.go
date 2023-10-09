@@ -66,4 +66,4 @@ var literal__FloatValue_r = parser.Get(literalConstReduction).From(FloatValue)
 
 var literal__literalArray_r = parser.
 	Get(literalFromLiteralArrayReduction).
-	From(FloatValue)
+	From(LiteralArray)
