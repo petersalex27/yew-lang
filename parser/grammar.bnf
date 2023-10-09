@@ -5,7 +5,6 @@ literal       ::= INT_VALUE
                   | literalArray
 val           ::= literal
                   | array
-                  | INTERPOLATED_STRING
 arrayValHead  ::= '[' expr
                   | arrayValHead ',' expr
                   | litArrHead ',' expr

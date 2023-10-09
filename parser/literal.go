@@ -11,15 +11,7 @@ import (
 type LiteralNode struct{expr.Expression[token.Token]}
 
 func (node LiteralNode) getExpression() ExpressionNode { 
-	return ExpressionNode{node.Expression} 
-}
-
-func (node LiteralNode) asConstant() expr.Const[token.Token] {
-	return node.Expression.(expr.Const[token.Token])
-}
-
-func (node LiteralNode) asList() expr.List[token.Token] {
-	return node.Expression.(expr.List[token.Token])
+	return ExpressionNode(node)
 }
 
 func (node LiteralNode) Equals(a ast.Ast) bool {

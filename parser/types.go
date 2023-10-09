@@ -71,6 +71,7 @@ const (
 	LAST_TERMINAL_TYPE__ = ast.Type(token.LAST_TYPE__)
 	// non-terminal types
 	Expr ast.Type = iota + LAST_TERMINAL_TYPE__
+	Val
 	Application
 	ApplicationId
 	FreeApplication

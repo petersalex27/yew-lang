@@ -30,10 +30,10 @@ func TestLiteral(t *testing.T) {
 	floatToken := makeToken_test(token.IntValue, "1.1", 1, 1)
 	stringToken := makeToken_test(token.IntValue, "hello, world!", 1, 1)
 
-	intLit := LiteralNode{expr.Const[token.Token]{intToken}}
-	charLit := LiteralNode{expr.Const[token.Token]{charToken}}
-	floatLit := LiteralNode{expr.Const[token.Token]{floatToken}}
-	stringLit := LiteralNode{expr.Const[token.Token]{stringToken}}
+	intLit := LiteralNode{expr.Const[token.Token]{Name: intToken}}
+	charLit := LiteralNode{expr.Const[token.Token]{Name: charToken}}
+	floatLit := LiteralNode{expr.Const[token.Token]{Name: floatToken}}
+	stringLit := LiteralNode{expr.Const[token.Token]{Name: stringToken}}
 	litArray := ArrayNode{true, expr.List[token.Token]{intLit.Expression, intLit.Expression}}
 
 	tests := []struct {
@@ -43,27 +43,27 @@ func TestLiteral(t *testing.T) {
 	}{
 		{
 			[]ast.Ast{ast.TokenNode(intToken)},
-			parser.MakeSource("test/parser/data", "1"),
+			parser.MakeSource("test/parser/literal", "1"),
 			ast.AstRoot{intLit},
 		},
 		{
 			[]ast.Ast{ast.TokenNode(charToken)},
-			parser.MakeSource("test/parser/data", "'a'"),
+			parser.MakeSource("test/parser/literal", "'a'"),
 			ast.AstRoot{charLit},
 		},
 		{
 			[]ast.Ast{ast.TokenNode(floatToken)},
-			parser.MakeSource("test/parser/data", "1.1"),
+			parser.MakeSource("test/parser/literal", "1.1"),
 			ast.AstRoot{floatLit},
 		},
 		{
 			[]ast.Ast{ast.TokenNode(stringToken)},
-			parser.MakeSource("test/parser/data", `"hello, world!"`),
+			parser.MakeSource("test/parser/literal", `"hello, world!"`),
 			ast.AstRoot{stringLit},
 		},
 		{
 			[]ast.Ast{litArray},
-			parser.MakeSource("test/parser/data", "[1,1]"),
+			parser.MakeSource("test/parser/literal", "[1,1]"),
 			ast.AstRoot{LiteralNode{litArray.List}},
 		},
 	}

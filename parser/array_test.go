@@ -32,9 +32,9 @@ func TestArray(t *testing.T) {
 	leftToken := makeToken_test(token.LeftBracket, "[", 1, 1)
 	rightToken := makeToken_test(token.RightBracket, "]", 1, 1)
 
-	lit := LiteralNode{expr.Expression[token.Token](expr.Const[token.Token]{litToken})}
+	lit := LiteralNode{Const(litToken)}
 	//litExpr := ExpressionNode{expr.Expression[token.Token](expr.Const[token.Token]{litToken})}
-	idExpr := ExpressionNode{expr.Const[token.Token]{idToken}}
+	idExpr := ExpressionNode{Const(idToken)}
 	leftBracket := ast.TokenNode(leftToken)
 	rightBracket := ast.TokenNode(rightToken)
 	comma := ast.TokenNode(commaToken)
@@ -46,7 +46,7 @@ func TestArray(t *testing.T) {
 	}{
 		{
 			[]ast.Ast{leftBracket, idExpr,},
-			parser.MakeSource("test/parser/data", "[a"),
+			parser.MakeSource("test/parser/array", "[a"),
 			ast.AstRoot{
 				NodeSequence{ArrayValHead, []ast.Ast{idExpr}},
 			},
@@ -57,7 +57,7 @@ func TestArray(t *testing.T) {
 				comma,
 				idExpr,
 			},
-			parser.MakeSource("test/parser/data", "[a,a"),
+			parser.MakeSource("test/parser/array", "[a,a"),
 			ast.AstRoot{
 				NodeSequence{ArrayValHead, []ast.Ast{idExpr, idExpr}},
 			},
@@ -68,7 +68,7 @@ func TestArray(t *testing.T) {
 				comma,
 				idExpr,
 			},
-			parser.MakeSource("test/parser/data", "[1,1,a"),
+			parser.MakeSource("test/parser/array", "[1,1,a"),
 			ast.AstRoot{
 				NodeSequence{ArrayValHead, []ast.Ast{lit, lit, idExpr}},
 			},
@@ -78,7 +78,7 @@ func TestArray(t *testing.T) {
 				NodeSequence{ArrayValHead, []ast.Ast{idExpr, idExpr}}, 
 				rightBracket,
 			},
-			parser.MakeSource("test/parser/data", "[a,a]"),
+			parser.MakeSource("test/parser/array", "[a,a]"),
 			ast.AstRoot{
 				ArrayNode{false, expr.List[token.Token]{idExpr.Expression, idExpr.Expression}},
 			},
@@ -89,7 +89,7 @@ func TestArray(t *testing.T) {
 				comma,
 				rightBracket,
 			},
-			parser.MakeSource("test/parser/data", "[a,a,]"),
+			parser.MakeSource("test/parser/array", "[a,a,]"),
 			ast.AstRoot{
 				ArrayNode{false, expr.List[token.Token]{idExpr.Expression, idExpr.Expression}},
 			},
@@ -135,7 +135,7 @@ func TestLiteralArray(t *testing.T) {
 	leftToken := makeToken_test(token.LeftBracket, "[", 1, 1)
 	rightToken := makeToken_test(token.RightBracket, "]", 1, 1)
 
-	lit := LiteralNode{expr.Expression[token.Token](expr.Const[token.Token]{litToken})}
+	lit := LiteralNode{Const(litToken)}
 	leftBracket := ast.TokenNode(leftToken)
 	rightBracket := ast.TokenNode(rightToken)
 	comma := ast.TokenNode(commaToken)
@@ -147,7 +147,7 @@ func TestLiteralArray(t *testing.T) {
 	}{
 		{
 			[]ast.Ast{leftBracket, lit,},
-			parser.MakeSource("test/parser/data", "[1"),
+			parser.MakeSource("test/parser/literal-array", "[1"),
 			ast.AstRoot{
 				NodeSequence{LitArrHead, []ast.Ast{lit}},
 			},
@@ -158,7 +158,7 @@ func TestLiteralArray(t *testing.T) {
 				comma,
 				lit,
 			},
-			parser.MakeSource("test/parser/data", "[1,1"),
+			parser.MakeSource("test/parser/literal-array", "[1,1"),
 			ast.AstRoot{
 				NodeSequence{LitArrHead, []ast.Ast{lit, lit}},
 			},
@@ -168,7 +168,7 @@ func TestLiteralArray(t *testing.T) {
 				NodeSequence{LitArrHead, []ast.Ast{lit, lit}}, 
 				rightBracket,
 			},
-			parser.MakeSource("test/parser/data", "[1,1]"),
+			parser.MakeSource("test/parser/literal-array", "[1,1]"),
 			ast.AstRoot{
 				ArrayNode{true, expr.List[token.Token]{lit.Expression, lit.Expression}},
 			},
@@ -179,7 +179,7 @@ func TestLiteralArray(t *testing.T) {
 				comma,
 				rightBracket,
 			},
-			parser.MakeSource("test/parser/data", "[1,1,]"),
+			parser.MakeSource("test/parser/literal-array", "[1,1,]"),
 			ast.AstRoot{
 				ArrayNode{true, expr.List[token.Token]{lit.Expression, lit.Expression}},
 			},
