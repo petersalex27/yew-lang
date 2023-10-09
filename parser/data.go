@@ -12,6 +12,10 @@ type DataNode struct {
 	data expr.Expression[token.Token]
 }
 
+func (node DataNode) getExpression() ExpressionNode { 
+	return ExpressionNode{node.data} 
+}
+
 func (n DataNode) Equals(a ast.Ast) bool {
 	n2, ok := a.(DataNode)
 	if !ok {

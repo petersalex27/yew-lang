@@ -124,9 +124,10 @@ var app__expr_expr_r = parser.
 	From(Expr, Expr)
 
 func app__expr_expr(nodes ...ast.Ast) ast.Ast {
+	left, right := getExpression(nodes[0]).Expression, getExpression(nodes[1]).Expression
 	return SomeExpression{
 		Application,
-		expr.Apply(asExpression(nodes[0]), asExpression(nodes[1])),
+		expr.Apply(left, right),
 	}
 }
 

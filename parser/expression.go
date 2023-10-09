@@ -7,6 +7,10 @@ import (
 	"yew.lang/main/token"
 )
 
+type expressionNodeTypes interface {
+	getExpression() ExpressionNode
+}
+
 type ExpressionNode struct{ expr.Expression[token.Token] }
 
 type SomeExpression struct {
@@ -14,9 +18,7 @@ type SomeExpression struct {
 	expr.Expression[token.Token]
 }
 
-func asExpression(node ast.Ast) expr.Expression[token.Token] {
-	return getExpression(node).Expression
-}
+func (e ExpressionNode) getExpression() ExpressionNode { return e }
 
 func getExpression(node ast.Ast) ExpressionNode {
 	return node.(ExpressionNode)
