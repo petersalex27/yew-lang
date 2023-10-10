@@ -22,7 +22,7 @@ typeDef       ::= typeDecl '=' constructor
 var typeDecl__TypeId_r = parser.
 	Get(simpleNodeRule(TypeDecl)).
 	From(TypeId)
-
+	
 // creates a tree structure like:
 //          /\
 //         /\ Id
