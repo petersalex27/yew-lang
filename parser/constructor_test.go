@@ -1,6 +1,7 @@
 package parser
 
 import (
+	//"fmt"
 	"testing"
 
 	"github.com/petersalex27/yew-packages/parser"
@@ -18,6 +19,7 @@ func TestConstructor(t *testing.T) {
 		UseReductions().
 		Finally(parser.RuleSet(
 			constructor__TypeId_r,
+			constructor__typeDecl_r,
 			constructor__constructor_name_r,
 			constructor__constructor_constructor_r,
 			constructor__enclosed_r,
@@ -36,6 +38,11 @@ func TestConstructor(t *testing.T) {
 			[]ast.Ast{ast.TokenNode(typeNameToken)},
 			parser.MakeSource("test/parser/data", "Name"),
 			ast.AstRoot{Node{Constructor, typeNameToken}},
+		},
+		{
+			[]ast.Ast{BinaryNode{TypeDecl, BinaryNode{TypeDecl, Node{Name, typeNameToken}, Node{Name, thingToken}}, Node{Name, thingToken}}},
+			parser.MakeSource("test/parser/data", "Name thing thing"),
+			ast.AstRoot{BinaryNode{Constructor, BinaryNode{Constructor, Node{Name, typeNameToken}, Node{Name, thingToken}}, Node{Name, thingToken}}},
 		},
 		{
 			[]ast.Ast{

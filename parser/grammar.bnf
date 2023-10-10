@@ -25,6 +25,7 @@ anyName       ::= name
                   | funcName 
                   | paramName
 constructor   ::= TYPE_ID
+                  | typeDecl
                   | constructor name
                   | constructor constructor
                   | '(' constructor ')'
@@ -56,7 +57,7 @@ functionDef   ::= functionDecl ':' type
 function      ::= functionDef '=' expr
                   | functionDecl '=' expr
 typeDecl      ::= TYPE_ID
-                  | typeDeclHead ID
+                  | typeDecl ID
 typeDef       ::= typeDecl '=' constrDefs
 constrDefs    ::= constructor
                   | constrDefs '|' constructor

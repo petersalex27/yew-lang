@@ -9,6 +9,17 @@ import (
 	"yew.lang/main/token"
 )
 
+// TODO
+/*
+functionDecl  ::= funcName param
+                  | funcName constructor
+                  | functionDecl param
+                  | functionDecl constructor
+functionDef   ::= functionDecl ':' type
+function      ::= functionDef '=' expr
+                  | functionDecl '=' expr
+*/
+
 type paramInterface interface {
 	getAsExpression() expr.Expression[token.Token]
 }

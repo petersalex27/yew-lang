@@ -88,7 +88,8 @@ const (
 	FunctionDefinition
 	FunctionDecl
 	InfixedDefinition
-	TypeDefinition
+	TypeDef
+	TypeDecl
 	Annotation
 	ImportList
 	UseList

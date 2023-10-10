@@ -3,3 +3,6 @@ func () Equals(a ast.Ast) bool
 func () NodeType() ast.Type
 
 func () InOrderTraversal(func(token.Token))
+
+BinaryNode{ty:109,left:BinaryNode{ty:109,left:Node{ty:134,Token:{{11}26Name},},right:Node{ty:134,Token:{{11}25thing},}},right:Node{ty:134,Token:{{11}25thing},}}
+BinaryNode{ty:109,left:BinaryNode{ty:115,left:Node{ty:134,Token:{{11}26Name},},right:Node{ty:134,Token:{{11}25thing},}},right:Node{ty:134,Token:{{11}25thing},}}

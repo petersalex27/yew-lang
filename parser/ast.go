@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/petersalex27/yew-packages/expr"
@@ -119,6 +120,34 @@ type Node struct {
 	token.Token
 }
 
+func (n Node) UpdateType(target, then ast.Type) BinaryRecursiveNode {
+	if n.ty == target {
+		n.ty = then
+	}
+	return n
+}
+
+func (n Node) String() string {
+	return fmt.Sprintf("Node{ty: %v, Token: %v}", n.ty, n.Token)
+}
+
+func (n Node) GetString(head string) string {
+	return fmt.Sprintf("Node{\n%s\tty:%v,\n%s\tToken:%v,\n%s}\n",
+		head, n.ty,
+		head, n.Token,
+		head,
+	)
+}
+
+func asType(node Node) types.ReferableType[token.Token] {
+	if node.Token.GetType() == uint(token.TypeId) {
+		return types.MakeConst[token.Token](node.Token)
+	} else if node.Token.GetType() == uint(token.Id) {
+		return types.Var[token.Token](node.Token)
+	}
+	panic("illegal operation: node.Token's type is not a valid type")
+}
+
 func getNode(node ast.Ast) Node {
 	return node.(Node)
 }
@@ -162,6 +191,8 @@ func monoSelect(rule func(nodes ...ast.Ast) ast.Ast, at int) func(nodes ...ast.A
 
 type BinaryRecursiveNode interface {
 	ast.Ast
+	UpdateType(target, then ast.Type) BinaryRecursiveNode
+	GetString(head string) string
 	SplitNode() (left, right BinaryRecursiveNode)
 	HasValue() (val Node, ok bool)
 }
@@ -173,6 +204,24 @@ func getBinaryRecursiveNode(node ast.Ast) BinaryRecursiveNode {
 type BinaryNode struct {
 	ty          ast.Type
 	left, right BinaryRecursiveNode
+}
+
+func (n BinaryNode) UpdateType(target, then ast.Type) BinaryRecursiveNode {
+	if n.ty == target {
+		n.ty = then
+	}
+	n.left = n.left.UpdateType(target, then)
+	n.right = n.right.UpdateType(target, then)
+	return n
+}
+
+func (n BinaryNode) GetString(head string) string {
+	return fmt.Sprintf("BinaryNode{\n%s\tty:%v,\n%s\tleft:%s,\n%s\tright:%s\n%s}\n", 
+		head, n.ty,
+		head, n.left.GetString(head+"\t"),
+		head, n.right.GetString(head+"\t"),
+		head,
+	)
 }
 
 func getBinaryNode(node ast.Ast) BinaryNode {
@@ -253,6 +302,14 @@ func binarySelect(rule func(nodes ...ast.Ast) ast.Ast, first, second int) func(n
 type NodeSequence struct {
 	ty    ast.Type
 	nodes []ast.Ast
+}
+
+func (n NodeSequence) GetString(head string) string {
+	return fmt.Sprintf("NodeSequence{\n%s\tty:%v,\n%s\tnodes:%v,\n%s}\n",
+		head, n.ty,
+		head, n.nodes,
+		head,
+	)
 }
 
 func getNodeSequence(node ast.Ast) NodeSequence {

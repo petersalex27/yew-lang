@@ -5,10 +5,6 @@ module prelude (
   (;)
 )
 
-import (
-  yewlang.ir
-)
-
 Int = __int__
 
 Float = __float__
@@ -19,11 +15,34 @@ String = __string__
 
 Uint = __int__
 
-Bool = True | False
+Bool = true | false
 
-if {cond} {then} {else} = cond of 
-  True -> then
-  False -> else
+[a; n: Uint] = 
+  []: [a; 0]
+  | (::) a [a; n]: [a; n+1]
+
+Branch a; (b: Bool) =
+  then a: Branch a; True @delimit
+  | else a: Branch a; False @delimit
+
+if cond true false: Bool -> (Branch a; True) -> (Branch a; False) -> ((Branch a; True) | (Branch a; False))
+
+if cond true false: cond -> (Branch a; cond) = cond when
+  True -> then x
+  Else 
+if: Bool -> (Branch a; True) -> (Branch a; False) -> a
+if cond true false 
+
+@lazy
+(&&) a b: Bool -> Bool -> Bool = 
+  if a then b else False
+
+@lazy
+(||) a b: Bool -> Bool -> Bool = 
+  if a then True else b
+
+! a: Bool -> Bool = 
+  if a then False else True
 
 -- ignores result of first argument;
 -- this is useful for forcing an expression to evaluate
