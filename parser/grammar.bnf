@@ -64,6 +64,7 @@ typeDef       ::= typeDecl '=' constructor
 type          ::= polytype 
                   | monotype 
                   | dependent
+                  | '(' type ')'
 polyHead      ::= 'forall' freeVars
 polytype      ::= polyHead '.' dependent
                   | polyHead '.' monotype
