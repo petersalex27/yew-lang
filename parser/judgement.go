@@ -10,7 +10,28 @@ import (
 	"yew.lang/main/token"
 )
 
+// judgement ::= expr ':' type
+
+// Wraps types.TypeJudgement
 type JudgementNode types.TypeJudgement[token.Token, expr.Expression[token.Token]]
+
+// judgement <- expr Colon type
+var judgement__expr_Colon_type_r = parser.
+	Get(judgementReduction).
+	From(Expr, Colon, Type)
+
+// judgement <- expr Colon type
+func judgementReduction(nodes ...ast.Ast) ast.Ast {
+	// ignore Colon, i.e., element nodes[1]
+	const exprIndex, _, typeIndex = 0, 1, 2
+	return JudgementNode(types.Judgement[token.Token, expr.Expression[token.Token]](
+		getExpression(nodes[exprIndex]).Expression,
+		GetType(nodes[typeIndex]).Type,
+	))
+}
+
+// judgement <- '(' judgement ')'
+var judgement__enclosed_r = parser.Get(grab_enclosed).From(LeftParen, TypeJudgement, RightParen)
 
 func judgementToExpression(nodes ...ast.Ast) ast.Ast {
 	return ExpressionNode{
@@ -72,7 +93,11 @@ func (j JudgementNode) Equals(a ast.Ast) bool {
 	if !ok {
 		return false
 	}
-	return j.Equals(j2)
+	judge := types.TypeJudgement[token.Token, expr.Expression[token.Token]](j)
+	judge2 := types.TypeJudgement[token.Token, expr.Expression[token.Token]](j2)
+	e, t := judge.GetExpression(), judge.GetType()
+	e2, t2 := judge2.GetExpression(), judge2.GetType()
+	return e.StrictEquals(e2) && t.Equals(t2)
 }
 
 func (j JudgementNode) NodeType() ast.Type { return TypeJudgement }
@@ -174,22 +199,6 @@ func makeSomeJudgement[E expr.Expression[token.Token]](ty ast.Type, e E, type_ T
 		JudgementNode(types.Judgement[token.Token, expr.Expression[token.Token]](e, type_.Type)),
 	}
 }
-
-// judgement <- expr Colon type
-var judgement__expr_Colon_type_r = parser.
-	Get(judgement__expr_Colon_type).
-	From(Expr, Colon, Type)
-
-func judgement__expr_Colon_type(nodes ...ast.Ast) ast.Ast {
-	// expr
-	ex := getExpression(nodes[0])
-	// ignore Colon, i.e., element nodes[1]
-	type_ := GetType(nodes[2])
-	return makeJudgement(ex, type_)
-}
-
-// judgement <- LeftParen judgement RightParen
-var judgement_enclosed_r = parser.Get(grab_enclosed).From(LeftParen, TypeJudgement, RightParen)
 
 // judgement <- varJudgement
 var judgement__varJudgement_r = parser.

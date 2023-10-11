@@ -49,6 +49,7 @@ data          ::= constructor
                   | data expr
                   | '(' data ')'
 judgement     ::= expr ':' type
+                  | '(' judgement ')'
 functionDecl  ::= funcName param
                   | funcName constructor
                   | functionDecl param
