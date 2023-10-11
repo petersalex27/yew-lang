@@ -17,6 +17,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/llir/ll v0.0.0-20220802044011-65001c0fb73c // indirect
 	github.com/mewmew/float v0.0.0-20201204173432-505706aa38fa // indirect
+	github.com/petersalex27/yew-packages/bridge v0.0.0-20231011005837-c945f3b161af // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/mod v0.4.2 // indirect
 	golang.org/x/tools v0.1.4 // indirect

@@ -34,26 +34,26 @@ func TestData(t *testing.T) {
 		{
 			[]ast.Ast{Node{Constructor, nameToken}},
 			parser.MakeSource("test/parser/data", "Name"),
-			ast.AstRoot{DataNode{Const(nameToken)}},
+			ast.AstRoot{SomeExpression{Data, Const(nameToken)}},
 		},
 		{
 			[]ast.Ast{
-				DataNode{Const(nameToken)}, 
+				SomeExpression{Data, Const(nameToken)}, 
 				ExpressionNode{Const(intLitToken)},
 			},
 			parser.MakeSource("test/parser/data", "Name 1"),
 			ast.AstRoot{
-				DataNode{expr.Apply[token.Token](Const(nameToken), Const(intLitToken))},
+				SomeExpression{Data, expr.Apply[token.Token](Const(nameToken), Const(intLitToken))},
 			},
 		},
 		{
 			[]ast.Ast{
-				DataNode{expr.Apply[token.Token](Const(nameToken), Const(intLitToken))}, 
+				SomeExpression{Data, expr.Apply[token.Token](Const(nameToken), Const(intLitToken))}, 
 				ExpressionNode{expr.Apply[token.Token](Const(nameToken), Const(intLitToken))},
 			},
 			parser.MakeSource("test/parser/data", "Name 1 (Name 1)"),
 			ast.AstRoot{
-				DataNode{expr.Apply[token.Token](
+				SomeExpression{Data, expr.Apply[token.Token](
 					expr.Apply[token.Token](Const(nameToken), Const(intLitToken)), 
 					expr.Apply[token.Token](Const(nameToken), Const(intLitToken)),
 				)},
@@ -62,11 +62,11 @@ func TestData(t *testing.T) {
 		{
 			[]ast.Ast{
 				ast.TokenNode(token.LeftParen.Make()), 
-				DataNode{Const(nameToken)},
+				SomeExpression{Data, Const(nameToken)},
 				ast.TokenNode(token.RightParen.Make()),
 			},
 			parser.MakeSource("test/parser/data", "( Name )"),
-			ast.AstRoot{DataNode{Const(nameToken)}},
+			ast.AstRoot{SomeExpression{Data, Const(nameToken)}},
 		},
 	}
 

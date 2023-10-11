@@ -35,12 +35,12 @@ func TestVal(t *testing.T) {
 		{
 			[]ast.Ast{lit},
 			parser.MakeSource("test/parser/val", "1"),
-			ast.AstRoot{ValNode(lit.getExpression())},
+			ast.AstRoot{SomeExpression{Val, lit.getExpression().Expression}},
 		},
 		{
 			[]ast.Ast{array},
 			parser.MakeSource("test/parser/val", "[1,1]"),
-			ast.AstRoot{ValNode(array.getExpression())},
+			ast.AstRoot{SomeExpression{Val, array.getExpression().Expression}},
 		},
 	}
 

@@ -8,31 +8,6 @@ import (
 	"yew.lang/main/token"
 )
 
-type DataNode struct {
-	data expr.Expression[token.Token]
-}
-
-func (node DataNode) getExpression() ExpressionNode { 
-	return ExpressionNode{node.data} 
-}
-
-func (n DataNode) Equals(a ast.Ast) bool {
-	n2, ok := a.(DataNode)
-	if !ok {
-		return false
-	}
-
-	return n.data.Equals(glb_cxt.exprCxt, n2.data)
-}
-
-func (n DataNode) NodeType() ast.Type { return Data }
-
-func (n DataNode) InOrderTraversal(f func(itoken.Token)) {
-	for _, dat := range n.data.Collect() {
-		f(dat)
-	}
-}
-
 /*
 data          ::= constructor
                   | data expr
@@ -40,14 +15,15 @@ data          ::= constructor
 */
 
 func dataFromConstructorReduction(nodes ...ast.Ast) ast.Ast {
-	nodePtr := new(DataNode)
-	nodePtr.data = nil
+	nodePtr := new(SomeExpression)
+	nodePtr.ty = Data
+	nodePtr.Expression = nil
 	toData := func(tok itoken.Token) {
 		dat := expr.Const[token.Token]{Name: tok.(token.Token)}
-		if nodePtr.data == nil {
-			nodePtr.data = dat
+		if nodePtr.Expression == nil {
+			nodePtr.Expression = dat
 		} else {
-			nodePtr.data = expr.Apply[token.Token](nodePtr.data, dat)
+			nodePtr.Expression = expr.Apply[token.Token](nodePtr.Expression, dat)
 		}
 	}
 
@@ -56,9 +32,9 @@ func dataFromConstructorReduction(nodes ...ast.Ast) ast.Ast {
 }
 
 func dataAppendExprReduction(nodes ...ast.Ast) ast.Ast {
-	data := nodes[0].(DataNode)
+	data := nodes[0].(SomeExpression)
 	ex := getExpression(nodes[1]).Expression
-	data.data = expr.Apply[token.Token](data.data, ex)
+	data.Expression = expr.Apply[token.Token](data.Expression, ex)
 	return data
 }
 

@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/petersalex27/yew-packages/bridge"
 	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
@@ -10,6 +11,14 @@ import (
 )
 
 type JudgementNode types.TypeJudgement[token.Token, expr.Expression[token.Token]]
+
+func judgementToExpression(nodes ...ast.Ast) ast.Ast {
+	return ExpressionNode{
+		bridge.JudgementAsExpression[token.Token, expr.Expression[token.Token]](
+			nodes[0].(JudgementNode),
+		),
+	}
+}
 
 type VariableJudgement types.TypeJudgement[token.Token, expr.Variable[token.Token]]
 
