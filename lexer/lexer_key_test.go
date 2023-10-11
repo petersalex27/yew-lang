@@ -58,8 +58,8 @@ func TestKey(t *testing.T) {
 			[]itoken.Token{token.Module.Make().SetLineChar(1,1),},
 		},
 		{
-			[]string{`of`},
-			[]itoken.Token{token.Of.Make().SetLineChar(1,1),},
+			[]string{`when`},
+			[]itoken.Token{token.When.Make().SetLineChar(1,1),},
 		},
 		{
 			[]string{`qualified`},

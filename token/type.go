@@ -40,7 +40,7 @@ const (
 	Thunked
 	/*keywords*/ _keyword_start_ // do not use!
 	Let
-	Of
+	When
 	Class
 	Import
 	Use
@@ -65,7 +65,7 @@ func (t TokenType) IsKeyword() bool {
 
 var builtinMap = map[TokenType]string{
 	Let:          "let",
-	Of:           "of",
+	When:         "when",
 	Class:        "class",
 	Import:       "import",
 	Use:          "use",

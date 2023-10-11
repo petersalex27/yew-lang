@@ -14,10 +14,14 @@ data          ::= constructor
                   | '(' data ')'
 */
 
+// Ast -> (Data==SomeExpression)
+func astToData(a ast.Ast) SomeExpression { return a.(SomeExpression) }
+
 func dataFromConstructorReduction(nodes ...ast.Ast) ast.Ast {
 	nodePtr := new(SomeExpression)
 	nodePtr.ty = Data
 	nodePtr.Expression = nil
+
 	toData := func(tok itoken.Token) {
 		dat := expr.Const[token.Token]{Name: tok.(token.Token)}
 		if nodePtr.Expression == nil {

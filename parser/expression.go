@@ -8,6 +8,8 @@ import (
 	"yew.lang/main/token"
 )
 
+func astToExpression(a ast.Ast) ExpressionNode { return a.(ExpressionNode) }
+
 /*
 expr          ::= val
                   | data

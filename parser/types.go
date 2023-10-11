@@ -60,7 +60,7 @@ const (
 	Module = ast.Type(token.Module)
 
 	Import               = ast.Type(token.Import)
-	Of                   = ast.Type(token.Of)
+	When                 = ast.Type(token.When)
 	From                 = ast.Type(token.From)
 	In                   = ast.Type(token.In)
 	Where                = ast.Type(token.Where)

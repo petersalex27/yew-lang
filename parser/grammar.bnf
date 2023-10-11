@@ -39,10 +39,9 @@ expr          ::= val
                   | judgement
                   | '(' expr ')'
 application   ::= expr expr
-pattern       ::= expr 'of' cases
-case          ::= constructor '->' expr
-cases         ::= case 
-                  | cases '|' case
+pattern       ::= expr 'when' case
+case          ::= case data '->' expr
+                  | data '->' expr
 letIn         ::= 'let' function 'in' expr
 exprWhere     ::= expr 'where' function
 data          ::= constructor
