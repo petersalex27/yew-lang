@@ -65,12 +65,16 @@ type          ::= polytype
                   | monotype 
                   | dependent
                   | '(' type ')'
-polyHead      ::= 'forall' freeVars
-polytype      ::= polyHead '.' dependent
-                  | polyHead '.' monotype
+polyHead      ::= 'forall' Id
+                  | polyHead Id
+polyBinders   ::= polyHead                        # when l.a. is '.'
+                  | '(' polyBinders ')'           #   //
+polytype      ::= polyBinders '.' dependentTyped
 dependentHead ::= 'mapall' varJudgement
                   | dependentHead varJudgement
-dependent     ::= dependentHead '.' monotype
+dependBinders ::= dependentHead                   # when l.a. is '.'
+                  | '(' dependBinders ')'         #   //
+dependent     ::= dependBinders '.' monotype
 dependInst    ::= arrayHead ']'
 arrayHead     ::= '[' monotype
                   | '[' monotype ';' expr

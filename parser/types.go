@@ -130,8 +130,10 @@ const (
 	AppJudgement
 	TupleJudgement
 	AnonJudgement
-	MapHead
-	ForallHead
+	DependHead
+	DependBinders
+	PolyHead
+	PolyBinders
 	ArrayHead
 	_last_type_
 )

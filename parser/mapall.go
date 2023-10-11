@@ -28,7 +28,7 @@ func (m MapHeadNode) Equals(a ast.Ast) bool {
 	return true
 }
 
-func (m MapHeadNode) NodeType() ast.Type { return MapHead }
+func (m MapHeadNode) NodeType() ast.Type { return DependHead }
 
 func (m MapHeadNode) InOrderTraversal(f func(itoken.Token)) {
 	for _, judge := range m {
@@ -37,9 +37,9 @@ func (m MapHeadNode) InOrderTraversal(f func(itoken.Token)) {
 }
 
 // depend <- mapallHead Dot typeApp
-var depend__mapallHead_Dot_typeApp_r = parser. 
-	Get(depend__mapallHead_Dot_typeApp). 
-	From(MapHead, Dot, TypeApp)
+var depend__mapallHead_Dot_typeApp_r = parser.
+	Get(depend__mapallHead_Dot_typeApp).
+	From(DependHead, Dot, TypeApp)
 
 func depend__mapallHead_Dot_typeApp(nodes ...ast.Ast) ast.Ast {
 	app := getApplicationType(nodes[2])
@@ -48,9 +48,9 @@ func depend__mapallHead_Dot_typeApp(nodes ...ast.Ast) ast.Ast {
 }
 
 // depend <- mapallHead Dot TypeId
-var depend__mapallHead_Dot_TypeId_r = parser. 
-	Get(depend__mapallHead_Dot_TypeId). 
-	From(MapHead, Dot, TypeId)
+var depend__mapallHead_Dot_TypeId_r = parser.
+	Get(depend__mapallHead_Dot_TypeId).
+	From(DependHead, Dot, TypeId)
 
 func depend__mapallHead_Dot_TypeId(nodes ...ast.Ast) ast.Ast {
 	ty := types.MakeConst(GetToken(nodes[2]))
@@ -60,7 +60,7 @@ func depend__mapallHead_Dot_TypeId(nodes ...ast.Ast) ast.Ast {
 }
 
 // mapallHead <- Mapall varJudgement
-var mapallHead__Mapall_varJudgement_r = parser. 
+var mapallHead__Mapall_varJudgement_r = parser.
 	Get(mapallHead__Mapall_varJudgement).
 	From(Mapall, VarJudgement)
 
@@ -69,9 +69,9 @@ func mapallHead__Mapall_varJudgement(nodes ...ast.Ast) ast.Ast {
 }
 
 // mapallHead <- mapallHead varJudgement
-var mapallHead__mapallHead_varJudgement_r = parser. 
-	Get(mapallHead__mapallHead_varJudgement). 
-	From(MapHead, VarJudgement)
+var mapallHead__mapallHead_varJudgement_r = parser.
+	Get(mapallHead__mapallHead_varJudgement).
+	From(DependHead, VarJudgement)
 
 func mapallHead__mapallHead_varJudgement(nodes ...ast.Ast) ast.Ast {
 	left := nodes[0].(MapHeadNode)
