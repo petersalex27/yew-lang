@@ -58,9 +58,8 @@ function      ::= functionDef '=' expr
                   | functionDecl '=' expr
 typeDecl      ::= TYPE_ID
                   | typeDecl ID
-typeDef       ::= typeDecl '=' constrDefs
-constrDefs    ::= constructor
-                  | constrDefs '|' constructor
+typeDef       ::= typeDecl '=' constructor
+                  | typeDef '|' constructor
 type          ::= polytype 
                   | monotype 
                   | dependent
