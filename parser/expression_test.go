@@ -25,7 +25,7 @@ func TestExpression(t *testing.T) {
 			//expr__funcName_r,
 			//expr__letIn_r,
 			expr__application_r,
-			//expr__pattern_r,
+			expr__pattern_r,
 			//expr__exprWhere_r,
 			expr__judgement_r,
 			expr__enclosed_r,
@@ -35,7 +35,8 @@ func TestExpression(t *testing.T) {
 	thingToken := makeIdToken_test("thing", 1, 1)
 	thingVal := expr.Var(thingToken)
 	intVal := SomeExpression{Val, Const(makeToken_test(token.IntValue,"1",1,1))}
-	data := SomeExpression{Data, Const(typeNameToken)}
+	nameConst := Const(typeNameToken)
+	data := SomeExpression{Data, nameConst}
 	app := SomeExpression{Application, expr.Apply[token.Token](Const(typeNameToken), Const(typeNameToken))}
 	judge := JudgementNode(types.Judgement[token.Token, expr.Expression[token.Token]](
 		thingVal, 
@@ -43,6 +44,13 @@ func TestExpression(t *testing.T) {
 	))
 	rparen := ast.TokenNode(makeToken_test(token.RightParen,")",1,1))
 	lparen := ast.TokenNode(makeToken_test(token.LeftParen,"(",1,1))
+	pattern := expr.Select[token.Token](
+		thingVal, 
+		(expr.BindersOnly[token.Token]{}).InCase(
+			nameConst, 
+			intVal.Expression,
+		),
+	)
 
 	tests := []struct {
 		nodes  []ast.Ast
@@ -77,12 +85,12 @@ func TestExpression(t *testing.T) {
 			parser.MakeSource("test/parser/expression", "Name Name"),
 			ast.AstRoot{ExpressionNode{app.Expression}},
 		},
-		/*
-		{ // TODO: pattern
-			[]ast.Ast{data},
+		{
+			[]ast.Ast{SomeExpression{Pattern, pattern}},
 			parser.MakeSource("test/parser/expression", "thing when Name -> 1"),
-			ast.AstRoot{ExpressionNode{data.Expression}},
+			ast.AstRoot{ExpressionNode{pattern}},
 		},
+		/*
 		{
 			// TODO: exprWhere
 			[]ast.Ast{data},

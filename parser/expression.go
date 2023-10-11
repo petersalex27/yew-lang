@@ -38,7 +38,7 @@ var expr__data_r = parser.Get(unwrapSomeExpression).From(Data)
 var expr__application_r = parser.Get(unwrapSomeExpression).From(Application)
 
 // expr <- pattern
-// var expr__pattern_r = parser.Get().From(Val)
+var expr__pattern_r = parser.Get(unwrapSomeExpression).From(Pattern)
 
 // expr <- exprWhere
 // var expr__exprWhere_r = parser.Get().From(Val)
