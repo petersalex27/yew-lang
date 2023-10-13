@@ -238,7 +238,19 @@ func (n TypeDefNode) Equals(a ast.Ast) bool {
 func (n TypeDefNode) NodeType() ast.Type { return TypeDef }
 
 func (n TypeDefNode) InOrderTraversal(f func(itoken.Token)) {
-	panic("implement: (TypeDefNode) InOrderTraversal(func(itoken.Token))")
+	for _, tok := range n.constType.Collect() {
+		f(tok)
+	}
+
+	for _, tok := range n.closedType.Collect() {
+		f(tok)
+	}
+
+	for _, judge := range n.constructors {
+		for _, tok := range judge.Collect() {
+			f(tok)
+		}
+	}
 }
 
 func typeDefCast(node ast.Ast) TypeDefNode {

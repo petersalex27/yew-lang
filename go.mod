@@ -2,10 +2,10 @@ module yew.lang/main
 
 go 1.20
 
-replace (
-	github.com/petersalex27/yew-packages/bridge v0.0.0-20231011005837-c945f3b161af => ../yew-packages/bridge
-	github.com/petersalex27/yew-packages/expr v0.0.0-20231011125342-d70db9a0d674 => ../yew-packages/expr
-)
+//replace (
+//github.com/petersalex27/yew-packages/bridge v0.0.0-20231011005837-c945f3b161af => ../yew-packages/bridge
+//github.com/petersalex27/yew-packages/expr v0.0.0-20231011125342-d70db9a0d674 => ../yew-packages/expr
+//)
 
 require (
 	github.com/petersalex27/yew-packages/errors v0.0.0-20231003031741-ea929e3ab360

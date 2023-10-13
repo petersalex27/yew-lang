@@ -26,7 +26,7 @@ type paramInterface interface {
 
 type FunctionDeclNode struct {
 	name   token.Token
-	params []ast.Ast
+	params []expr.Expression[token.Token]
 }
 
 type FunctionDefNode types.TypeJudgement[token.Token, expr.Application[token.Token]]
