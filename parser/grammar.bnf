@@ -21,9 +21,6 @@ funcName      ::= SYMBOL
                   | ID
 param         ::= ID
                   | THUNKED
-anyName       ::= name
-                  | funcName 
-                  | paramName
 constructor   ::= TYPE_ID
                   | typeDecl
                   | constructor name
@@ -39,23 +36,27 @@ expr          ::= val
                   | judgement
                   | '(' expr ')'
 application   ::= expr expr
-pattern       ::= expr 'when' case
+patternMatch  ::= expr 'when' case
 case          ::= case data '->' expr
                   | data '->' expr
 letIn         ::= 'let' function 'in' expr
 exprWhere     ::= expr 'where' function
-data          ::= constructor
+pattern       ::= constructor
+                  | literal
+                  | funcName
+                  | pattern pattern
+									| '(' pattern ')'
+data          ::= pattern
                   | data expr
                   | '(' data ')'
 judgement     ::= expr ':' type
                   | '(' judgement ')'
-functionDecl  ::= funcName param
-                  | funcName constructor
-                  | functionDecl param
-                  | functionDecl constructor
-functionDef   ::= functionDecl ':' type
+functionDecl  ::= INDENT funcName
+functionHead  ::= functionDecl pattern
+                  | functionDecl                # only when L.A. is '=' or ':'
+functionDef   ::= functionHead ':' type
+									| functionHead      					# only when L.A. is '='
 function      ::= functionDef '=' expr
-                  | functionDecl '=' expr
 typeDecl      ::= TYPE_ID
                   | typeDecl ID
 typeDef       ::= typeDecl '=' constructor

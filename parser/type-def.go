@@ -131,6 +131,7 @@ func abstractForConstructor(depth int) expr.Function[token.Token] {
 	return f
 }
 
+// arrow constant for function types, e.g., the "->" token in `a -> a`
 var arrowConst = types.InfixConst[token.Token](types.MakeConst(token.Arrow.Make().AddValue("->")))
 
 func binaryNodeInFunction(constr BinaryRecursiveNode, rightTy types.Monotyped[token.Token]) (res types.Monotyped[token.Token], tag token.Token, depth int) {

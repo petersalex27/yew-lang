@@ -11,6 +11,15 @@ import (
 	"yew.lang/main/token"
 )
 
+// prefix for compiler generated parameter names
+const parameterStringPrefix string = "$p"
+
+// prefix for compiler generated data member variables
+const memberStringPrefix string = "$m"
+
+// prefix for compiler generated type names
+const typeStringPrefix string = "$t"
+
 // indexes must be sorted from low to high
 func sliceRule(rule func(...ast.Ast) ast.Ast, indexes ...int) func(nodes ...ast.Ast) ast.Ast {
 	n := len(indexes)
@@ -20,6 +29,20 @@ func sliceRule(rule func(...ast.Ast) ast.Ast, indexes ...int) func(nodes ...ast.
 			buff[i] = nodes[index]
 		}
 		return rule(buff...)
+	}
+}
+
+// changes type of BinaryRecursiveNode
+//
+//	nodes[0].(BinaryRecursiveNode).NodeType() == t =>
+//	rewrapReduction(t2)(nodes[0]) =>
+//	nodes[0].(BinaryRecursiveNode).NodeType() == t2
+func rewrapReduction(newType ast.Type) func(nodes ...ast.Ast) ast.Ast {
+	return func(nodes ...ast.Ast) ast.Ast {
+		brn := nodes[0].(BinaryRecursiveNode)
+		// will always update b/c target = brn.NodeType() and brn is updated iff
+		// target == brn.NodeType()
+		return brn.UpdateType(brn.NodeType(), newType)
 	}
 }
 
@@ -216,7 +239,7 @@ func (n BinaryNode) UpdateType(target, then ast.Type) BinaryRecursiveNode {
 }
 
 func (n BinaryNode) GetString(head string) string {
-	return fmt.Sprintf("BinaryNode{\n%s\tty:%v,\n%s\tleft:%s,\n%s\tright:%s\n%s}\n", 
+	return fmt.Sprintf("BinaryNode{\n%s\tty:%v,\n%s\tleft:%s,\n%s\tright:%s\n%s}\n",
 		head, n.ty,
 		head, n.left.GetString(head+"\t"),
 		head, n.right.GetString(head+"\t"),
@@ -345,7 +368,7 @@ func consRule(ty ast.Type) func(nodes ...ast.Ast) ast.Ast {
 func rewrapNodeSequenceRule(ty ast.Type) func(nodes ...ast.Ast) ast.Ast {
 	return func(nodes ...ast.Ast) ast.Ast {
 		res := getNodeSequence(nodes[0])
-		res.ty = ty 
+		res.ty = ty
 		return res
 	}
 }

@@ -18,13 +18,22 @@ func TestData(t *testing.T) {
 		ForTypesThrough(_last_type_).
 		UseReductions().
 		Finally(parser.RuleSet(
-			data__constructor_r,
+			data__patternC_r,
 			data__data_expr_r,
 			data__enclosed_r,
 		))
 
 	nameToken := makeTypeIdToken_test("Name",1,1)
+	nameConst := Const(nameToken)
+	namePatternC := Node{PatternC, nameToken}
+
 	intLitToken := makeSymbolToken_test("1",1,1)
+	intExpr := Const(intLitToken)
+
+	name1Expr := expr.Apply[token.Token](nameConst, intExpr)
+
+	lparen := ast.TokenNode(token.LeftParen.Make())
+	rparen := ast.TokenNode(token.RightParen.Make())
 
 	tests := []struct{
 		nodes []ast.Ast
@@ -32,41 +41,41 @@ func TestData(t *testing.T) {
 		expect ast.AstRoot
 	}{
 		{
-			[]ast.Ast{Node{Constructor, nameToken}},
+			[]ast.Ast{namePatternC},
 			parser.MakeSource("test/parser/data", "Name"),
-			ast.AstRoot{SomeExpression{Data, Const(nameToken)}},
+			ast.AstRoot{SomeExpression{Data, nameConst}},
 		},
 		{
 			[]ast.Ast{
-				SomeExpression{Data, Const(nameToken)}, 
-				ExpressionNode{Const(intLitToken)},
+				SomeExpression{Data, nameConst}, 
+				ExpressionNode{intExpr},
 			},
 			parser.MakeSource("test/parser/data", "Name 1"),
 			ast.AstRoot{
-				SomeExpression{Data, expr.Apply[token.Token](Const(nameToken), Const(intLitToken))},
+				SomeExpression{Data, name1Expr},
 			},
 		},
 		{
 			[]ast.Ast{
-				SomeExpression{Data, expr.Apply[token.Token](Const(nameToken), Const(intLitToken))}, 
-				ExpressionNode{expr.Apply[token.Token](Const(nameToken), Const(intLitToken))},
+				SomeExpression{Data, name1Expr}, 
+				ExpressionNode{name1Expr},
 			},
 			parser.MakeSource("test/parser/data", "Name 1 (Name 1)"),
 			ast.AstRoot{
-				SomeExpression{Data, expr.Apply[token.Token](
-					expr.Apply[token.Token](Const(nameToken), Const(intLitToken)), 
-					expr.Apply[token.Token](Const(nameToken), Const(intLitToken)),
-				)},
+				SomeExpression{
+					Data, 
+					expr.Apply[token.Token](name1Expr, name1Expr),
+				},
 			},
 		},
 		{
 			[]ast.Ast{
-				ast.TokenNode(token.LeftParen.Make()), 
-				SomeExpression{Data, Const(nameToken)},
-				ast.TokenNode(token.RightParen.Make()),
+				lparen,
+				SomeExpression{Data, nameConst},
+				rparen,
 			},
 			parser.MakeSource("test/parser/data", "( Name )"),
-			ast.AstRoot{SomeExpression{Data, Const(nameToken)}},
+			ast.AstRoot{SomeExpression{Data, nameConst}},
 		},
 	}
 

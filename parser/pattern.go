@@ -4,96 +4,132 @@ import (
 	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
-	itoken "github.com/petersalex27/yew-packages/token"
+	"github.com/petersalex27/yew-packages/util"
 	"yew.lang/main/token"
 )
 
-func astToCase(a ast.Ast) CaseNode { return a.(CaseNode) }
-
-func astToPattern(a ast.Ast) SomeExpression { return a.(SomeExpression) }
-
-type CaseNode []expr.Case[token.Token]
-
-func (cs CaseNode) Equals(a ast.Ast) bool {
-	cs2, ok := a.(CaseNode)
-	if !ok {
-		return false
-	}
-	
-	if len(cs) != len(cs2) {
-		return false
-	}
-
-	for i, c := range cs {
-		if !c.StrictEquals(cs2[i]) {
-			return false
-		}
-	}
-
-	return true
-}
-
-func (c CaseNode) NodeType() ast.Type { return Case }
-
-func (cs CaseNode) InOrderTraversal(f func(itoken.Token)) {
-	for _, c := range cs {
-		for _, tok := range c.Collect() {
-			f(tok)
-		}
-	}
-}
-
 /*
-pattern       ::= expr 'when' case
-case          ::= case data '->' expr
-									| data '->' expr
+patternC ::= constructor
+pattern	 ::= patternC
+             | literal
+             | funcName
+             | pattern pattern
+						 | '(' pattern ')'
 */
 
-// pattern <- expr 'when' case
-var pattern__expr_When_case_r = parser. 
-	Get(patternReduction).From(Expr, When, Case)
+var patternC__constructor_r = parser.
+	Get(rewrapReduction(PatternC)).
+	From(Constructor)
 
-// case <- case data '->' expr
-var case__case_data_Arrow_expr_r = parser. 
-	Get(caseJoinReduction).From(Case, Data, Arrow, Expr)
+// == Note About Pattern Nodes ================================================
+// pattern nodes should always create a tree like so (where clf stands for an 
+// arbitrary pattern from a single constructor, literal, or funcName):
+//          /\
+//         /\ clf
+//        /\ clf
+//      ... clf
+//      /\
+//   clf  clf
+// this is because no other rule has any of the following reductions:
+//	x	::= pattern constructor
+//	y ::= pattern literal
+//	z ::= pattern funcName
+// thus, the reduction
+//	pattern ::= pattern pattern
+// will always appear in the following way
+//	(1.) stack = .., pattern, clf				[premise]
+//	(2.) stack = .., pattern, pattern		[pattern ::= constructor | literal | funcName]
+//	(3.) stack = .., pattern						[pattern ::= pattern pattern] 
 
-// case <- data '->' expr
-var case__data_Arrow_expr_r = parser. 
-	Get(caseReduction).From(Data, Arrow, Expr)
+// Returns a list from an expression. 
+//
+// Case 1:
+//	ex is an expr.Application=(a b c ..) => expr.List=[a,b,c,..]
+// Case 2:
+//	ex is anything else => ex
+func linearizeExpression(ex expr.Expression[token.Token]) expr.Expression[token.Token] {
+	app, isApp := ex.(expr.Application[token.Token])
+	if !isApp { // this checks for "Case 2"
+		return ex
+	}
 
-// for each case: collect vars declared in `data`, using them to bind
-// corr. free vars in `expr`
+	// everything below is "Case 1" 
 
-var arbitraryExpressionVariable = expr.Var(
-	token.Id.Make().
-		AddValue("_").
-		SetLineChar(1,1).(token.Token),
-)
+	// left and right elements of application
+	var left, right expr.Expression[token.Token]
+	// a sub-application w/in application `app`
+	var subApp expr.Application[token.Token] = app
+	// true iff there are more sub-applications to linearize
+	var ok bool = true
 
-func patternReduction(nodes ...ast.Ast) ast.Ast {
-	const exprIndex, _, caseIndex int = 0, 1, 2
-	e := astToExpression(nodes[exprIndex]).Expression
-	cs := astToCase(nodes[caseIndex])
+	// create a expression list buffer to store elements of application
+	buff := make(expr.List[token.Token], 0, 32)
+
+	// add elements in breadth-first order
+	for ok {
+		left, right = subApp.Split()
+		buff = append(buff, right)
+		// if ok == true, then left will be updated in next iteration;
+		// else left is added as the final element
+		subApp, ok = left.(expr.Application[token.Token])
+	}
+
+	// add final element
+	buff = append(buff, left)
+
+	// breadth-first order of the application tree orders the elements in reverse
+	// order; so, reverse the order of the buffer (call to util.Reverse returns a
+	// perfect-fit slice)
+	return expr.List[token.Token](util.Reverse(buff))
+}
+
+var pattern__patternC_r = parser.
+	Get(patternCAsPatternReduction).
+	From(Constructor)
+
+var pattern__literal_r = parser.
+	Get(literalAsPatternReduction).
+	From(Literal)
+
+var pattern__funcName_r = parser.
+	Get(funcNameAsPatternReduction).
+	From(Constructor)
+
+var pattern__pattern_pattern_r = parser.
+	Get(applyPatternsReduction).
+	From(Pattern, Pattern)
+
+var pattern__enclosed_r = parser.Get(grab_enclosed).From(LeftParen, Pattern, RightParen)
+
+func applyPatternsReduction(nodes ...ast.Ast) ast.Ast {
+	const leftIndex, rightIndex int = 0, 1
+	left := nodes[leftIndex].(SomeExpression).Expression.(expr.List[token.Token])
+	right := nodes[rightIndex].(SomeExpression).Expression.(expr.List[token.Token])
 	return SomeExpression{
 		Pattern,
-		expr.Select[token.Token](e, cs...),
+		append(left, right...),
 	}
 }
 
-func caseReduction(nodes ...ast.Ast) ast.Ast {
-	const dataIndex, _, exprIndex int = 0, 1, 2
-	data := astToData(nodes[dataIndex]).Expression
-	expression := astToExpression(nodes[exprIndex]).Expression
-	var binders expr.BindersOnly[token.Token] = 
-		data.ExtractFreeVariables(arbitraryExpressionVariable)
-	expression.Bind(binders)
-	return CaseNode{binders.InCase(data, expression),}
+func funcNameAsPatternReduction(nodes ...ast.Ast) ast.Ast {
+	const nameIndex int = 0
+	name := expr.Const[token.Token]{Name: GetToken(nodes[nameIndex])}
+	pattern := expr.List[token.Token]{name}
+	return SomeExpression{Pattern, pattern}
 }
 
-func caseJoinReduction(nodes ...ast.Ast) ast.Ast {
-	const caseIndex, dataIndex, _, _ int = 0, 1, 2, 3
-	rightCase := caseReduction(nodes[dataIndex:]...).(CaseNode)
-	leftCase := nodes[caseIndex].(CaseNode)
-	leftCase = append(leftCase, rightCase...)
-	return leftCase
+func literalAsPatternReduction(nodes ...ast.Ast) ast.Ast {
+	const literalIndex int = 0
+	literal := nodes[literalIndex].(LiteralNode).Expression
+	pattern := expr.List[token.Token]{literal}
+	return SomeExpression{Pattern, pattern}
+}
+
+func patternCAsPatternReduction(nodes ...ast.Ast) ast.Ast {
+	const patternCIndex int = 0
+	// patternC == constructor.(BinaryRecursiveNode).
+	//		UpdateType(constructor.(BinaryRecursiveNode).NodeType(), PatternC)
+	constructorExpr := constructorToExpression(nodes[patternCIndex])
+	pattern := expr.List[token.Token]{constructorExpr}
+	return SomeExpression{Pattern, pattern}
 }

@@ -86,7 +86,9 @@ const (
 	Constructor
 	UnionPair
 	FunctionDefinition
+	FunctionHead
 	FunctionDecl
+	Function
 	InfixedDefinition
 	TypeDef
 	TypeDecl
@@ -100,7 +102,9 @@ const (
 	ExportList
 	AnonymousFunction
 	Case
+	PatternMatch
 	Pattern
+	PatternC
 	Array
 	LiteralArray
 	ArrayValHead

@@ -13,35 +13,18 @@ import (
 	"yew.lang/main/token"
 )
 
-func TestPattern(t *testing.T) {
+func TestPatternC(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
 		Finally(parser.RuleSet(
-			pattern__expr_When_case_r,
+			patternC__constructor_r,
 		))
 
-	x := ExpressionNode{exprVar("x")}
-	dataToken := makeTypeIdToken_test("Data", 1, 1)
-	dataConst := Const(dataToken)
-	a := exprVar("a")
 	nameToken := makeTypeIdToken_test("Name", 1, 1)
-	nameConst := Const(nameToken)
-	b := exprVar("b")
-	data := SomeExpression{
-		Data,
-		expr.Apply[token.Token](dataConst, a),
-	}
-	name := SomeExpression{
-		Data,
-		expr.Apply[token.Token](nameConst, b),
-	}
-	caseData := CaseNode{(expr.BindersOnly[token.Token]{a}).InCase(data.Expression, a)}
-	caseData_caseName := CaseNode{
-		caseData[0],
-		(expr.BindersOnly[token.Token]{b}).InCase(name.Expression,b),
-	}
-	when := ast.TokenNode(makeToken_test(token.When,"when",1,1))
+
+	nameConstructor := Node{Constructor, nameToken}
+	namePatternC := Node{PatternC, nameToken}
 
 	tests := []struct {
 		nodes  []ast.Ast
@@ -49,31 +32,9 @@ func TestPattern(t *testing.T) {
 		expect ast.AstRoot
 	}{
 		{
-			[]ast.Ast{x, when, caseData},
-			parser.MakeSource("test/parser/pattern", "x when Data a -> a"),
-			ast.AstRoot{
-				SomeExpression{
-					Pattern, 
-					expr.Select[token.Token](x.Expression, caseData...),
-				},
-			},
-		},
-		{
-			[]ast.Ast{x, when, caseData_caseName},
-			parser.MakeSource("test/parser/pattern", 
-				"x when",
-				"  Data a -> a",
-				"  Name b -> b",
-			),
-			ast.AstRoot{
-				SomeExpression{
-					Pattern, 
-					expr.Select[token.Token](
-						x.Expression, 
-						caseData_caseName...,
-					),
-				},
-			},
+			[]ast.Ast{nameConstructor},
+			parser.MakeSource("test/parser/patternC", "Name"),
+			ast.AstRoot{namePatternC},
 		},
 	}
 
@@ -99,35 +60,34 @@ func TestPattern(t *testing.T) {
 	}
 }
 
-func TestCase(t *testing.T) {
+func TestPattern(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
 		Finally(parser.RuleSet(
-			case__case_data_Arrow_expr_r,
-			case__data_Arrow_expr_r,
+			pattern__patternC_r,
+			pattern__literal_r,
+			pattern__funcName_r,
+			pattern__pattern_pattern_r,
+			pattern__enclosed_r,
 		))
 
-	dataToken := makeTypeIdToken_test("Data", 1, 1)
-	dataConst := Const(dataToken)
-	a := exprVar("a")
 	nameToken := makeTypeIdToken_test("Name", 1, 1)
 	nameConst := Const(nameToken)
-	b := exprVar("b")
-	data := SomeExpression{
-		Data,
-		expr.Apply[token.Token](dataConst, a),
-	}
-	name := SomeExpression{
-		Data,
-		expr.Apply[token.Token](nameConst, b),
-	}
-	caseData := CaseNode{(expr.BindersOnly[token.Token]{a}).InCase(data.Expression, a)}
-	caseData_caseName := CaseNode{
-		caseData[0],
-		(expr.BindersOnly[token.Token]{b}).InCase(name.Expression,b),
-	}
-	arrow := ast.TokenNode(makeToken_test(token.Arrow,"->",1,1))
+	namePattern := SomeExpression{Pattern, nameConst}
+
+	namePatternC := Node{PatternC, nameToken}
+
+	intLitToken := makeSymbolToken_test("1", 1, 1)
+	intExpr := Const(intLitToken)
+	literal := LiteralNode{intExpr}
+
+	fToken := makeIdToken_test("f", 1, 1)
+	f := Node{FuncName, fToken}
+	fConst := Const(fToken)
+
+	lparen := ast.TokenNode(token.LeftParen.Make())
+	rparen := ast.TokenNode(token.RightParen.Make())
 
 	tests := []struct {
 		nodes  []ast.Ast
@@ -135,17 +95,34 @@ func TestCase(t *testing.T) {
 		expect ast.AstRoot
 	}{
 		{
-			[]ast.Ast{caseData, name, arrow, ExpressionNode{b}},
-			parser.MakeSource("test/parser/case",
-				"Data a -> a",
-				"Name b -> b",
-			),
-			ast.AstRoot{caseData_caseName},
+			[]ast.Ast{namePatternC},
+			parser.MakeSource("test/parser/pattern", "Name"),
+			ast.AstRoot{namePattern},
 		},
 		{
-			[]ast.Ast{data, arrow, ExpressionNode{a}},
-			parser.MakeSource("test/parser/case", "Data a -> a"),
-			ast.AstRoot{caseData},
+			[]ast.Ast{literal},
+			parser.MakeSource("test/parser/pattern", "1"),
+			ast.AstRoot{SomeExpression{Pattern, intExpr}},
+		},
+		{
+			[]ast.Ast{f},
+			parser.MakeSource("test/parser/pattern", "f"),
+			ast.AstRoot{SomeExpression{Pattern, fConst}},
+		},
+		{
+			[]ast.Ast{namePattern, namePattern},
+			parser.MakeSource("test/parser/pattern", "(Name) Name"),
+			ast.AstRoot{
+				SomeExpression{
+					Pattern,
+					expr.Apply[token.Token](nameConst, nameConst),
+				},
+			},
+		},
+		{
+			[]ast.Ast{lparen, namePattern, rparen},
+			parser.MakeSource("test/parser/data", "( Name )"),
+			ast.AstRoot{namePattern},
 		},
 	}
 

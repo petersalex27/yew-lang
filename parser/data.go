@@ -4,12 +4,11 @@ import (
 	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
-	itoken "github.com/petersalex27/yew-packages/token"
 	"yew.lang/main/token"
 )
 
 /*
-data          ::= constructor
+data          ::= patternC
                   | data expr
                   | '(' data ')'
 */
@@ -17,22 +16,12 @@ data          ::= constructor
 // Ast -> (Data==SomeExpression)
 func astToData(a ast.Ast) SomeExpression { return a.(SomeExpression) }
 
-func dataFromConstructorReduction(nodes ...ast.Ast) ast.Ast {
-	nodePtr := new(SomeExpression)
-	nodePtr.ty = Data
-	nodePtr.Expression = nil
-
-	toData := func(tok itoken.Token) {
-		dat := expr.Const[token.Token]{Name: tok.(token.Token)}
-		if nodePtr.Expression == nil {
-			nodePtr.Expression = dat
-		} else {
-			nodePtr.Expression = expr.Apply[token.Token](nodePtr.Expression, dat)
-		}
-	}
-
-	getConstructor(nodes[0]).InOrderTraversal(toData)
-	return *nodePtr
+func dataFromPatternCReduction(nodes ...ast.Ast) ast.Ast {
+	const patternCIndex int = 0
+	// patternC == constructor.(BinaryRecursiveNode).
+	//		UpdateType(constructor.(BinaryRecursiveNode).NodeType(), PatternC)
+	constructorExpr := constructorToExpression(nodes[patternCIndex])
+	return SomeExpression{Data, constructorExpr}
 }
 
 func dataAppendExprReduction(nodes ...ast.Ast) ast.Ast {
@@ -42,8 +31,8 @@ func dataAppendExprReduction(nodes ...ast.Ast) ast.Ast {
 	return data
 }
 
-var data__constructor_r = parser.
-	Get(dataFromConstructorReduction).From(Constructor)
+var data__patternC_r = parser.
+	Get(dataFromPatternCReduction).From(Pattern)
 
 var data__data_expr_r = parser.
 	Get(dataAppendExprReduction).From(Data, Expr)

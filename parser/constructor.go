@@ -1,12 +1,32 @@
 package parser
 
 import (
+	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
+	itoken "github.com/petersalex27/yew-packages/token"
+	"yew.lang/main/token"
 )
 
 func constructorCast(node ast.Ast) BinaryRecursiveNode {
 	return node.(BinaryRecursiveNode)
+}
+
+func constructorToExpression(constructorNode ast.Ast) expr.Expression[token.Token] {
+	exprPtr := new(expr.Expression[token.Token])
+	exprPtr = nil
+
+	toExpression := func(tok itoken.Token) {
+		right := expr.Const[token.Token]{Name: tok.(token.Token)}
+		if exprPtr == nil {
+			*exprPtr = right
+		} else {
+			*exprPtr = expr.Apply[token.Token](*exprPtr, right)
+		}
+	}
+
+	getConstructor(constructorNode).InOrderTraversal(toExpression)
+	return *exprPtr
 }
 
 var constructorSingleReduction = simpleNodeRule(Constructor)

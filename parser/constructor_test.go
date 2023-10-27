@@ -36,12 +36,12 @@ func TestConstructor(t *testing.T) {
 	}{
 		{
 			[]ast.Ast{ast.TokenNode(typeNameToken)},
-			parser.MakeSource("test/parser/data", "Name"),
+			parser.MakeSource("test/parser/constructor", "Name"),
 			ast.AstRoot{Node{Constructor, typeNameToken}},
 		},
 		{
 			[]ast.Ast{BinaryNode{TypeDecl, BinaryNode{TypeDecl, Node{Name, typeNameToken}, Node{Name, thingToken}}, Node{Name, thingToken}}},
-			parser.MakeSource("test/parser/data", "Name thing thing"),
+			parser.MakeSource("test/parser/constructor", "Name thing thing"),
 			ast.AstRoot{BinaryNode{Constructor, BinaryNode{Constructor, Node{Name, typeNameToken}, Node{Name, thingToken}}, Node{Name, thingToken}}},
 		},
 		{
@@ -49,7 +49,7 @@ func TestConstructor(t *testing.T) {
 				Node{Constructor, typeNameToken},
 				Node{Name, thingToken},
 			},
-			parser.MakeSource("test/parser/data", "Name thing"),
+			parser.MakeSource("test/parser/constructor", "Name thing"),
 			ast.AstRoot{
 				BinaryNode{
 					Constructor,
@@ -63,7 +63,7 @@ func TestConstructor(t *testing.T) {
 				Node{Constructor, typeNameToken},
 				Node{Constructor, typeName2Token},
 			},
-			parser.MakeSource("test/parser/data", "Name Name2"),
+			parser.MakeSource("test/parser/constructor", "Name Name2"),
 			ast.AstRoot{
 				BinaryNode{
 					Constructor,
@@ -78,7 +78,7 @@ func TestConstructor(t *testing.T) {
 				Node{Constructor, typeNameToken},
 				ast.TokenNode(token.RightParen.Make()),
 			},
-			parser.MakeSource("test/parser/data", "( Name )"),
+			parser.MakeSource("test/parser/constructor", "( Name )"),
 			ast.AstRoot{Node{Constructor, typeNameToken}},
 		},
 	}

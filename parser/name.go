@@ -2,7 +2,16 @@ package parser
 
 import (
 	"github.com/petersalex27/yew-packages/parser"
+	"github.com/petersalex27/yew-packages/parser/ast"
+	"yew.lang/main/token"
 )
+
+func _nodeAsToken(node ast.Ast) token.Token {
+	return node.(Node).Token
+}
+
+var funcNameAsToken, nameAsToken, paramAsToken = 
+	_nodeAsToken, _nodeAsToken, _nodeAsToken
 
 var nameReduction = simpleNodeRule(Name)
 
