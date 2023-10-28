@@ -5,7 +5,7 @@ import (
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	itoken "github.com/petersalex27/yew-packages/token"
-	"yew.lang/main/token"
+	"github.com/petersalex27/yew-lang/token"
 )
 
 func astToExpression(a ast.Ast) ExpressionNode { return a.(ExpressionNode) }

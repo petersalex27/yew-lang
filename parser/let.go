@@ -6,7 +6,7 @@ import (
 	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
-	"yew.lang/main/token"
+	"github.com/petersalex27/yew-lang/token"
 )
 
 // letIn ::= 'let' function 'in' expr

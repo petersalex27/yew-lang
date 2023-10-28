@@ -10,6 +10,13 @@ type Token struct {
 	value string
 }
 
+func TokenEquals(a, b Token) bool {
+	return a.line == b.line && 
+		a.char == b.char &&
+		a.ty == b.ty &&
+		a.value == b.value
+}
+
 func (t Token) GetName() string {
 	return t.value
 }

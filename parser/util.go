@@ -2,7 +2,7 @@ package parser
 
 import (
 	"github.com/petersalex27/yew-packages/expr"
-	"yew.lang/main/token"
+	"github.com/petersalex27/yew-lang/token"
 )
 
 /*

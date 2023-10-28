@@ -3,7 +3,7 @@ package parser
 import (
 	//"github.com/petersalex27/yew-packages/parser"
 	//"github.com/petersalex27/yew-packages/types"
-	"yew.lang/main/token"
+	"github.com/petersalex27/yew-lang/token"
 )
 
 func name_maker(s string) token.Token {

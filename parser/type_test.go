@@ -10,8 +10,8 @@ import (
 	itoken "github.com/petersalex27/yew-packages/token"
 	"github.com/petersalex27/yew-packages/types"
 	"github.com/petersalex27/yew-packages/util/testutil"
-	"yew.lang/main/errors"
-	"yew.lang/main/token"
+	"github.com/petersalex27/yew-lang/errors"
+	"github.com/petersalex27/yew-lang/token"
 )
 
 func TestType(t *testing.T) {

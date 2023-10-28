@@ -3,7 +3,7 @@ package parser
 import (
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
-	"yew.lang/main/token"
+	"github.com/petersalex27/yew-lang/token"
 )
 
 func _nodeAsToken(node ast.Ast) token.Token {

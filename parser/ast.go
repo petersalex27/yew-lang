@@ -8,7 +8,7 @@ import (
 	"github.com/petersalex27/yew-packages/parser/ast"
 	itoken "github.com/petersalex27/yew-packages/token"
 	"github.com/petersalex27/yew-packages/types"
-	"yew.lang/main/token"
+	"github.com/petersalex27/yew-lang/token"
 )
 
 // prefix for compiler generated parameter names

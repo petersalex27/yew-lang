@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"yew.lang/main/token"
+	"github.com/petersalex27/yew-lang/token"
 )
 
 func makeToken_test(ty token.TokenType, val string, line, char int) token.Token {

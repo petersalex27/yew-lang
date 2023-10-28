@@ -5,7 +5,7 @@ import (
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	"github.com/petersalex27/yew-packages/util"
-	"yew.lang/main/token"
+	"github.com/petersalex27/yew-lang/token"
 )
 
 /*

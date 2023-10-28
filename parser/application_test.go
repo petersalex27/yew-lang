@@ -9,8 +9,8 @@ import (
 	"github.com/petersalex27/yew-packages/source"
 	itoken "github.com/petersalex27/yew-packages/token"
 	"github.com/petersalex27/yew-packages/util/testutil"
-	"yew.lang/main/errors"
-	"yew.lang/main/token"
+	"github.com/petersalex27/yew-lang/errors"
+	"github.com/petersalex27/yew-lang/token"
 )
 
 func TestApplication(t *testing.T) {

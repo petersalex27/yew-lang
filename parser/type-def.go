@@ -9,7 +9,7 @@ import (
 	itoken "github.com/petersalex27/yew-packages/token"
 	"github.com/petersalex27/yew-packages/types"
 	"github.com/petersalex27/yew-packages/util/stack"
-	"yew.lang/main/token"
+	"github.com/petersalex27/yew-lang/token"
 )
 
 /*
