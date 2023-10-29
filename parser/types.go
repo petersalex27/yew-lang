@@ -18,7 +18,6 @@ const (
 
 	// other
 	Wildcard  = ast.Type(token.Wildcard)
-	Empty     = ast.Type(token.Empty)
 	Comment   = ast.Type(token.Comment)
 	At        = ast.Type(token.At)
 	Colon     = ast.Type(token.Typing)
@@ -47,12 +46,11 @@ const (
 	Id      = ast.Type(token.Id)
 	TypeId  = ast.Type(token.TypeId)
 	Infixed = ast.Type(token.Infixed)
-	Thunked = ast.Type(token.Thunked)
 
 	shiftKeywords_class = Let
 	// shift keywords
 	Let    = ast.Type(token.Let)
-	Class  = ast.Type(token.Class)
+	Traot  = ast.Type(token.Trait)
 	Use    = ast.Type(token.Use)
 	Family = ast.Type(token.Family)
 	Forall = ast.Type(token.Forall)
@@ -65,85 +63,136 @@ const (
 	In                   = ast.Type(token.In)
 	Where                = ast.Type(token.Where)
 	Qualified            = ast.Type(token.Qualified)
-	Struct               = ast.Type(token.Struct)
+	Of                   = ast.Type(token.Of)
 	Derives              = ast.Type(token.Derives)
 	Do                   = ast.Type(token.Do)
 	LAST_TERMINAL_TYPE__ = ast.Type(token.LAST_TYPE__)
 	// non-terminal types
+
+	// expression, e.g.,
+	//		1 + 1
 	Expr ast.Type = iota + LAST_TERMINAL_TYPE__
+	// literal value or array, e.g.,
+	//		1
 	Val
+	// expr expr
 	Application
-	ApplicationId
-	FreeApplication
+	// let x = y in z
 	LetExpr
+	// z where x = y
 	WhereExpr
-	Context
-	ClassDeclaration
-	ClassDefinition
+	// trait C a
+	TraitDeclaration
+	// trait C a where f: a -> a
+	TraitDefinition
+	// C of MyType
 	InstanceDeclaration
+	// C of MyType where f mt = mt
 	InstanceDefinition
+	// x { member -> SomeType a }
 	StructDefinition
-	ConstructorDefinition
+	// Brach (BinaryTree a) (BinaryTree a)
 	Constructor
-	UnionPair
+	// definitions and instances of functions and traits and type definitions
+	//		trait C a where f: a -> a
+	//		MyType a = MyData a Int
+	//		C of MyType where f mt = mt
+	//		myFunc: a -> a
+	//		myFunc x = x
 	Definitions
+	// module myModule ( myFunc,
 	ExportHead
-	ExportAwait
+	// top level node
+	// 		module myModule ( myFunc ) where
+	//			myFunc: a -> a
+	//			myFunc x = x
 	Source
+	// f x: Int -> Int
 	FunctionDefinition
+	// f x
 	FunctionHead
+	// f
 	FunctionDecl
+	// f x: Int -> Int = x
 	Function
-	InfixedDefinition
+	// BinaryTree a = Leaf a | Brach (BinaryTree a) (BinaryTree a)
 	TypeDef
+	// BinaryTree a
 	TypeDecl
+	// --@infixr 3
 	Annotation
+	// import ( myModule, anotherModule, .. )
 	ImportList
+	// use import ( myModule, anotherModule, .. )
 	UseList
+	// qualified import ( myModule, anotherModule, .. )
 	QualifiedList
+	// use myModule in
 	Namespace
+	// module myModule
 	ModuleDeclaration
+	// module myModule ( myFunc, (%>), .. )
 	ModuleDefinition
+	// module myModule ( myFunc, (%>), ..
 	ExportList
+	// (\x -> x)
 	AnonymousFunction
+	// Just x -> x
 	Case
+	// pather match:
+	//		g when
+	//			Just x -> f x
+	//			Nothing -> Nothing
 	PatternMatch
+	// Just x
 	Pattern
+	// Just
 	PatternC
+	// [1, a+b, b]
 	Array
+	// [1, 2, 3]
 	LiteralArray
+	// [1, a+b,
 	ArrayValHead
+	// [1, 2,
 	LitArrHead
+	// Just 1
 	Data
-	Block
-	Group
+	// myName
 	Name
+	// myName
 	Param
+	// (>>=)
 	FuncName
-	AnyName
+	// 1
 	Literal
-	TypeJudgement // e: (T ..)
-	FreeTyping
-	Polytype    // (forall a ..) . (T ..)
-	Dependtype  // (mapall (a: A) ..) . (B ..; ..)
-	Dependtyped // type node for a type T, dep 𝚷(a: A)B(a) s.t. 𝚷(a: A)B(a) ⊑ T
-	Monotype    // type node for monotypes
-	Type        // most generic "type" node
-	MonoList    // (T .., U .., ..)
-	MonoTail
+	// x: T
+	TypeJudgement
+	// forall a b . MyType a b
+	Polytype
+	// mapall (a: A) (b: B) . (MyTypeFunc; a b)
+	Dependtype
+	// type node for a type T, dep 𝚷(a: A)B(a) s.t. 𝚷(a: A)B(a) ⊑ T
+	Dependtyped
+	// Maybe Int
+	Monotype
+	// most generic "type" node
+	Type
+	// , Maybe Int, Int)
 	TupleType
-	FreeVar         // var
-	TypeApp         // T U ..
-	DependIndexHead // T ..;
-	DependInstance  // T ..; e ..
+	// (SomeType a;
+	DependIndexHead
+	// (SomeType a; (x+1) y)
+	DependInstance
+	// a: Int
 	VarJudgement
-	AppJudgement
-	TupleJudgement
-	AnonJudgement
+	// mapall (a: A) (b: B)
 	DependHead
+	// mapall (a: A) (b: B)
 	DependBinders
+	// forall a b
 	PolyHead
+	// forall a b
 	PolyBinders
-	ArrayHead
 	_last_type_
 )

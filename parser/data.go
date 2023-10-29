@@ -1,10 +1,10 @@
 package parser
 
 import (
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
-	"github.com/petersalex27/yew-lang/token"
 )
 
 /*
@@ -12,9 +12,6 @@ data          ::= patternC
                   | data expr
                   | '(' data ')'
 */
-
-// Ast -> (Data==SomeExpression)
-func astToData(a ast.Ast) SomeExpression { return a.(SomeExpression) }
 
 func dataFromPatternCReduction(nodes ...ast.Ast) ast.Ast {
 	const patternCIndex int = 0
@@ -38,4 +35,4 @@ var data__data_expr_r = parser.
 	Get(dataAppendExprReduction).From(Data, Expr)
 
 var data__enclosed_r = parser.
-	Get(grab_enclosed).From(LeftParen, Data, RightParen)
+	Get(parenEnclosedReduction).From(LeftParen, Data, RightParen)

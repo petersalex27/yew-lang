@@ -23,7 +23,3 @@ func makeSymbolToken_test(name string, line, char int) token.Token {
 func makeInfixed_test(name string, line, char int) token.Token {
 	return makeToken_test(token.Infixed, name, line, char)
 }
-
-func makeThunkedToken_test(name string, line, char int) token.Token {
-	return makeToken_test(token.Thunked, name, line, char)
-}

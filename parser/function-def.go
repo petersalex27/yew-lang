@@ -1,11 +1,11 @@
 package parser
 
 import (
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	itoken "github.com/petersalex27/yew-packages/token"
 	"github.com/petersalex27/yew-packages/types"
-	"github.com/petersalex27/yew-lang/token"
 )
 
 /*
@@ -60,16 +60,16 @@ func untypedFunctionReduction(nodes ...ast.Ast) ast.Ast {
 
 	if length < 1 {
 		// just name
-		glb_cxt.typeMutex.Lock()
-		typing = glb_cxt.typeCxt.NewVar()
-		glb_cxt.typeMutex.Unlock()
+		globalContext__.typeMutex.Lock()
+		typing = globalContext__.typeCxt.NewVar()
+		globalContext__.typeMutex.Unlock()
 	} else {
 		// name and an application pattern
 
 		// create an array for `length` type variables
 		vars := make([]types.Variable[token.Token], length)
 
-		glb_cxt.typeMutex.Lock()
+		globalContext__.typeMutex.Lock()
 
 		// generate `length` new type variables
 		//
@@ -77,13 +77,13 @@ func untypedFunctionReduction(nodes ...ast.Ast) ast.Ast {
 		// for-loop that generates the function type, from left to right, in
 		// oldest to newest type variable
 		for i := range vars {
-			vars[length-1-i] = glb_cxt.typeCxt.NewVar()
+			vars[length-1-i] = globalContext__.typeCxt.NewVar()
 		}
 
 		// return type of function
-		retType := glb_cxt.typeCxt.NewVar()
+		retType := globalContext__.typeCxt.NewVar()
 
-		glb_cxt.typeMutex.Unlock()
+		globalContext__.typeMutex.Unlock()
 
 		// aN -> retType
 		functionType := types.Apply[token.Token](arrowConst, vars[0], retType)

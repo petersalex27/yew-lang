@@ -2,8 +2,7 @@ package parser
 
 import (
 	"testing"
-
-	"github.com/petersalex27/yew-packages/expr"
+	
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	"github.com/petersalex27/yew-packages/source"
@@ -14,24 +13,16 @@ import (
 	"github.com/petersalex27/yew-lang/token"
 )
 
-func TestJudgement(t *testing.T) {
+func TestPolyBinders(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
 		Finally(parser.RuleSet(
-			judgement__expr_Colon_type_r,
-			// TODO: judgement__varJudgement_r,
-			judgement__enclosed_r,
+			polyBinders__polyHead_r,
+			polyBinders__enclosed_r,
 		))
-
-	intNameToken := makeTypeIdToken_test("Int", 1, 1)
-	intType := TypeNode{Type, types.MakeConst[token.Token](intNameToken)}
-	intExpr := ExpressionNode{Const(makeToken_test(token.IntValue,"1",1,1))}
-	judge := JudgementNode(types.Judgement[token.Token, expr.Expression[token.Token]]( 
-		intExpr.Expression,
-		intType.Type,
-	))
-	colon := ast.TokenNode(makeToken_test(token.Typing,":",1,1))
+	aToken := makeIdToken_test("a",1,1)
+	aVar := types.Var[token.Token](aToken)
 	rparen := ast.TokenNode(makeToken_test(token.RightParen,")",1,1))
 	lparen := ast.TokenNode(makeToken_test(token.LeftParen,"(",1,1))
 
@@ -41,14 +32,14 @@ func TestJudgement(t *testing.T) {
 		expect ast.AstRoot
 	}{
 		{
-			[]ast.Ast{intExpr, colon, intType},
-			parser.MakeSource("test/parser/judgement", "1: Int"),
-			ast.AstRoot{judge},
+			[]ast.Ast{PolyHeadNode{false, []types.Variable[token.Token]{aVar}}},
+			parser.MakeSource("test/parser/type", "forall a"),
+			ast.AstRoot{PolyHeadNode{true, []types.Variable[token.Token]{aVar}}},
 		},
 		{
-			[]ast.Ast{lparen, judge, rparen},
-			parser.MakeSource("test/parser/expression", "(1: Int)"),
-			ast.AstRoot{judge},
+			[]ast.Ast{lparen, PolyHeadNode{true, []types.Variable[token.Token]{aVar}}, rparen},
+			parser.MakeSource("test/parser/type", "(forall a)"),
+			ast.AstRoot{PolyHeadNode{true, []types.Variable[token.Token]{aVar}}},
 		},
 	}
 

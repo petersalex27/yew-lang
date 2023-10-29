@@ -3,13 +3,13 @@ package parser
 import (
 	"sync"
 
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	itoken "github.com/petersalex27/yew-packages/token"
 	"github.com/petersalex27/yew-packages/types"
 	"github.com/petersalex27/yew-packages/util/stack"
-	"github.com/petersalex27/yew-lang/token"
 )
 
 /*
@@ -20,20 +20,22 @@ typeDef       ::= typeDecl '=' constructor
 */
 
 var typeDecl__TypeId_r = parser.
-	Get(simpleNodeRule(TypeDecl)).
+	Get(giveTypeToTokenReductionGen(TypeDecl)).
 	From(TypeId)
-	
+
 // creates a tree structure like:
-//          /\
-//         /\ Id
-//        /\ Id
-//  TypeId  Id
-// typeDecls should not be stored as NodeSequences because they will most likely 
-// be converted to constructor nodes; and constructor nodes are stored in a tree 
+//
+//	        /\
+//	       /\ Id
+//	      /\ Id
+//	TypeId  Id
+//
+// typeDecls should not be stored as NodeSequences because they will most likely
+// be converted to constructor nodes; and constructor nodes are stored in a tree
 // structure
 var typeDecl__typeDecl_Id_r = parser.
 	Get(func(nodes ...ast.Ast) ast.Ast {
-		return simpleBinaryNodeRule(TypeDecl)(nodes[0], simpleNodeRule(Name)(nodes[1]))
+		return simpleBinaryNodeRule(TypeDecl)(nodes[0], giveTypeToTokenReductionGen(Name)(nodes[1]))
 	}).From(TypeDecl, Id)
 
 // unrolls tree structue and splits the contant head from the free type variables
@@ -53,12 +55,12 @@ func typeDeclType(declNode ast.Ast) (name types.Constant[token.Token], vars []ty
 	hasFreeVars := !childless
 	// stack stores free variables in reverse order
 	var s *stack.Stack[types.Variable[token.Token]] = nil
-	if hasFreeVars { 
+	if hasFreeVars {
 		s = stack.NewStack[types.Variable[token.Token]](8) // init stack
 	}
 
-	// keep pushing right childrens' tokens (these represent free variables) 
-	// until left-most node is reached; the left-most (on loop end, this will 
+	// keep pushing right childrens' tokens (these represent free variables)
+	// until left-most node is reached; the left-most (on loop end, this will
 	// be `head`) node holds the type constant
 	for !childless {
 		// grab children
@@ -112,17 +114,17 @@ func abstractForConstructor(depth int) expr.Function[token.Token] {
 	f, found := constructorGenMemo[depth] // in table?
 	if found {
 		return f
-	} 
+	}
 
 	vars := make([]expr.Variable[token.Token], depth)
 	var bound expr.Expression[token.Token] = exprVar("tag")
 	// expression context must be locked!!!
-	glb_cxt.exprMutex.Lock()
+	globalContext__.exprMutex.Lock()
 	for i := range vars {
-		vars[i] = glb_cxt.exprCxt.NewVar()
+		vars[i] = globalContext__.exprCxt.NewVar()
 		bound = expr.Apply[token.Token](bound, vars[i])
 	}
-	glb_cxt.exprMutex.Unlock() // matching unlock :)
+	globalContext__.exprMutex.Unlock() // matching unlock :)
 
 	// create function
 	f = expr.StrictBind[token.Token](exprVar("tag"), vars...).In(bound)
@@ -138,7 +140,7 @@ func binaryNodeInFunction(constr BinaryRecursiveNode, rightTy types.Monotyped[to
 	if node, ok := constr.HasValue(); ok {
 		// bottom of left edge of tree, `node` holds the name of the type constructor/tag
 		tag = node.Token
-		return rightTy, tag, 1 
+		return rightTy, tag, 1
 	}
 
 	left, right := constr.SplitNode()
@@ -149,13 +151,16 @@ func binaryNodeInFunction(constr BinaryRecursiveNode, rightTy types.Monotyped[to
 	return res, tag, depth
 }
 
-// given 
-//  unboundType = (Type _),
-//  constr = (Con a1 a2 .. aN)
+// given
+//
+//	unboundType = (Type _),
+//	constr = (Con a1 a2 .. aN)
+//
 // return
-//  res = a1 -> a2 -> .. -> aN -> (Type _), 
-//  tag = Con, 
-//  depth = N
+//
+//	res = a1 -> a2 -> .. -> aN -> (Type _),
+//	tag = Con,
+//	depth = N
 func constructorToType(unboundType types.Monotyped[token.Token], constr BinaryRecursiveNode) (res types.Monotyped[token.Token], tag token.Token, depth int) {
 	if node, ok := constr.HasValue(); ok {
 		// at root of tree, this is also the bottom of the left edge of the tree; thus,
@@ -167,7 +172,7 @@ func constructorToType(unboundType types.Monotyped[token.Token], constr BinaryRe
 	// the `unboundType` type
 
 	left, right := constr.SplitNode()
-	// given constructorToType(`Type a`, `Con a1 .. aN`), 
+	// given constructorToType(`Type a`, `Con a1 .. aN`),
 	// endDomain = `aN`, endFunction = `aN -> (Type a)`
 	endDomain := binaryNodeAsAppOrConst(right)
 	endFunction := types.Apply[token.Token](arrowConst, endDomain, unboundType)
@@ -177,7 +182,7 @@ func constructorToType(unboundType types.Monotyped[token.Token], constr BinaryRe
 func constructorToJudgement(ty types.Monotyped[token.Token], binders []types.Variable[token.Token], constr BinaryRecursiveNode) types.TypeJudgement[token.Token, expr.Expression[token.Token]] {
 	// Type a = Con1 a Int | Con2 (Type a) a
 	// Type = forall a . Type a
-	// Con1_constr = ((\c x y -> c x y) Con1): forall a . a -> Int -> Type a 
+	// Con1_constr = ((\c x y -> c x y) Con1): forall a . a -> Int -> Type a
 	// Con2_constr = ((\c x y -> c x y) Con2): forall a . Type a -> a -> Type a
 	//     /\         /\
 	//    /\ Int     /\ a
@@ -197,15 +202,15 @@ func constructorToJudgement(ty types.Monotyped[token.Token], binders []types.Var
 }
 
 type TypeDefNode struct {
-	constType types.Constant[token.Token]
-	closedType types.Type[token.Token]
+	constType    types.Constant[token.Token]
+	closedType   types.Type[token.Token]
 	constructors []types.TypeJudgement[token.Token, expr.Expression[token.Token]]
 }
 
 func (n TypeDefNode) SplitType() ([]types.Variable[token.Token], types.ReferableType[token.Token]) {
-	// assertion is not guarenteed to work if `n` is initialized outside of 
+	// assertion is not guarenteed to work if `n` is initialized outside of
 	// function `initialTypeDef`; but it is assumed here that it is
-	
+
 	if poly, ok := n.closedType.(types.Polytype[token.Token]); ok {
 		return poly.GetBinders_shallow(), poly.GetBound().(types.ReferableType[token.Token])
 	}
@@ -219,15 +224,15 @@ func (n TypeDefNode) Equals(a ast.Ast) bool {
 		return false
 	}
 	if !n.constType.Equals(n2.constType) || !n.closedType.Equals(n2.closedType) {
-		return false 
+		return false
 	}
 	if len(n.constructors) != len(n2.constructors) {
 		return false
 	}
 	for i, con := range n.constructors {
 		exp, ty := con.GetExpression(), con.GetType()
-		if !exp.Equals(glb_cxt.exprCxt, n2.constructors[i].GetExpression()) {
-			return false 
+		if !exp.Equals(globalContext__.exprCxt, n2.constructors[i].GetExpression()) {
+			return false
 		}
 		if !ty.Equals(n2.constructors[i].GetType()) {
 			return false
@@ -265,7 +270,7 @@ func initialTypeDef(nodes ...ast.Ast) ast.Ast {
 	// split type declaration into constant name and free type binders
 	head, binders := typeDeclType(nodes[typeDeclIndex])
 	def := TypeDefNode{
-		constType: head,
+		constType:    head,
 		constructors: make([]types.TypeJudgement[token.Token, expr.Expression[token.Token]], 0, 1),
 	}
 
@@ -291,7 +296,7 @@ func initialTypeDef(nodes ...ast.Ast) ast.Ast {
 func appendConstructorToTypeDef(nodes ...ast.Ast) ast.Ast {
 	// nodes[0]: TypeDef, nodes[1]: _, nodes[2]: Constructor
 	const typeDefIndex, _, constructorIndex int = 0, 1, 2
-	
+
 	def := typeDefCast(nodes[typeDefIndex])
 	constructorNode := constructorCast(nodes[constructorIndex])
 	// create left-most type constructor and corresponding type
@@ -300,7 +305,7 @@ func appendConstructorToTypeDef(nodes ...ast.Ast) ast.Ast {
 	// add constructor to definition
 	def.constructors = append(def.constructors, judgement)
 	return def
-	
+
 }
 
 var typeDef__typeDecl_Assign_constructor_r = parser.

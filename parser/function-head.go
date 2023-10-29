@@ -16,42 +16,11 @@ functionDef   ::= functionHead ':' type
 									| functionHead      					# only when L.A. is '='
 */
 
-type FunctionDeclNode_ token.Token
-
 // function declarations--declares a function refered to as `name` with an
 // application pattern of `params[0] params[1] .. params[len(params)-1]` exists
 type FunctionHeadNode struct {
 	name   token.Token
 	params []expr.Expression[token.Token]
-}
-
-// takes a parameter node and converts it into a Variable expression
-//
-// ASSUMPTION: `paramNode` has type `Node`
-func paramToVarExpression(paramNode ast.Ast) expr.Variable[token.Token] {
-	paramToken := paramAsToken(paramNode)
-	return expr.Var(paramToken)
-}
-
-func (fd FunctionHeadNode) appendExpressionToFuncHead(ex expr.Expression[token.Token]) FunctionHeadNode {
-	newParams := make([]expr.Expression[token.Token], len(fd.params)+1)
-	copy(newParams, fd.params)
-	newParams[len(fd.params)] = ex
-	return FunctionHeadNode{
-		name:   fd.name,
-		params: newParams,
-	}
-}
-
-// reduction: funcDecl <- funcName param
-func funcHeadInitialParamReduction(nodes ...ast.Ast) ast.Ast {
-	const funcNameIndex, paramIndex int = 0, 1
-	name := funcNameAsToken(nodes[funcNameIndex])
-	param := paramToVarExpression(nodes[paramIndex])
-	return FunctionHeadNode{
-		name:   name,
-		params: []expr.Expression[token.Token]{param},
-	}
 }
 
 // reduction: funcHead <- funcDecl pattern

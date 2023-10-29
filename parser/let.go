@@ -85,7 +85,7 @@ func letReduction(nodes ...ast.Ast) ast.Ast {
 			//	 the compiler
 			// - thus, any variable prefixed with "$p" will not be free in the 
 			//	 function body
-			paramStr := "$p" + strconv.Itoa(i)
+			paramStr := parameterStringPrefix + strconv.Itoa(i)
 			paramToken := token.Id.Make().AddValue(paramStr)
 			paramVar := expr.Var(paramToken)
 			binders[i] = paramVar

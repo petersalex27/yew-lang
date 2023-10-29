@@ -14,26 +14,24 @@ import (
 	"github.com/petersalex27/yew-lang/token"
 )
 
-func TestJudgement(t *testing.T) {
+func TestDependBinders(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
 		Finally(parser.RuleSet(
-			judgement__expr_Colon_type_r,
-			// TODO: judgement__varJudgement_r,
-			judgement__enclosed_r,
+			dependBinders__dependHead_r,
+			dependBinders__enclosed_r,
 		))
 
-	intNameToken := makeTypeIdToken_test("Int", 1, 1)
-	intType := TypeNode{Type, types.MakeConst[token.Token](intNameToken)}
-	intExpr := ExpressionNode{Const(makeToken_test(token.IntValue,"1",1,1))}
-	judge := JudgementNode(types.Judgement[token.Token, expr.Expression[token.Token]]( 
-		intExpr.Expression,
-		intType.Type,
-	))
-	colon := ast.TokenNode(makeToken_test(token.Typing,":",1,1))
+	aType := types.MakeConst[token.Token](makeTypeIdToken_test("A",1,1))
+	monoA := TypeNode{Monotype, aType}
 	rparen := ast.TokenNode(makeToken_test(token.RightParen,")",1,1))
 	lparen := ast.TokenNode(makeToken_test(token.LeftParen,"(",1,1))
+	judgeA := types.TypeJudgement[token.Token, expr.Variable[token.Token]](
+		types.Judgement(exprVar("a"), monoA.Type),
+	)
+	head := DependHeadNode{false, []types.TypeJudgement[token.Token, expr.Variable[token.Token]]{judgeA}}
+	binder := DependHeadNode{true, []types.TypeJudgement[token.Token, expr.Variable[token.Token]]{judgeA}}
 
 	tests := []struct {
 		nodes  []ast.Ast
@@ -41,14 +39,14 @@ func TestJudgement(t *testing.T) {
 		expect ast.AstRoot
 	}{
 		{
-			[]ast.Ast{intExpr, colon, intType},
-			parser.MakeSource("test/parser/judgement", "1: Int"),
-			ast.AstRoot{judge},
+			[]ast.Ast{head},
+			parser.MakeSource("test/parser/dependent", "mapall (a: A)"),
+			ast.AstRoot{binder},
 		},
 		{
-			[]ast.Ast{lparen, judge, rparen},
-			parser.MakeSource("test/parser/expression", "(1: Int)"),
-			ast.AstRoot{judge},
+			[]ast.Ast{lparen, binder, rparen},
+			parser.MakeSource("test/parser/dependent", "(mapall (a: A))"),
+			ast.AstRoot{binder},
 		},
 	}
 

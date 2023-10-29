@@ -10,8 +10,6 @@ import (
 
 func astToCase(a ast.Ast) CaseNode { return a.(CaseNode) }
 
-func astToPattern(a ast.Ast) SomeExpression { return a.(SomeExpression) }
-
 type CaseNode []expr.Case[token.Token]
 
 func (cs CaseNode) Equals(a ast.Ast) bool {

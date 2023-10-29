@@ -1,16 +1,16 @@
 package parser
 
 import (
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	itoken "github.com/petersalex27/yew-packages/token"
-	"github.com/petersalex27/yew-lang/token"
 )
 
-type LiteralNode struct{expr.Expression[token.Token]}
+type LiteralNode struct{ expr.Expression[token.Token] }
 
-func (node LiteralNode) getExpression() ExpressionNode { 
+func (node LiteralNode) getExpression() ExpressionNode {
 	return ExpressionNode(node)
 }
 
@@ -20,7 +20,7 @@ func (node LiteralNode) Equals(a ast.Ast) bool {
 		return false
 	}
 
-	return node.Expression.Equals(glb_cxt.exprCxt, lit.Expression)
+	return node.Expression.Equals(globalContext__.exprCxt, lit.Expression)
 }
 
 func (node LiteralNode) InOrderTraversal(f func(itoken.Token)) {
@@ -41,9 +41,9 @@ func literalFromLiteralArrayReduction(nodes ...ast.Ast) ast.Ast {
 }
 
 /*
-literal       ::= INT_VALUE 
-                  | CHAR_VALUE 
-                  | STRING_VALUE 
+literal       ::= INT_VALUE
+                  | CHAR_VALUE
+                  | STRING_VALUE
                   | FLOAT_VALUE
                   | literalArray
 */

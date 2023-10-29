@@ -1,11 +1,12 @@
 package parser
 
 import (
+	"github.com/petersalex27/yew-lang/token"
+	"github.com/petersalex27/yew-packages/bridge"
 	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	itoken "github.com/petersalex27/yew-packages/token"
-	"github.com/petersalex27/yew-lang/token"
 )
 
 func astToExpression(a ast.Ast) ExpressionNode { return a.(ExpressionNode) }
@@ -44,12 +45,20 @@ var expr__pattern_r = parser.Get(unwrapSomeExpression).From(Pattern)
 // var expr__exprWhere_r = parser.Get().From(Val)
 
 // expr <- judgement
-var expr__judgement_r = parser. 
+var expr__judgement_r = parser.
 	Get(judgementToExpression).From(TypeJudgement)
 
 // expr <- '(' expr ')'
-var expr__enclosed_r = parser. 
-	Get(grab_enclosed).From(LeftParen, Expr, RightParen)
+var expr__enclosed_r = parser.
+	Get(parenEnclosedReduction).From(LeftParen, Expr, RightParen)
+
+func judgementToExpression(nodes ...ast.Ast) ast.Ast {
+	return ExpressionNode{
+		bridge.JudgementAsExpression[token.Token, expr.Expression[token.Token]](
+			nodes[0].(JudgementNode),
+		),
+	}
+}
 
 type expressionNodeTypes interface {
 	getExpression() ExpressionNode
@@ -72,17 +81,13 @@ func getExpression(node ast.Ast) ExpressionNode {
 	return node.(ExpressionNode)
 }
 
-func getApplication(node ast.Ast) expr.Application[token.Token] {
-	return getExpression(node).Expression.(expr.Application[token.Token])
-}
-
 func (e1 ExpressionNode) Equals(a ast.Ast) bool {
 	e2, ok := a.(ExpressionNode)
 	if !ok {
 		return false
 	}
 
-	return e1.Expression.Equals(glb_cxt.exprCxt, e2.Expression)
+	return e1.Expression.Equals(globalContext__.exprCxt, e2.Expression)
 }
 
 func (e ExpressionNode) NodeType() ast.Type { return Expr }
@@ -108,5 +113,5 @@ func (e SomeExpression) Equals(a ast.Ast) bool {
 	if !ok {
 		return false
 	}
-	return e.ty == e2.ty && e.Expression.Equals(glb_cxt.exprCxt, e2.Expression)
+	return e.ty == e2.ty && e.Expression.Equals(globalContext__.exprCxt, e2.Expression)
 }

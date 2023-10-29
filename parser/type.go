@@ -1,11 +1,11 @@
 package parser
 
 import (
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	itoken "github.com/petersalex27/yew-packages/token"
 	"github.com/petersalex27/yew-packages/types"
-	"github.com/petersalex27/yew-lang/token"
 )
 
 /*
@@ -35,11 +35,11 @@ var type__dependent_r = parser.
 	Get(typeRewrapReduction).From(Dependtype)
 
 // type <- '(' type ')'
-var type__enclosed_r = parser. 
-	Get(grab_enclosed).From(LeftParen, Type, RightParen)
+var type__enclosed_r = parser.
+	Get(parenEnclosedReduction).From(LeftParen, Type, RightParen)
 
-type TypeNode struct{
-	ty ast.Type 
+type TypeNode struct {
+	ty ast.Type
 	types.Type[token.Token]
 }
 

@@ -3,6 +3,8 @@ package parser
 import (
 	"testing"
 
+	"github.com/petersalex27/yew-lang/errors"
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
@@ -10,8 +12,6 @@ import (
 	itoken "github.com/petersalex27/yew-packages/token"
 	"github.com/petersalex27/yew-packages/types"
 	"github.com/petersalex27/yew-packages/util/testutil"
-	"github.com/petersalex27/yew-lang/errors"
-	"github.com/petersalex27/yew-lang/token"
 )
 
 func TestFunctionDef(t *testing.T) {
@@ -40,11 +40,11 @@ func TestFunctionDef(t *testing.T) {
 	yToken := makeIdToken_test("y", 1, 1)
 	yVar := expr.Var(yToken)
 
-	glb_cxt.typeMutex.Lock()
-	free0 := glb_cxt.typeCxt.NewVar()
-	free1 := glb_cxt.typeCxt.NewVar()
-	free2 := glb_cxt.typeCxt.NewVar()
-	glb_cxt.typeMutex.Unlock()
+	globalContext__.typeMutex.Lock()
+	free0 := globalContext__.typeCxt.NewVar()
+	free1 := globalContext__.typeCxt.NewVar()
+	free2 := globalContext__.typeCxt.NewVar()
+	globalContext__.typeMutex.Unlock()
 
 	// a0 -> a1
 	freeToFreeType := types.Apply[token.Token](arrowConst, free0, free1)

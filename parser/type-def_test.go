@@ -3,6 +3,8 @@ package parser
 import (
 	"testing"
 
+	"github.com/petersalex27/yew-lang/errors"
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
@@ -10,8 +12,6 @@ import (
 	itoken "github.com/petersalex27/yew-packages/token"
 	"github.com/petersalex27/yew-packages/types"
 	"github.com/petersalex27/yew-packages/util/testutil"
-	"github.com/petersalex27/yew-lang/errors"
-	"github.com/petersalex27/yew-lang/token"
 )
 
 func TestTypeDef(t *testing.T) {
@@ -37,11 +37,11 @@ func TestTypeDef(t *testing.T) {
 	kon := Node{Constructor, konToken}
 	// Con a (Type a)
 	con2 := BinaryNode{Constructor,
-		// Con a 
-		BinaryNode{Constructor, 
-			Node{Name, conToken}, 
+		// Con a
+		BinaryNode{Constructor,
+			Node{Name, conToken},
 			Node{Name, aToken},
-		}, 
+		},
 		// Type a
 		BinaryNode{Constructor, Node{Name, typeToken}, Node{Name, aToken}},
 	}
@@ -55,8 +55,8 @@ func TestTypeDef(t *testing.T) {
 	aVar := types.Var(aToken)
 	typeA := types.Apply(constType, types.Monotyped[token.Token](aVar))
 	closedType := types.Forall(aVar).Bind(typeA)
-	newVar := glb_cxt.exprCxt.NewVar()
-	newVar2 := glb_cxt.exprCxt.NewVar()
+	newVar := globalContext__.exprCxt.NewVar()
+	newVar2 := globalContext__.exprCxt.NewVar()
 
 	// (\$0 -> Con $0): forall a . a -> Type a
 	conJudge := types.Judgement[token.Token, expr.Expression[token.Token]](
@@ -65,8 +65,8 @@ func TestTypeDef(t *testing.T) {
 		// forall a . a -> Type a
 		types.Forall(aVar).Bind(
 			types.Apply(
-				types.ReferableType[token.Token](arrowConst), 
-				types.Monotyped[token.Token](aVar), 
+				types.ReferableType[token.Token](arrowConst),
+				types.Monotyped[token.Token](aVar),
 				types.Monotyped[token.Token](typeA),
 			),
 		),
@@ -85,12 +85,12 @@ func TestTypeDef(t *testing.T) {
 		// forall a . a -> Type a -> Type a
 		types.Forall(aVar).Bind(
 			types.Apply( // a -> Type a -> Type a
-				types.ReferableType[token.Token](arrowConst), 
-				types.Monotyped[token.Token](aVar), 
+				types.ReferableType[token.Token](arrowConst),
+				types.Monotyped[token.Token](aVar),
 				types.Monotyped[token.Token](
 					types.Apply( // Type a -> Type a
-						types.ReferableType[token.Token](arrowConst), 
-						types.Monotyped[token.Token](typeA), 
+						types.ReferableType[token.Token](arrowConst),
+						types.Monotyped[token.Token](typeA),
 						types.Monotyped[token.Token](typeA),
 					),
 				),
@@ -146,7 +146,7 @@ func TestTypeDef(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		// reset global context 
+		// reset global context
 		reInit()
 
 		p := parser.NewParser().

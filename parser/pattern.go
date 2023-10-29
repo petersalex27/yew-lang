@@ -1,11 +1,11 @@
 package parser
 
 import (
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	"github.com/petersalex27/yew-packages/util"
-	"github.com/petersalex27/yew-lang/token"
 )
 
 /*
@@ -22,7 +22,7 @@ var patternC__constructor_r = parser.
 	From(Constructor)
 
 // == Note About Pattern Nodes ================================================
-// pattern nodes should always create a tree like so (where clf stands for an 
+// pattern nodes should always create a tree like so (where clf stands for an
 // arbitrary pattern from a single constructor, literal, or funcName):
 //          /\
 //         /\ clf
@@ -39,13 +39,16 @@ var patternC__constructor_r = parser.
 // will always appear in the following way
 //	(1.) stack = .., pattern, clf				[premise]
 //	(2.) stack = .., pattern, pattern		[pattern ::= constructor | literal | funcName]
-//	(3.) stack = .., pattern						[pattern ::= pattern pattern] 
+//	(3.) stack = .., pattern						[pattern ::= pattern pattern]
 
-// Returns a list from an expression. 
+// Returns a list from an expression.
 //
 // Case 1:
+//
 //	ex is an expr.Application=(a b c ..) => expr.List=[a,b,c,..]
+//
 // Case 2:
+//
 //	ex is anything else => ex
 func linearizeExpression(ex expr.Expression[token.Token]) expr.Expression[token.Token] {
 	app, isApp := ex.(expr.Application[token.Token])
@@ -53,7 +56,7 @@ func linearizeExpression(ex expr.Expression[token.Token]) expr.Expression[token.
 		return ex
 	}
 
-	// everything below is "Case 1" 
+	// everything below is "Case 1"
 
 	// left and right elements of application
 	var left, right expr.Expression[token.Token]
@@ -99,7 +102,7 @@ var pattern__pattern_pattern_r = parser.
 	Get(applyPatternsReduction).
 	From(Pattern, Pattern)
 
-var pattern__enclosed_r = parser.Get(grab_enclosed).From(LeftParen, Pattern, RightParen)
+var pattern__enclosed_r = parser.Get(parenEnclosedReduction).From(LeftParen, Pattern, RightParen)
 
 func applyPatternsReduction(nodes ...ast.Ast) ast.Ast {
 	const leftIndex, rightIndex int = 0, 1

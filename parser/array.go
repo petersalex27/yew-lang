@@ -1,11 +1,11 @@
 package parser
 
 import (
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	itoken "github.com/petersalex27/yew-packages/token"
-	"github.com/petersalex27/yew-lang/token"
 )
 
 /*
@@ -48,7 +48,7 @@ func (node ArrayNode) Equals(a ast.Ast) bool {
 		return false
 	}
 
-	return node.List.Equals(glb_cxt.exprCxt, arr.List)
+	return node.List.Equals(globalContext__.exprCxt, arr.List)
 }
 
 func (node ArrayNode) NodeType() ast.Type {
