@@ -125,7 +125,7 @@ func abstractForConstructor(depth int) expr.Function[token.Token] {
 	glb_cxt.exprMutex.Unlock() // matching unlock :)
 
 	// create function
-	f = expr.Bind[token.Token](exprVar("tag"), vars...).In(bound)
+	f = expr.StrictBind[token.Token](exprVar("tag"), vars...).In(bound)
 	// now "memoize" and return function
 	constructorGenMemo[depth] = f
 	return f

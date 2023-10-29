@@ -76,6 +76,7 @@ const (
 	ApplicationId
 	FreeApplication
 	LetExpr
+	WhereExpr
 	Context
 	ClassDeclaration
 	ClassDefinition
