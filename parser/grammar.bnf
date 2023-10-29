@@ -1,3 +1,19 @@
+moduleHead    ::= INDENT 'module' ID
+exportHead    ::= moduleHead '('
+                  | export ','
+export        ::= exportHead ID
+                  | exportHead TYPE_ID
+                  | exportHead SYMBOL
+                  | exportHead INFIXED
+                  | exportHead          # only when L.A. is ')'
+module        ::= moduleHead
+                  | export ')'
+source        ::= module 'where' definitions
+                  | module
+definitions   ::= INDENT function
+                  | INDENT functionDef
+                  | INDENT function definitions
+                  | INDENT functionDef definitions
 literal       ::= INT_VALUE 
                   | CHAR_VALUE 
                   | STRING_VALUE 
@@ -51,7 +67,7 @@ data          ::= pattern
                   | '(' data ')'
 judgement     ::= expr ':' type
                   | '(' judgement ')'
-functionDecl  ::= INDENT funcName
+(INDENT) functionDecl ::= INDENT funcName
 functionHead  ::= functionDecl pattern
                   | functionDecl                # only when L.A. is '=' or ':'
 functionDef   ::= functionHead ':' type

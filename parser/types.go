@@ -86,6 +86,10 @@ const (
 	ConstructorDefinition
 	Constructor
 	UnionPair
+	Definitions
+	ExportHead
+	ExportAwait
+	Source
 	FunctionDefinition
 	FunctionHead
 	FunctionDecl
