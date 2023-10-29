@@ -19,7 +19,7 @@ const (
 	// other
 	Wildcard  = ast.Type(token.Wildcard)
 	Comment   = ast.Type(token.Comment)
-	At        = ast.Type(token.At)
+	Annotation= ast.Type(token.Annotation)
 	Colon     = ast.Type(token.Typing)
 	Assign    = ast.Type(token.Assign)
 	Bar       = ast.Type(token.Bar)
@@ -119,8 +119,6 @@ const (
 	TypeDef
 	// BinaryTree a
 	TypeDecl
-	// --@infixr 3
-	Annotation
 	// import ( myModule, anotherModule, .. )
 	ImportList
 	// use import ( myModule, anotherModule, .. )
@@ -149,6 +147,7 @@ const (
 	// Just
 	PatternC
 	// [1, a+b, b]
+	Empty
 	Array
 	// [1, 2, 3]
 	LiteralArray

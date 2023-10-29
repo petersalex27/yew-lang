@@ -1,9 +1,8 @@
 package lexer
 
-import "yew.lang/main/token"
+import "github.com/petersalex27/yew-lang/token"
 
 var keywords = map[string]token.TokenType{
-	"class":     token.Class,
 	"derives":   token.Derives,
 	"do":        token.Do,
 	"family":    token.Family,
@@ -14,15 +13,15 @@ var keywords = map[string]token.TokenType{
 	"let":       token.Let,
 	"mapall":    token.Mapall,
 	"module":    token.Module,
-	"when":      token.When,
+	"of":        token.Of,
+	"trait":     token.Trait,
 	"qualified": token.Qualified,
-	"struct":    token.Struct,
 	"use":       token.Use,
+	"when":      token.When,
 	"where":     token.Where,
 }
 
 var builtinSymbols = map[string]token.TokenType{
-	"()": token.Empty,
 	"(":  token.LeftParen,
 	")":  token.RightParen,
 	"{":  token.LeftBrace,
@@ -31,7 +30,6 @@ var builtinSymbols = map[string]token.TokenType{
 	"]":  token.RightBracket,
 	",":  token.Comma,
 	";":  token.SemiColon,
-	"@":  token.At,
 	":":  token.Typing,
 	"=":  token.Assign,
 	"|":  token.Bar,
@@ -42,14 +40,14 @@ var builtinSymbols = map[string]token.TokenType{
 }
 
 var keywordTrie = map[byte]map[string]token.TokenType{
-	'c': {"class": token.Class},
 	'd': {"derives": token.Derives, "do": token.Do},
 	'f': {"family": token.Family, "forall": token.Forall, "from": token.From},
 	'i': {"import": token.Import, "in": token.In},
 	'l': {"let": token.Let},
 	'm': {"mapall": token.Mapall, "module": token.Module},
+	'o': {"of": token.Of},
 	'q': {"qualified": token.Qualified},
-	's': {"struct": token.Struct},
+	't': {"trait": token.Trait},
 	'u': {"use": token.Use},
 	'w': {"when": token.When, "where": token.Where},
 }

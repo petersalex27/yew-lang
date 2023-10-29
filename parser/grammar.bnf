@@ -10,6 +10,8 @@ module        ::= moduleHead
                   | export ')'
 source        ::= module 'where' definitions
                   | module
+trait         ::= traitDecl 'where' INDENT functionDef
+                  | trait functionDef
 definitions   ::= INDENT function
                   | INDENT functionDef
                   | INDENT function definitions

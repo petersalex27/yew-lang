@@ -3,6 +3,8 @@ package parser
 import (
 	"testing"
 
+	"github.com/petersalex27/yew-lang/errors"
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
@@ -10,8 +12,6 @@ import (
 	itoken "github.com/petersalex27/yew-packages/token"
 	"github.com/petersalex27/yew-packages/types"
 	"github.com/petersalex27/yew-packages/util/testutil"
-	"github.com/petersalex27/yew-lang/errors"
-	"github.com/petersalex27/yew-lang/token"
 )
 
 func TestJudgement(t *testing.T) {
@@ -20,20 +20,29 @@ func TestJudgement(t *testing.T) {
 		UseReductions().
 		Finally(parser.RuleSet(
 			judgement__expr_Colon_type_r,
-			// TODO: judgement__varJudgement_r,
+			judgement__varJudgement_r,
 			judgement__enclosed_r,
 		))
 
 	intNameToken := makeTypeIdToken_test("Int", 1, 1)
 	intType := TypeNode{Type, types.MakeConst[token.Token](intNameToken)}
-	intExpr := ExpressionNode{Const(makeToken_test(token.IntValue,"1",1,1))}
-	judge := JudgementNode(types.Judgement[token.Token, expr.Expression[token.Token]]( 
-		intExpr.Expression,
-		intType.Type,
+	intExpr := ExpressionNode{Const(makeToken_test(token.IntValue, "1", 1, 1))}
+
+	aNameToken := makeIdToken_test("a", 1, 1)
+	aVar := expr.Var(aNameToken)
+
+	varJudge := VariableJudgement(types.Judgement[token.Token, expr.Variable[token.Token]](
+		aVar, intType.Type,
 	))
-	colon := ast.TokenNode(makeToken_test(token.Typing,":",1,1))
-	rparen := ast.TokenNode(makeToken_test(token.RightParen,")",1,1))
-	lparen := ast.TokenNode(makeToken_test(token.LeftParen,"(",1,1))
+	judge := JudgementNode(types.Judgement[token.Token, expr.Expression[token.Token]](
+		intExpr.Expression, intType.Type,
+	))
+	judgeFromVarJudge := JudgementNode(types.Judgement[token.Token, expr.Expression[token.Token]](
+		aVar, intType.Type,
+	))
+	colon := ast.TokenNode(makeToken_test(token.Typing, ":", 1, 1))
+	rparen := ast.TokenNode(makeToken_test(token.RightParen, ")", 1, 1))
+	lparen := ast.TokenNode(makeToken_test(token.LeftParen, "(", 1, 1))
 
 	tests := []struct {
 		nodes  []ast.Ast
@@ -44,6 +53,11 @@ func TestJudgement(t *testing.T) {
 			[]ast.Ast{intExpr, colon, intType},
 			parser.MakeSource("test/parser/judgement", "1: Int"),
 			ast.AstRoot{judge},
+		},
+		{
+			[]ast.Ast{varJudge},
+			parser.MakeSource("test/parser/judgement", "a: Int"),
+			ast.AstRoot{judgeFromVarJudge},
 		},
 		{
 			[]ast.Ast{lparen, judge, rparen},

@@ -5,7 +5,7 @@ import (
 
 	"github.com/petersalex27/yew-packages/lexer"
 	"github.com/petersalex27/yew-packages/source"
-	"yew.lang/main/util"
+	"github.com/petersalex27/yew-lang/util"
 )
 
 func TestAdvanceChar(t *testing.T) {

@@ -17,6 +17,10 @@ github.com/petersalex27/yew-packages/expr v0.0.0-20231027014743-8a336f2b97bc h1:
 github.com/petersalex27/yew-packages/expr v0.0.0-20231027014743-8a336f2b97bc/go.mod h1:bUHfnTn2TABcDRJJXU17BQo6I53ANt65yTHr9MHukw4=
 github.com/petersalex27/yew-packages/expr v0.0.0-20231027224046-d65092c119fb h1:YFxG7828fCsjFV59jsDy+iulFgh++DiAslqOBoyk5Qo=
 github.com/petersalex27/yew-packages/expr v0.0.0-20231027224046-d65092c119fb/go.mod h1:bUHfnTn2TABcDRJJXU17BQo6I53ANt65yTHr9MHukw4=
+github.com/petersalex27/yew-packages/expr v0.0.0-20231028190155-c4b6b9392e07 h1:9sq2DW1tp67p0E4Yu0LjXjZ2kx9weL+cyKiBzHoJkfY=
+github.com/petersalex27/yew-packages/expr v0.0.0-20231028190155-c4b6b9392e07/go.mod h1:bUHfnTn2TABcDRJJXU17BQo6I53ANt65yTHr9MHukw4=
+github.com/petersalex27/yew-packages/expr v0.0.0-20231029021703-f71dbb0fd093 h1:NW0AVygW7Ty8MXRCsl5QFvVUhZZEq9AJPR98xqwaX3c=
+github.com/petersalex27/yew-packages/expr v0.0.0-20231029021703-f71dbb0fd093/go.mod h1:bUHfnTn2TABcDRJJXU17BQo6I53ANt65yTHr9MHukw4=
 github.com/petersalex27/yew-packages/fun v0.0.0-20231003031741-ea929e3ab360 h1:ozRSkSH3Mv5d1sApNNG9Km/GoKpMSeJVEJ+W4Mq8JoA=
 github.com/petersalex27/yew-packages/fun v0.0.0-20231003031741-ea929e3ab360/go.mod h1:IUku/vaCvNChsy43bc2Ztgm4jGyYZUJKmtY2oUAecIY=
 github.com/petersalex27/yew-packages/lexer v0.0.0-20231005234018-86372fe4a5de h1:3S82OmW/yQQnV5erZp4u1bXZ1DfB9hHhIPEZCUfInZ0=
@@ -37,6 +41,8 @@ github.com/petersalex27/yew-packages/util v0.0.0-20231003031741-ea929e3ab360 h1:
 github.com/petersalex27/yew-packages/util v0.0.0-20231003031741-ea929e3ab360/go.mod h1:zDtG3xFP3nukNZ1tVun7j5q9FhLediwYFLlXC/zTu0c=
 github.com/petersalex27/yew-packages/util v0.0.0-20231027014743-8a336f2b97bc h1:glyXxOPb87SL1CCJZs3uswY5Y2/xxa0IDuZc+TGCkJM=
 github.com/petersalex27/yew-packages/util v0.0.0-20231027014743-8a336f2b97bc/go.mod h1:zDtG3xFP3nukNZ1tVun7j5q9FhLediwYFLlXC/zTu0c=
+github.com/petersalex27/yew-packages/util v0.0.0-20231028213157-d772f5bf828c h1:2KzOlwU6QFN18cLkjSSX/FmHOHeEJB39PzcbAGOjpgo=
+github.com/petersalex27/yew-packages/util v0.0.0-20231028213157-d772f5bf828c/go.mod h1:zDtG3xFP3nukNZ1tVun7j5q9FhLediwYFLlXC/zTu0c=
 golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.12.0 h1:CM0HF96J0hcLAwsHPJZjfdNzs0gftsLfgKt57wWHJ0o=

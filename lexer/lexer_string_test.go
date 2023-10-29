@@ -4,8 +4,8 @@ import (
 	"testing"
 	"github.com/petersalex27/yew-packages/lexer"
 	itoken "github.com/petersalex27/yew-packages/token"
-	"yew.lang/main/token"
-	"yew.lang/main/errors"
+	"github.com/petersalex27/yew-lang/token"
+	"github.com/petersalex27/yew-lang/errors"
 )
 
 func TestAnalyzeString(t *testing.T) {

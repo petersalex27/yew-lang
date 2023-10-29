@@ -14,7 +14,7 @@ require (
 	github.com/petersalex27/yew-packages/source v0.0.0-20231005234018-86372fe4a5de
 	github.com/petersalex27/yew-packages/token v0.0.0-20231003031741-ea929e3ab360
 	github.com/petersalex27/yew-packages/types v0.0.0-20231010022506-2e69eed1f223
-	github.com/petersalex27/yew-packages/util v0.0.0-20231027014743-8a336f2b97bc
+	github.com/petersalex27/yew-packages/util v0.0.0-20231028213157-d772f5bf828c
 )
 
 // @v0.0.0-20231011161121-bff57e72ddea
@@ -26,7 +26,7 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/petersalex27/yew-packages/equality v0.0.0-20231003031741-ea929e3ab360 // indirect
-	github.com/petersalex27/yew-packages/expr v0.0.0-20231027224046-d65092c119fb
+	github.com/petersalex27/yew-packages/expr v0.0.0-20231029021703-f71dbb0fd093
 	github.com/petersalex27/yew-packages/fun v0.0.0-20231003031741-ea929e3ab360 // indirect
 	github.com/petersalex27/yew-packages/nameable v0.0.0-20231003031741-ea929e3ab360 // indirect
 	github.com/petersalex27/yew-packages/stringable v0.0.0-20231003031741-ea929e3ab360 // indirect

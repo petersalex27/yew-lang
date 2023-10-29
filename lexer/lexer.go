@@ -5,24 +5,44 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/petersalex27/yew-lang/errors"
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/lexer"
 	"github.com/petersalex27/yew-packages/source"
 	itoken "github.com/petersalex27/yew-packages/token"
-	"yew.lang/main/errors"
-	"yew.lang/main/token"
 )
 
-func indentation(lex *lexer.Lexer) bool {
+// Returns true iff source position is at the start of a line AND source is
+// positioned at a non-empty sequence of whitespace. There are two cases in
+// which a token is pushed into the lexer's token buffer:
+//   - (1) function would return true AND source is positioned at a non-empty
+//     sequence of whitespace; in this case, the sequence of whitespace is
+//     pushed as an indent token to the lexer's token buffer
+//   - (2) function would return false AND source is positioned at the start of
+//     a line (this implies an empty sequence of whitespace at position); in
+//     this case, an empty indent token is pushed to the lexer's token
+//     buffer
+//
+// NOTE: you can think of the return value of the function as whether or not
+// the source position is advanced
+func indentation(lex *lexer.Lexer) (isPositionAdvanced bool) {
 	line, char := lex.GetLineChar()
+	isLineStart := char == 1
 	ws, statWs := source.GetLeadingWhitespace(lex)
 	if statWs.NotOk() {
 		lex.AddError(errors.Lex(lex, errors.MessageFromStatus(statWs)))
+		return false
 	}
 
 	if ws != "" { // found leading whitespace
 		tok := token.Indent.Make().AddValue(ws)
 		lex.PushToken(tok.SetLineChar(line, char))
 		return true
+	} else if isLineStart {
+		// add empty indentation
+		tok := token.Indent.Make().AddValue("")
+		lex.PushToken(tok.SetLineChar(line, char))
+		return false // NOTE: notice false return
 	}
 	return false
 }
@@ -35,7 +55,7 @@ const (
 	hex
 	octal
 	binary
-	string_
+	stringClass
 	identifier
 	underscore
 	comment
@@ -49,12 +69,15 @@ var symbolRegex = regexp.MustCompile(symbolRegexClassRaw)
 
 const freeSymbolRegexClassRaw string = `[!#\$%\^\&\*~,<>\.\?/:\|\-\+=\\` + "`]"
 
-var freeSymbolRegex = regexp.MustCompile(freeSymbolRegexClassRaw)
+//var freeSymbolRegex = regexp.MustCompile(freeSymbolRegexClassRaw)
 
 func isSymbol(c byte) bool {
 	return symbolRegex.Match([]byte{c})
 }
 
+// Determines the class of some input section based on some byte `c` of the
+// input. Unless there's a good reason to do otherwise, `c` is the first
+// character of that input section.
 func determineClass(lex *lexer.Lexer, c byte) (class symbolClass, e error) {
 	r := rune(c)
 	e = nil
@@ -65,7 +88,7 @@ func determineClass(lex *lexer.Lexer, c byte) (class symbolClass, e error) {
 	} else if c == '\'' {
 		class = char
 	} else if c == '"' {
-		class = string_
+		class = stringClass
 	} else if c == '_' {
 		class = underscore
 	} else if c == '-' {
@@ -94,6 +117,7 @@ func determineClass(lex *lexer.Lexer, c byte) (class symbolClass, e error) {
 
 var endMultiCommentRegex = regexp.MustCompile(`\*-`)
 
+/*
 func trimSpaceRight(s string) string {
 	if len(s) == 0 {
 		return s
@@ -106,11 +130,95 @@ func trimSpaceRight(s string) string {
 		}
 	}
 	return s[:i]
+}*/
+
+// reads and pushes respective token for single-line comments and single-line annotations.
+//
+// NOTE:
+//		--@MyAnnot
+// is an annotation, but
+//		-- @MyAnnot
+// is not an annotation because there is whitespace before '@'
+func getSingleLineComment(lex *lexer.Lexer, line string, lineNum, charNum int) source.Status {
+	var ty token.TokenType = token.Comment // type of token to be pushed
+
+	length := len(line)
+
+	// check first char of `line`; if it's '@' comment is an annotation
+	if length > 0 && line[0] == '@' {
+		ty = token.Annotation
+		line = line[1:] // remove '@' from "comment"
+	}
+
+	// remove extra whitespace
+	// NOTE: the order of this statement and the previous conditional branch is
+	// important. It prevents `--<whitespace>@` from being considered an annotation 
+	trimmed := strings.TrimSpace(line)
+	tok := ty.Make().AddValue(trimmed)
+	lex.PushToken(tok.SetLineChar(lineNum, charNum))
+	lex.SetLineChar(lineNum, length+charNum) // set to end of line
+	return source.Ok
+}
+
+// reads and pushes respective token for multi-line comments and multi-line annotations 
+//
+// NOTE:
+//		-*@MyAnnot .. *-
+// is an annotation, but
+//		-* @MyAnnot .. *-
+// is not an annotation because there is whitespace before '@'
+func getMultiLineComment(lex *lexer.Lexer, line string, lineNum, charNum int) source.Status {
+	var ty token.TokenType = token.Comment // type of token to be pushed
+	stat := source.Ok
+	lineNum_0, charNum_0 := lineNum, charNum // initial line and char numbers
+	var comment string = "" // full comment
+	var next string = line // next line to analyze
+
+	// check first char of `next`; if it's '@' comment is an annotation
+	if len(next) > 0 && next[0] == '@' {
+		ty = token.Annotation
+		next = next[1:] // remove '@' from "comment"
+	}
+
+	loc := endMultiCommentRegex.FindStringIndex(line) // check for end of comment
+	// append input read to comment until end of comment is reached
+	for loc == nil {
+		lineNum = lineNum + 1
+
+		lex.SetLineChar(lineNum, 1)
+		stat = lex.PositionStatus()
+		if stat.Is(source.BadLineNumber) { // at eof?
+			statError(lex, source.Eof)
+			return source.Eof
+		}
+
+		next = strings.TrimSpace(next)
+		comment = comment + next
+		if len(next) > 0 {
+			comment = comment + " "
+		}
+
+		// get next line
+		var eol bool
+		line, eol = lex.RemainingLine()
+		if eol {
+			statError(lex, source.Eol)
+			return source.Eol
+		}
+		next = line
+
+		// check for '*-'
+		loc = endMultiCommentRegex.FindStringIndex(line)
+	}
+	comment = comment + strings.TrimSpace(next[:loc[0]])
+	tok := ty.Make().AddValue(comment)
+	lex.PushToken(tok.SetLineChar(lineNum_0, charNum_0))
+	lex.SetLineChar(lineNum, loc[1])
+	return stat
 }
 
 func analyzeComment(lex *lexer.Lexer) source.Status {
 	lineNum, charNum := lex.GetLineChar()
-	lineNum_0, charNum_0 := lineNum, charNum
 
 	var c byte
 	_, stat := lex.AdvanceChar() // remove initial '-'
@@ -118,58 +226,27 @@ func analyzeComment(lex *lexer.Lexer) source.Status {
 		statError(lex, stat)
 		return stat
 	}
+	// remove second thing ('-' or '*'), the value of `c` will determine the
+	// branch to take in the condition below the next one
 	c, stat = lex.AdvanceChar()
 	if stat.NotOk() {
 		statError(lex, stat)
 		return stat
 	}
 
+	// given a line
+	//		-- abc ..
+	// or
+	//		-* abc ..
+	// `line` is
+	//		line = " abc .."
 	line, _ := lex.RemainingLine()
 	if c == '-' { // single line comment
-		length := len(line)
-		tok := token.Comment.Make().AddValue(strings.TrimSpace(line))
-		lex.PushToken(tok.SetLineChar(lineNum_0, charNum_0))
-		lex.SetLineChar(lineNum, length+charNum) // set to end of line
+		return getSingleLineComment(lex, line, lineNum, charNum)
 	} else if c == '*' { // multi line comment
-		var comment string = ""
-		var next string = line
-		loc := endMultiCommentRegex.FindStringIndex(line)
-		for loc == nil {
-			lineNum = lineNum + 1
-
-			lex.SetLineChar(lineNum, 1)
-			stat = lex.PositionStatus()
-			if stat.Is(source.BadLineNumber) { // at eof?
-				statError(lex, source.Eof)
-				return source.Eof
-			}
-
-			next = strings.TrimSpace(next)
-			comment = comment + next
-			if len(next) > 0 {
-				comment = comment + " "
-			}
-
-			// get next line
-			var eol bool
-			line, eol = lex.RemainingLine()
-			if eol {
-				statError(lex, source.Eol)
-				return source.Eol
-			}
-			next = line
-
-			// check for '*-'
-			loc = endMultiCommentRegex.FindStringIndex(line)
-		}
-		comment = comment + strings.TrimSpace(next[:loc[0]])
-		tok := token.Comment.Make().AddValue(comment)
-		lex.PushToken(tok.SetLineChar(lineNum_0, charNum_0))
-		lex.SetLineChar(lineNum, loc[1])
-	} else {
-		panic("bug in analyzeComment: else branch reached")
+		return getMultiLineComment(lex, line, lineNum, charNum)
 	}
-	return stat
+	panic("bug in analyzeComment: else branch reached")
 }
 
 var intRegex = regexp.MustCompile(`[0-9](_*[0-9]+)*`)
@@ -182,7 +259,7 @@ func checkNumTail(line string, numEnd int) bool {
 		return true
 	}
 
-	return '_' != line[numEnd] && (' ' == line[numEnd] || '\t' == line[numEnd] || isSymbol(line[numEnd]))
+	return line[numEnd] != '_' && (line[numEnd] == '_' || line[numEnd] == '\t' || isSymbol(line[numEnd]))
 }
 
 func stripChar(s string, strip byte) string {
@@ -346,13 +423,6 @@ func analyzeNumber(lex *lexer.Lexer) source.Status {
 	return source.Ok
 }
 
-func analyzeThunk(id string) (tok token.Token, numChars int) {
-	fixed, unfixedLen := fixEnclosedId(id)
-	numChars = unfixedLen
-	tok = token.Thunked.Make().AddValue(fixed)
-	return
-}
-
 func analyzeInfix(id string) (tok token.Token, numChars int) {
 	fixed, unfixedLen := fixEnclosedId(id)
 	numChars = unfixedLen
@@ -369,7 +439,6 @@ func fixEnclosedId(enclosedId string) (fixed string, unfixedLen int) {
 
 // \([a-zA-Z][a-zA-Z0-9'_]+\)
 var infixIdRegex = regexp.MustCompile(`\(` + idRegexClassRaw + `*\)`)
-var thunkIdRegex = regexp.MustCompile(`\{` + idRegexClassRaw + `*\}`)
 
 // \([!@#\$%\^\&\*~,<>\.\?/:\|-\+=`]+\)
 var infixSymbolRegex = regexp.MustCompile(`\(` + freeSymbolRegexClassRaw + `+\)`)
@@ -377,9 +446,10 @@ var infixSymbolRegex = regexp.MustCompile(`\(` + freeSymbolRegexClassRaw + `+\)`
 // following regex is used after confirming symbol/id is enclosed by parens:
 // (\(.*-\*.*?\*-\))|(\(.*--.*?\))
 var commentEmbededRegex = regexp.MustCompile(`(\(.*-\*.*?\*-\))|(\(.*--.*?\))`)
-var lineComment = regexp.MustCompile(`--`)
-var multiLineComment = regexp.MustCompile(`-*`)
-var commentRegex = regexp.MustCompile(`(--)|(-*)`)
+
+//var lineComment = regexp.MustCompile(`--`)
+//var multiLineComment = regexp.MustCompile(`-*`)
+//var commentRegex = regexp.MustCompile(`(--)|(-*)`)
 
 func locateAtStart(s string, regex *regexp.Regexp) (string, bool) {
 	loc := regex.FindStringIndex(s)
@@ -404,34 +474,11 @@ func enclosesComment(infixedId string) bool {
 }
 
 func handleLParen(line string) (tok token.Token, numChars int) {
-	if len(line) > 1 && line[1] == ')' {
-		tok, numChars = token.Empty.Make(), 2
+	id, isInfix := maybeInfixId(line)
+	if isInfix {
+		tok, numChars = analyzeInfix(id)
 	} else {
-		id, isInfix := maybeInfixId(line)
-		if isInfix {
-			tok, numChars = analyzeInfix(id)
-		} else {
-			tok, numChars = token.LeftParen.Make(), 1
-		}
-	}
-	return
-}
-
-func maybeThunkId(s string) (id string, isThunk bool) {
-	id, isThunk = locateAtStart(s, thunkIdRegex)
-	return
-}
-
-func handleLBrace(line string) (tok token.Token, numChars int) {
-	if len(line) > 1 && line[1] == '}' {
-		tok, numChars = token.Empty.Make(), 2
-	} else {
-		id, isThunk := maybeThunkId(line)
-		if isThunk {
-			tok, numChars = analyzeThunk(id)
-		} else {
-			tok, numChars = token.LeftBrace.Make(), 1
-		}
+		tok, numChars = token.LeftParen.Make(), 1
 	}
 	return
 }
@@ -486,15 +533,13 @@ func analyzeSymbol(lex *lexer.Lexer) source.Status {
 	case ']':
 		tok = token.RightBracket.Make()
 	case '{':
-		tok, numChars = handleLBrace(remainingLine)
+		tok = token.LeftBrace.Make()
 	case '}':
 		tok = token.RightBrace.Make()
 	case ';':
 		tok = token.SemiColon.Make()
 	case ',':
 		tok = token.Comma.Make()
-	case '@':
-		tok = token.At.Make()
 	default:
 		var efunc errors.LazyErrorFn
 		tok, numChars, efunc = tokenizeSymbol(remainingLine)
@@ -780,7 +825,7 @@ func (class symbolClass) analyze(lex *lexer.Lexer) source.Status {
 		return analyzeSymbol(lex)
 	case char:
 		return analyzeChar(lex)
-	case string_:
+	case stringClass:
 		return analyzeString(lex)
 	case identifier:
 		return analyzeIdentifier(lex)
@@ -816,12 +861,22 @@ func analyze(lex *lexer.Lexer) source.Status {
 
 var lexerWhitespace = regexp.MustCompile(`\t| `)
 
-func RunLexer(lex *lexer.Lexer) ([]itoken.Token, []error) {
+func RunLexer(lex *lexer.Lexer) (tokens []itoken.Token, es []error) {
+	// keep reading tokens until stat is not Ok
 	stat := analyze(lex)
 	for stat.IsOk() {
 		stat = analyze(lex)
 	}
-	return lex.GetTokens(), lex.GetErrors()
+
+	tokens, es = lex.GetTokens(), lex.GetErrors()
+	if len(tokens) > 0 {
+		// prepend 0 length indent
+		// create indent token that exists at start of first line
+		tok := token.Indent.Make().AddValue("").SetLineChar(1, 1)
+		// add indent token
+		tokens = append([]itoken.Token{tok}, tokens...)
+	}
+	return
 }
 
 func CastTokens(ts []itoken.Token) []token.Token {
@@ -845,7 +900,7 @@ func GetSourceRaw(lex *lexer.Lexer) []string {
 	n := lex.NumLines()
 	out := make([]string, n)
 	for i := range out {
-		line, _ := lex.SourceLine(i+1)
+		line, _ := lex.SourceLine(i + 1)
 		out[i] = line
 	}
 	return out

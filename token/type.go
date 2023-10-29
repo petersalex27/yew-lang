@@ -12,9 +12,8 @@ const (
 	Indent
 	// other
 	Wildcard
-	Empty
 	Comment
-	At
+	Annotation
 	Typing
 	Assign
 	Bar
@@ -37,11 +36,10 @@ const (
 	Id
 	TypeId
 	Infixed
-	Thunked
 	/*keywords*/ _keyword_start_ // do not use!
 	Let
 	When
-	Class
+	Trait
 	Import
 	Use
 	Family
@@ -52,11 +50,11 @@ const (
 	Where
 	Module
 	Qualified
-	Struct
+	Of
 	Derives
 	Do
 	/*end of keywords*/ _keyword_end_ // do not use!
-	LAST_TYPE__ // for use with ast node type
+	LAST_TYPE__                       // for use with ast node type
 )
 
 func (t TokenType) IsKeyword() bool {
@@ -66,7 +64,7 @@ func (t TokenType) IsKeyword() bool {
 var builtinMap = map[TokenType]string{
 	Let:          "let",
 	When:         "when",
-	Class:        "class",
+	Trait:        "trait",
 	Import:       "import",
 	Use:          "use",
 	Forall:       "forall",
@@ -79,7 +77,7 @@ var builtinMap = map[TokenType]string{
 	Qualified:    "qualified",
 	From:         "from",
 	In:           "in",
-	Struct:       "struct",
+	Of:           "of",
 	Wildcard:     "_",
 	LeftParen:    "(",
 	RightParen:   ")",
@@ -89,14 +87,12 @@ var builtinMap = map[TokenType]string{
 	RightBrace:   "}",
 	SemiColon:    ";",
 	Comma:        ",",
-	At:           "@",
 	Typing:       ":",
-	Empty:        "()",
 	Assign:       "=",
 	Bar:          "|",
 	Arrow:        "->",
 	Backslash:    `\`,
-	Dot:					`.`,
+	Dot:          `.`,
 	DotDot:       `..`,
 }
 

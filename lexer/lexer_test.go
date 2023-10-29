@@ -3,10 +3,10 @@ package lexer
 import (
 	"testing"
 
+	"github.com/petersalex27/yew-lang/errors"
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/lexer"
 	itoken "github.com/petersalex27/yew-packages/token"
-	"yew.lang/main/errors"
-	"yew.lang/main/token"
 )
 
 func TestLexer(t *testing.T) {
@@ -66,18 +66,6 @@ func TestLexer(t *testing.T) {
 			[]string{`)`},
 			[]itoken.Token{
 				token.RightParen.Make().SetLineChar(1, 1),
-			},
-		},
-		{
-			[]string{`@`},
-			[]itoken.Token{
-				token.At.Make().SetLineChar(1, 1),
-			},
-		},
-		{
-			[]string{`()`},
-			[]itoken.Token{
-				token.Empty.Make().SetLineChar(1, 1),
 			},
 		},
 		{

@@ -6,20 +6,15 @@ module prelude (
 )
 
 Int = __int__
-
 Float = __float__
-
 Char = __char__
-
 String = __string__
-
 Uint = __int__
-
-Bool = true | false
+Bool = True | False
 
 [a; n: Uint] = 
-  []: [a; 0]
-  | (::) a [a; n]: [a; n+1]
+  []: [a; 0] | 
+  (::) a [a; n]: [a; n+1] 
 
 Branch a; (b: Bool) =
   then a: Branch a; True @delimit

@@ -3,10 +3,10 @@ package lexer
 import (
 	"testing"
 
+	"github.com/petersalex27/yew-lang/errors"
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/lexer"
 	itoken "github.com/petersalex27/yew-packages/token"
-	"yew.lang/main/errors"
-	"yew.lang/main/token"
 )
 
 func TestAnalyzeBuiltinSymbols(t *testing.T) {
@@ -60,18 +60,6 @@ func TestAnalyzeBuiltinSymbols(t *testing.T) {
 			[]string{`)`},
 			[]itoken.Token{
 				token.RightParen.Make().SetLineChar(1, 1),
-			},
-		},
-		{
-			[]string{`@`},
-			[]itoken.Token{
-				token.At.Make().SetLineChar(1, 1),
-			},
-		},
-		{
-			[]string{`()`},
-			[]itoken.Token{
-				token.Empty.Make().SetLineChar(1, 1),
 			},
 		},
 		{
@@ -188,12 +176,6 @@ func TestAnalyzeSymbol(t *testing.T) {
 			[]string{`(mod)`},
 			[]itoken.Token{
 				token.Infixed.Make().AddValue("mod").SetLineChar(1, 1),
-			},
-		},
-		{
-			[]string{`{thunk}`},
-			[]itoken.Token{
-				token.Thunked.Make().AddValue("thunk").SetLineChar(1, 1),
 			},
 		},
 	}
