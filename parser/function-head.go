@@ -108,7 +108,7 @@ func (fd FunctionHeadNode) Equals(a ast.Ast) bool {
 	return true
 }
 
-func (fd FunctionHeadNode) NodeType() ast.Type { return FunctionDecl }
+func (fd FunctionHeadNode) NodeType() ast.Type { return FunctionHead }
 
 func (fd FunctionHeadNode) InOrderTraversal(f func(itoken.Token)) {
 	f(fd.name)

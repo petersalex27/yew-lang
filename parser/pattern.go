@@ -85,7 +85,7 @@ func linearizeExpression(ex expr.Expression[token.Token]) expr.Expression[token.
 
 var pattern__patternC_r = parser.
 	Get(patternCAsPatternReduction).
-	From(Constructor)
+	From(PatternC)
 
 var pattern__literal_r = parser.
 	Get(literalAsPatternReduction).
@@ -93,7 +93,7 @@ var pattern__literal_r = parser.
 
 var pattern__funcName_r = parser.
 	Get(funcNameAsPatternReduction).
-	From(Constructor)
+	From(FuncName)
 
 var pattern__pattern_pattern_r = parser.
 	Get(applyPatternsReduction).
@@ -113,7 +113,8 @@ func applyPatternsReduction(nodes ...ast.Ast) ast.Ast {
 
 func funcNameAsPatternReduction(nodes ...ast.Ast) ast.Ast {
 	const nameIndex int = 0
-	name := expr.Const[token.Token]{Name: GetToken(nodes[nameIndex])}
+	nameToken := nodes[nameIndex].(Node).Token
+	name := expr.Const[token.Token]{Name: nameToken}
 	pattern := expr.List[token.Token]{name}
 	return SomeExpression{Pattern, pattern}
 }

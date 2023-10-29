@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"github.com/petersalex27/yew-packages/parser/ast"
 	"github.com/petersalex27/yew-lang/token"
+	"github.com/petersalex27/yew-packages/parser/ast"
 )
 
 const (
@@ -75,7 +75,7 @@ const (
 	Application
 	ApplicationId
 	FreeApplication
-	LetDeclaration
+	LetExpr
 	Context
 	ClassDeclaration
 	ClassDefinition

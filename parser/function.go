@@ -13,7 +13,42 @@ import (
 // function instances
 type FunctionNode struct {
 	def FunctionDefNode
+	prologue prologueSemiNode
 	body expr.Expression[token.Token]
+}
+
+type deconstructionInstruction byte
+const (
+	moveLeft deconstructionInstruction = iota
+	moveRight
+	skipParam
+	extractLeft
+	extractRight
+)
+
+type prologueSemiNode struct {
+	/*
+	params = a (Data a (Thing (Thing _) a))
+	[][]deconstructionInstruction{
+		// a
+		{skipParam},
+		// (MyData a (Thing (Thing _) a))
+		//					  /\
+		//					_/  \_
+		//				 /\    /\
+		//     Data  a  /\ a
+		//				 Thing /\
+		//					Thing  *
+		{moveLeft, extractRight, moveRight, extractRight},
+	}
+	*/
+	
+	deconstruct [][]deconstructionInstruction
+}
+
+func (f FunctionNode) deconstruct() FunctionNode {
+	f.prologue.deconstruct = recursiveDeconstruction(f.def.head.params)
+	return f
 }
 
 func functionReduction(nodes ...ast.Ast) ast.Ast {

@@ -74,7 +74,7 @@ func TestPattern(t *testing.T) {
 
 	nameToken := makeTypeIdToken_test("Name", 1, 1)
 	nameConst := Const(nameToken)
-	namePattern := SomeExpression{Pattern, nameConst}
+	namePattern := SomeExpression{Pattern, expr.List[token.Token]{nameConst}}
 
 	namePatternC := Node{PatternC, nameToken}
 
@@ -102,20 +102,20 @@ func TestPattern(t *testing.T) {
 		{
 			[]ast.Ast{literal},
 			parser.MakeSource("test/parser/pattern", "1"),
-			ast.AstRoot{SomeExpression{Pattern, intExpr}},
+			ast.AstRoot{SomeExpression{Pattern, expr.List[token.Token]{intExpr}}},
 		},
 		{
 			[]ast.Ast{f},
 			parser.MakeSource("test/parser/pattern", "f"),
-			ast.AstRoot{SomeExpression{Pattern, fConst}},
+			ast.AstRoot{SomeExpression{Pattern, expr.List[token.Token]{fConst}}},
 		},
 		{
 			[]ast.Ast{namePattern, namePattern},
-			parser.MakeSource("test/parser/pattern", "(Name) Name"),
+			parser.MakeSource("test/parser/pattern", "Name Name"),
 			ast.AstRoot{
 				SomeExpression{
 					Pattern,
-					expr.Apply[token.Token](nameConst, nameConst),
+					expr.List[token.Token]{nameConst, nameConst},
 				},
 			},
 		},

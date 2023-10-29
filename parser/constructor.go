@@ -14,11 +14,11 @@ func constructorCast(node ast.Ast) BinaryRecursiveNode {
 
 func constructorToExpression(constructorNode ast.Ast) expr.Expression[token.Token] {
 	exprPtr := new(expr.Expression[token.Token])
-	exprPtr = nil
+	*exprPtr = nil
 
 	toExpression := func(tok itoken.Token) {
 		right := expr.Const[token.Token]{Name: tok.(token.Token)}
-		if exprPtr == nil {
+		if *exprPtr == nil {
 			*exprPtr = right
 		} else {
 			*exprPtr = expr.Apply[token.Token](*exprPtr, right)

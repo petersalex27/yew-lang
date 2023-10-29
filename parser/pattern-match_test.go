@@ -67,7 +67,7 @@ func TestPatternMatch(t *testing.T) {
 			),
 			ast.AstRoot{
 				SomeExpression{
-					Pattern, 
+					PatternMatch, 
 					expr.Select[token.Token](
 						x.Expression, 
 						caseData_caseName...,

@@ -32,7 +32,7 @@ func dataAppendExprReduction(nodes ...ast.Ast) ast.Ast {
 }
 
 var data__patternC_r = parser.
-	Get(dataFromPatternCReduction).From(Pattern)
+	Get(dataFromPatternCReduction).From(PatternC)
 
 var data__data_expr_r = parser.
 	Get(dataAppendExprReduction).From(Data, Expr)
