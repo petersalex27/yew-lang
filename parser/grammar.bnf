@@ -45,18 +45,18 @@ constructor   ::= TYPE_ID
 expr          ::= val
                   | data
                   | funcName
-                  | letIn
+                  | letExpr
                   | application
                   | pattern
-                  | exprWhere
+                  | whereExpr
                   | judgement
                   | '(' expr ')'
 application   ::= expr expr
 patternMatch  ::= expr 'when' case
 case          ::= case data '->' expr
                   | data '->' expr
-letIn         ::= 'let' function 'in' expr
-exprWhere     ::= expr 'where' function
+letExpr        ::= 'let' function 'in' expr
+whereExpr     ::= expr 'where' function
 pattern       ::= constructor
                   | literal
                   | funcName
@@ -81,8 +81,8 @@ type          ::= polytype
                   | monotype 
                   | dependent
                   | '(' type ')'
-polyHead      ::= 'forall' Id
-                  | polyHead Id
+polyHead      ::= 'forall' ID
+                  | polyHead ID
 polyBinders   ::= polyHead                        # when l.a. is '.'
                   | '(' polyBinders ')'           #   //
 polytype      ::= polyBinders '.' dependentTyped
@@ -96,6 +96,12 @@ arrayHead     ::= '[' monotype
                   | '[' monotype ';' expr
 appType       ::= monotype monotype
                   | namedApp
-monotype      ::=
+monotype      ::= monotype '->' monotype
+                 | '(' monotype ')'
+                 | TYPE_ID
+                 | monotype monotype
+                 | '(' monotype tupleType
+tupleType     ::= ',' monotype ')'
+                 | ',' monotype tupleType
 varJudgement  ::= ID ':' monotype
                   | '(' varJudgement ')'

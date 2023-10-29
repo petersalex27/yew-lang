@@ -131,6 +131,7 @@ const (
 	Type        // most generic "type" node
 	MonoList    // (T .., U .., ..)
 	MonoTail
+	TupleType
 	FreeVar         // var
 	TypeApp         // T U ..
 	DependIndexHead // T ..;
