@@ -27,6 +27,16 @@ github.com/petersalex27/yew-packages/lexer v0.0.0-20231005234018-86372fe4a5de h1
 github.com/petersalex27/yew-packages/lexer v0.0.0-20231005234018-86372fe4a5de/go.mod h1:D4JrE+0J0hQ8qc3GPINHw/xyuehtWn6FapJN6jI7IiM=
 github.com/petersalex27/yew-packages/lexer v0.0.0-20231030021721-504772a608ea h1:PC4TGgdizLAkY6CYUKiohs4KVtcJYLxtwvneCS07Ndk=
 github.com/petersalex27/yew-packages/lexer v0.0.0-20231030021721-504772a608ea/go.mod h1:D4JrE+0J0hQ8qc3GPINHw/xyuehtWn6FapJN6jI7IiM=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231031085141-ca72dccf15bb h1:W0V7e3l5bDkTLEZxkMwc7vUzzgRyAVCfSKHOvqJNkB8=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231031085141-ca72dccf15bb/go.mod h1:D4JrE+0J0hQ8qc3GPINHw/xyuehtWn6FapJN6jI7IiM=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231031090725-8c697a8fffdd h1:/I8jeKWRLw1P/RSOjYArseXLI2BzCDHsHMAqLGZHvNU=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231031090725-8c697a8fffdd/go.mod h1:D4JrE+0J0hQ8qc3GPINHw/xyuehtWn6FapJN6jI7IiM=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231031092749-cb3d7dc03874 h1:P8EFNomRzOkUY3t+7GwXiHG7n7aYmufwX2br/hbklqw=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231031092749-cb3d7dc03874/go.mod h1:D4JrE+0J0hQ8qc3GPINHw/xyuehtWn6FapJN6jI7IiM=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231031093007-acf889ac9507 h1:n++8MZUSW7kk6PNWBf2OB3dkJ+WxsqmLuVHUUH9W3+A=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231031093007-acf889ac9507/go.mod h1:D4JrE+0J0hQ8qc3GPINHw/xyuehtWn6FapJN6jI7IiM=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231031095200-67dc792c16b6 h1:7/jWfb1QqwDELjVUuUexCClclvPcTs+nnAJUcNftzyY=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231031095200-67dc792c16b6/go.mod h1:D4JrE+0J0hQ8qc3GPINHw/xyuehtWn6FapJN6jI7IiM=
 github.com/petersalex27/yew-packages/nameable v0.0.0-20231003031741-ea929e3ab360 h1:2ZFRdZTBLBBCA06V5sFreXwiplyJ3PJwOUTC+N/TzL0=
 github.com/petersalex27/yew-packages/nameable v0.0.0-20231003031741-ea929e3ab360/go.mod h1:F9amyHu+dehoAn92BeuZhqJKzY90cut9FYYCeyP7p6M=
 github.com/petersalex27/yew-packages/parser v0.0.0-20231010022506-2e69eed1f223 h1:HB14Ef8UVqqaS1yWjGPY5OTSduN7KLS2lxrfqXN2+Kg=

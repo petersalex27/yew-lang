@@ -116,7 +116,10 @@ func lexAnnotation(call func(name string) func(any), annot *AnnotationNode, anno
 
 	// apply offsets to tokens' lines and chars based on annotation token's so
 	// the tokens have the correct line and char number
-	lex.ApplyOffset(annotToken.GetLineChar())
+	annotLine, firstChar := annotToken.GetLineChar()
+	// -1 b/c don't want to includ annot name in char offset. just trying to find
+	// how far annotation name is from the start of its line
+	lex.ApplyOffset(annotLine, firstChar-1)
 	// now get correctly offset tokens
 	itoks := lex.GetTokens()
 
@@ -129,8 +132,9 @@ func lexAnnotation(call func(name string) func(any), annot *AnnotationNode, anno
 		return
 	}
 
-	// first token is annotation name, remaining tokens are annotation body
-	const annotNameIndex, annotBodyStart int = 0, 1
+	// first token is auto. indent, skip it; second token is annotation name;
+	// remaining tokens are annotation body
+	const _, annotNameIndex, annotBodyStart int = 0, 1, 2
 	justName := lexer.CastTokens(itoks[annotNameIndex:annotBodyStart])
 	(*annot).annotationName = justName[0]
 	(*annot).annotationBody = itoks[annotBodyStart:]

@@ -9,7 +9,7 @@ go 1.20
 
 require (
 	github.com/petersalex27/yew-packages/errors v0.0.0-20231003031741-ea929e3ab360
-	github.com/petersalex27/yew-packages/lexer v0.0.0-20231030021721-504772a608ea
+	github.com/petersalex27/yew-packages/lexer v0.0.0-20231031095200-67dc792c16b6
 	github.com/petersalex27/yew-packages/parser v0.0.0-20231031021409-4c9227f1c059
 	github.com/petersalex27/yew-packages/source v0.0.0-20231005234018-86372fe4a5de
 	github.com/petersalex27/yew-packages/token v0.0.0-20231003031741-ea929e3ab360

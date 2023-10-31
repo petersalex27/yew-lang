@@ -24,7 +24,7 @@ func TestAnnotation(t *testing.T) {
 	annotName := token.TypeId.Make().AddValue("MyAnnot").SetLineChar(1, 4)
 	thisToken := token.Id.Make().AddValue("this").SetLineChar(1, 12)
 	isToken := token.Id.Make().AddValue("is").SetLineChar(1, 17)
-	theToken := token.Id.Make().AddValue("the").SetLineChar(1, 3)
+	theToken := token.Id.Make().AddValue("the").SetLineChar(1, 20)
 	bodyToken := token.Id.Make().AddValue("body").SetLineChar(1, 24)
 
 	tests := []struct {
@@ -34,9 +34,11 @@ func TestAnnotation(t *testing.T) {
 	}{
 		{
 			[]ast.Ast{
-				ast.TokenNode(token.Annotation.Make().AddValue(
-					"MyAnnot this is the body",
-				)),
+				ast.TokenNode(token.Annotation.Make().
+					AddValue("MyAnnot this is the body").
+					SetLength(27).
+					SetLineChar(1, 4),
+				),
 			},
 			parser.MakeSource(
 				"test/parser/annotation",
