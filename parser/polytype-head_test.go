@@ -17,7 +17,7 @@ func TestPolyHead(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			polyHead__Forall_Id_r,
 			polyHead__polyHead_Id_r,
 		))

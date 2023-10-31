@@ -135,44 +135,55 @@ func trimSpaceRight(s string) string {
 // reads and pushes respective token for single-line comments and single-line annotations.
 //
 // NOTE:
-//		--@MyAnnot
+//
+//	--@MyAnnot
+//
 // is an annotation, but
-//		-- @MyAnnot
+//
+//	-- @MyAnnot
+//
 // is not an annotation because there is whitespace before '@'
-func getSingleLineComment(lex *lexer.Lexer, line string, lineNum, charNum int) source.Status {
+func getSingleLineComment(lex *lexer.Lexer, lineAfterDashes string, lineNum, charNum int) source.Status {
 	var ty token.TokenType = token.Comment // type of token to be pushed
 
-	length := len(line)
+	length := len(lineAfterDashes)+2 // +2 for "--"
 
 	// check first char of `line`; if it's '@' comment is an annotation
-	if length > 0 && line[0] == '@' {
+	if length > 0 && lineAfterDashes[0] == '@' {
 		ty = token.Annotation
-		line = line[1:] // remove '@' from "comment"
+		lineAfterDashes = lineAfterDashes[1:] // remove '@' from "comment"
 	}
 
 	// remove extra whitespace
 	// NOTE: the order of this statement and the previous conditional branch is
-	// important. It prevents `--<whitespace>@` from being considered an annotation 
-	trimmed := strings.TrimSpace(line)
-	tok := ty.Make().AddValue(trimmed)
+	// important. It prevents `--<whitespace>@` from being considered an annotation
+	trimmed := strings.TrimSpace(lineAfterDashes)
+
+	tok := ty.Make().AddValue(trimmed).SetLength(length)
 	lex.PushToken(tok.SetLineChar(lineNum, charNum))
+
 	lex.SetLineChar(lineNum, length+charNum) // set to end of line
+
 	return source.Ok
 }
 
-// reads and pushes respective token for multi-line comments and multi-line annotations 
+// reads and pushes respective token for multi-line comments and multi-line annotations
 //
 // NOTE:
-//		-*@MyAnnot .. *-
+//
+//	-*@MyAnnot .. *-
+//
 // is an annotation, but
-//		-* @MyAnnot .. *-
+//
+//	-* @MyAnnot .. *-
+//
 // is not an annotation because there is whitespace before '@'
 func getMultiLineComment(lex *lexer.Lexer, line string, lineNum, charNum int) source.Status {
 	var ty token.TokenType = token.Comment // type of token to be pushed
 	stat := source.Ok
 	lineNum_0, charNum_0 := lineNum, charNum // initial line and char numbers
-	var comment string = "" // full comment
-	var next string = line // next line to analyze
+	var comment string = ""                  // full comment
+	var next string = line                   // next line to analyze
 
 	// check first char of `next`; if it's '@' comment is an annotation
 	if len(next) > 0 && next[0] == '@' {
@@ -254,7 +265,7 @@ var hexRegex = regexp.MustCompile(`(0x|0X)[0-9a-fA-F](_*[0-9a-fA-F]+)*`)
 var octRegex = regexp.MustCompile(`(0o|0O)[0-7](_*[0-7]+)*`)
 var binRegex = regexp.MustCompile(`(0b|0B)(0|1)(_*(0|1)+)*`)
 
-func checkNumTail(line string, numEnd int) bool {
+func isNumEndCharValid(line string, numEnd int) bool {
 	if len(line) <= numEnd {
 		return true
 	}
@@ -262,6 +273,7 @@ func checkNumTail(line string, numEnd int) bool {
 	return line[numEnd] != '_' && (line[numEnd] == '_' || line[numEnd] == '\t' || isSymbol(line[numEnd]))
 }
 
+// removes `strip` from `s` and returns result
 func stripChar(s string, strip byte) string {
 	var builder strings.Builder
 	c := rune(strip)
@@ -273,13 +285,15 @@ func stripChar(s string, strip byte) string {
 	return builder.String()
 }
 
-func analyzeNon10(num, line string) (tok token.Token, numChars int, efunc errors.LazyErrorFn) {
+// read non-base ten integer token: hexidecimal, octal, or binary
+func analyzeNonBase10(num, line string) (tok token.Token, numChars int, efunc errors.LazyErrorFn) {
 	numChars, efunc = len(num), nil
-	if !checkNumTail(line, len(num)) {
+	if !isNumEndCharValid(line, len(num)) {
 		efunc = errors.LazyLex(errors.UnexpectedSymbol)
 	} else {
+		tokenLength := len(num)
 		num = stripChar(num, '_')
-		tok = token.IntValue.Make().AddValue(num)
+		tok = token.IntValue.Make().AddValue(num).SetLength(tokenLength)
 	}
 	return
 }
@@ -292,15 +306,106 @@ func isSign(s string, i int) bool {
 	return s[i] == '+' || s[i] == '-'
 }
 
+// assumes numChars is the correct value and that it corresponds to the length
+// of the token
 func returnInt(num string, numChars int) (token.Token, int, errors.LazyErrorFn) {
-	return token.IntValue.Make().AddValue(stripChar(num, '_')), numChars, nil
+	num = stripChar(num, '_')
+	return token.IntValue.Make().AddValue(num).SetLength(numChars), numChars, nil
 }
 
+func analyzeDotNum(numOrgin, line string, numCharsOrigin int, hasEOrigin bool) (num string, numChars int, hasE bool, efunc errors.LazyErrorFn) {
+	num, numChars, hasE = numOrgin, numCharsOrigin, hasEOrigin // init
+
+	numChars = numChars + 1
+	if len(line) <= numChars { // <integer>.EOL
+		efunc = errors.LazyLex(errors.MessageFromStatus(source.Eol))
+		return
+	}
+
+	frac, ok := locateAtStart(line[numChars:], intRegex)
+	if !ok { // <integer>.<non-integer>
+		efunc = errors.LazyLex(errors.UnexpectedSymbol)
+		return
+	}
+
+	numChars = numChars + len(frac)
+	num = num + "." + frac
+
+	if len(line) <= numChars {
+		return
+	}
+
+	hasE = isE(line, numChars)
+	if !hasE && !isNumEndCharValid(line, numChars) { // <integer>.<integer><illegal-char>
+		efunc = errors.LazyLex(errors.UnexpectedSymbol)
+	}
+	return
+}
+
+// read sign if one exists and return (possibly) empty sign and new total
+// number of chars read
+func analyzePossibleSign(line string, numCharsOrigin int) (sign string, numChars int) {
+	// init
+	numChars = numCharsOrigin
+
+	// if signed, read sign and return it
+	signed := isSign(line, numChars)
+	sign = ""
+	if signed {
+		sign = string(line[numChars])
+		numChars = numChars + 1
+	}
+
+	return sign, numChars
+}
+
+// ASSUMPTION: line[numChars] == 'e' or 'E'
+//
+// reads number from input at exponent marker (i.e., 'e' or 'E') to end of number
+func analyzeExponentNum(numOrgin, line string, numCharsOrigin int) (num string, numChars int, efunc errors.LazyErrorFn) {
+	num, numChars = numOrgin, numCharsOrigin // init
+
+	e := line[numChars] // 'e' or 'E'
+	numChars = numChars + 1
+	if len(line) <= numChars { // <float>eEOL
+		efunc = errors.LazyLex(errors.MessageFromStatus(source.Eol))
+		return
+	}
+
+	var sign string
+	sign, numChars = analyzePossibleSign(line, numChars)
+
+	if len(line) <= numChars { // <float>e<sign>EOL
+		efunc = errors.LazyLex(errors.MessageFromStatus(source.Eol))
+		return
+	}
+
+	// read integer value that follows 'e'/'E'
+	frac, ok := locateAtStart(line[numChars:], intRegex)
+	if !ok { // <float>e[sign]<illegal-char>
+		efunc = errors.LazyLex(errors.UnexpectedSymbol)
+		return
+	}
+
+	numChars = numChars + len(frac)
+	if !isNumEndCharValid(line, numChars) { // <float>e[sign]<integer><illegal-char>
+		efunc = errors.LazyLex(errors.UnexpectedSymbol)
+		return
+	}
+
+	// build value as string
+	num = num + string(e) + sign + frac
+	return
+}
+
+// return a number token. Could be either floating point number or integer
 func maybeFractional(num, line string) (tok token.Token, numChars int, efunc errors.LazyErrorFn) {
+	tokenLength := 0
 	numChars, efunc = len(num), nil
 	// remove leading zeros (so 0[integer] isn't mistaken as an octal number by llvm or go)
 	for numChars != 0 && num[0] == '0' {
 		num = num[1:]
+		tokenLength++ // increment token length to account for '0's stripped
 	}
 
 	if len(line) <= numChars { // just an integer at the end of the line
@@ -308,105 +413,51 @@ func maybeFractional(num, line string) (tok token.Token, numChars int, efunc err
 	}
 
 	// because of above branch, line[numChars] must exist
-	eNum := isE(line, numChars)
-	dotNum := line[numChars] == '.'
+	hasE := isE(line, numChars)
+	hasDot := line[numChars] == '.'
 
-	if !(dotNum || eNum) {
+	if !hasDot && !hasE {
 		return returnInt(num, numChars)
 	}
 
 	// dotNum must be handled first to account for numbers like '123.123e123'
-	if dotNum {
-		numChars = numChars + 1
-		if len(line) <= numChars { // <integer>.EOL
-			efunc = errors.LazyLex(errors.MessageFromStatus(source.Eol))
-			return
-		}
-
-		frac, ok := locateAtStart(line[numChars:], intRegex)
-		if !ok { // <integer>.<non-integer>
-			efunc = errors.LazyLex(errors.UnexpectedSymbol)
-			return
-		}
-
-		numChars = numChars + len(frac)
-		num = num + "." + frac
-
-		if len(line) > numChars {
-			eNum = isE(line, numChars)
-			if !eNum && !checkNumTail(line, numChars) { // <integer>.<integer><illegal-char>
-				efunc = errors.LazyLex(errors.UnexpectedSymbol)
-				return
-			}
-		}
+	if hasDot {
+		num, numChars, hasE, efunc = analyzeDotNum(num, line, numChars, hasE)
 	}
 
-	if eNum {
-		e := line[numChars] // 'e' or 'E'
-		numChars = numChars + 1
-		if len(line) <= numChars { // <float>eEOL
-			efunc = errors.LazyLex(errors.MessageFromStatus(source.Eol))
-			return
-		}
-
-		signed := isSign(line, numChars)
-		sign := ""
-		if signed {
-			sign = string(line[numChars])
-			numChars = numChars + 1
-		}
-
-		if len(line) <= numChars { // <float>e<sign>EOL
-			efunc = errors.LazyLex(errors.MessageFromStatus(source.Eol))
-			return
-		}
-
-		frac, ok := locateAtStart(line[numChars:], intRegex)
-		if !ok { // <float>e[sign]<illegal-char>
-			efunc = errors.LazyLex(errors.UnexpectedSymbol)
-			return
-		}
-
-		numChars = numChars + len(frac)
-		if !checkNumTail(line, numChars) { // <float>e[sign]<integer><illegal-char>
-			efunc = errors.LazyLex(errors.UnexpectedSymbol)
-			return
-		}
-
-		num = num + string(e) + sign + frac
+	// read 'e' or 'E' and exponent
+	if hasE {
+		num, numChars, efunc = analyzeExponentNum(num, line, numChars)
 	}
 
+	tokenLength = tokenLength + len(num) // leading zeros + remaining num
 	num = stripChar(num, '_')
-	tok = token.FloatValue.Make().AddValue(num)
+	tok = token.FloatValue.Make().AddValue(num).SetLength(tokenLength)
 	return
 }
 
+// read number from input
 func analyzeNumber(lex *lexer.Lexer) source.Status {
 	lineNum, charNum := lex.GetLineChar()
 	line, eol := lex.RemainingLine()
-	if eol {
+	if eol { // end of line?
 		statError(lex, source.Eol)
 		return source.Eol
 	}
 
-	var tok token.Token
-	var numChars int
-	var efunc errors.LazyErrorFn = nil
+	var tok token.Token                // token result
+	var numChars int                   // total number of chars read
+	var efunc errors.LazyErrorFn = nil // error function
 
 	// 0x, 0b, and 0o must be checked first, else the lexer might falsely think
 	// '0' is the number
-	if num, ok := locateAtStart(line, hexRegex); ok {
-		tok, numChars, efunc = analyzeNon10(num, line)
-	} else if num, ok := locateAtStart(line, octRegex); ok {
-		tok, numChars, efunc = analyzeNon10(num, line)
-		if efunc == nil {
-			v := tok.GetValue()
-			v = "0" + v[2:] // 0o<octal> -> 0<octal>
-			tok = tok.AddValue(v)
-		}
-	} else if num, ok := locateAtStart(line, binRegex); ok {
-		tok, numChars, efunc = analyzeNon10(num, line)
-	} else if num, ok := locateAtStart(line, intRegex); ok {
+	if num, ok := locateAtStart(line, hexRegex); ok { // hex
+		tok, numChars, efunc = analyzeNonBase10(num, line)
+	} else if num, ok := locateAtStart(line, octRegex); ok { // oct
+		tok, numChars, efunc = analyzeNonBase10(num, line)
+	} else if num, ok := locateAtStart(line, binRegex); ok { // bin
+		tok, numChars, efunc = analyzeNonBase10(num, line)
+	} else if num, ok := locateAtStart(line, intRegex); ok { // int or float
 		tok, numChars, efunc = maybeFractional(num, line)
 	} else {
 		numChars = 0
@@ -419,14 +470,20 @@ func analyzeNumber(lex *lexer.Lexer) source.Status {
 		return source.Bad
 	}
 
-	lex.PushToken(tok.SetLineChar(lineNum, charNum))
+	// finish creating number token, token length already set, just set
+	// line number and char number
+	token := tok.SetLineChar(lineNum, charNum)
+	lex.PushToken(token)
 	return source.Ok
 }
 
+// return infixed id
 func analyzeInfix(id string) (tok token.Token, numChars int) {
 	fixed, unfixedLen := fixEnclosedId(id)
 	numChars = unfixedLen
-	tok = token.Infixed.Make().AddValue(fixed)
+	// +2 for opening and closing paren which are NOT allowed to be followed
+	// and preceeded by whitespace respectively
+	tok = token.Infixed.Make().AddValue(fixed).SetLength(len(fixed) + 2)
 	return
 }
 
@@ -504,9 +561,9 @@ func tokenizeSymbol(line string) (tok token.Token, numChars int, efunc errors.La
 	}
 	numChars = len(res)
 	if ty, found := builtinSymbols[res]; found {
-		tok = ty.Make()
+		tok = ty.Make() // length auto. set
 	} else {
-		tok = token.Symbol.Make().AddValue(res)
+		tok = token.Symbol.Make().AddValue(res) // length auto. set
 	}
 	return
 }
@@ -638,7 +695,7 @@ func updateEscape(s string, escapeString bool) (string, bool, int) {
 
 func analyzeChar(lex *lexer.Lexer) source.Status {
 	line, char := lex.GetLineChar()
-	c, stat := lex.AdvanceChar()
+	c, stat := lex.AdvanceChar() // should be leading '
 	if stat.NotOk() || c != '\'' {
 		if c != '\'' {
 			stat = source.Bad
@@ -683,6 +740,7 @@ func analyzeChar(lex *lexer.Lexer) source.Status {
 	tok := token.CharValue.
 		Make().
 		AddValue(res).
+		SetLength(length+2). // +2 for enclosing single quotes
 		SetLineChar(line, char)
 	lex.PushToken(tok)
 
@@ -691,7 +749,7 @@ func analyzeChar(lex *lexer.Lexer) source.Status {
 
 func analyzeString(lex *lexer.Lexer) source.Status {
 	line, char := lex.GetLineChar()
-	c, stat := lex.AdvanceChar()
+	c, stat := lex.AdvanceChar() // should be first quotation mark
 	if stat.NotOk() || c != '"' {
 		if c != '"' {
 			stat = source.Bad
@@ -749,6 +807,7 @@ func analyzeString(lex *lexer.Lexer) source.Status {
 		tok := token.StringValue.
 			Make().
 			AddValue(res).
+			SetLength(tot+1). // +1 to account for leading quotation mark
 			SetLineChar(line, char)
 		lex.PushToken(tok)
 	} else {
@@ -868,15 +927,7 @@ func RunLexer(lex *lexer.Lexer) (tokens []itoken.Token, es []error) {
 		stat = analyze(lex)
 	}
 
-	tokens, es = lex.GetTokens(), lex.GetErrors()
-	if len(tokens) > 0 {
-		// prepend 0 length indent
-		// create indent token that exists at start of first line
-		tok := token.Indent.Make().AddValue("").SetLineChar(1, 1)
-		// add indent token
-		tokens = append([]itoken.Token{tok}, tokens...)
-	}
-	return
+	return lex.GetTokens(), lex.GetErrors()
 }
 
 func CastTokens(ts []itoken.Token) []token.Token {
@@ -904,6 +955,15 @@ func GetSourceRaw(lex *lexer.Lexer) []string {
 		out[i] = line
 	}
 	return out
+}
+
+func NewStringLexer(stringFromPath, input string) *lexer.Lexer {
+	lex, e := lexer.Initialize(stringFromPath, []byte(input), lexerWhitespace)
+	if e != nil {
+		errors.PrintErrors(errors.MkSystemError(e.Error()))
+		return nil
+	}
+	return lex
 }
 
 func LexPath(path string) ([]itoken.Token, []error) {

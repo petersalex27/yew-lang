@@ -19,7 +19,7 @@ func TestExpression(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			expr__val_r,
 			expr__data_r,
 			//expr__funcName_r,

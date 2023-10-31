@@ -17,7 +17,7 @@ func TestPatternC(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			patternC__constructor_r,
 		))
 
@@ -64,7 +64,7 @@ func TestPattern(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			pattern__patternC_r,
 			pattern__literal_r,
 			pattern__funcName_r,

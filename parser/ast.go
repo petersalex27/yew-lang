@@ -2,6 +2,7 @@ package parser
 
 import (
 	"github.com/petersalex27/yew-lang/token"
+	itoken "github.com/petersalex27/yew-packages/token"
 	"github.com/petersalex27/yew-packages/parser/ast"
 )
 
@@ -37,7 +38,7 @@ func parenEnclosedReduction(nodes ...ast.Ast) ast.Ast {
 	return nodes[1]
 }
 
-func EqualsToken(a, b token.Token) bool {
+func EqualsToken[T itoken.Token](a, b T) bool {
 	lineA, charA := a.GetLineChar()
 	lineB, charB := b.GetLineChar()
 	tyA, tyB := a.GetType(), b.GetType()

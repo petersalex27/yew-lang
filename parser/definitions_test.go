@@ -18,7 +18,7 @@ func TestDefinitions(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			definitions__Indent_function_r,
 			definitions__Indent_funcDef_r,
 			definitions__Indent_function_definitions_r,

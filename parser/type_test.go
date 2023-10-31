@@ -18,7 +18,7 @@ func TestType(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			type__monotype_r,
 			type__polytype_r,
 			type__dependent_r,

@@ -18,7 +18,7 @@ func TestMonotype(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			monotype__monotype_monotype_r,
 			monotype__monotype_Arrow_monotype_r,
 			monotype__enclosed_r,

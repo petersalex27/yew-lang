@@ -20,7 +20,7 @@ func TestTypeDef(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			typeDef__typeDecl_Assign_constructor_r,
 			typeDef__typeDef_Bar_constructor_r,
 		))

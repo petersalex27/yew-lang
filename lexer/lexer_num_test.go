@@ -41,13 +41,13 @@ func TestAnalyzeNumber(t *testing.T) {
 		{
 			[]string{"0o1",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("01").SetLineChar(1,1),
+				token.IntValue.Make().AddValue("0o1").SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{"0O1",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("01").SetLineChar(1,1),
+				token.IntValue.Make().AddValue("0O1").SetLineChar(1,1),
 			},
 		},
 		{
@@ -101,37 +101,37 @@ func TestAnalyzeNumber(t *testing.T) {
 		{
 			[]string{"0_1",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("1").SetLineChar(1,1),
+				token.IntValue.Make().AddValue("1").SetLength(3).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{"00_1",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("1").SetLineChar(1,1),
+				token.IntValue.Make().AddValue("1").SetLength(4).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{"11__1",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("111").SetLineChar(1,1),
+				token.IntValue.Make().AddValue("111").SetLength(5).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{"0x1_1",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("0x11").SetLineChar(1,1),
+				token.IntValue.Make().AddValue("0x11").SetLength(5).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{"0o1_1",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("011").SetLineChar(1,1),
+				token.IntValue.Make().AddValue("0o11").SetLength(5).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{"0b1_1",},
 			[]itoken.Token{
-				token.IntValue.Make().AddValue("0b11").SetLineChar(1,1),
+				token.IntValue.Make().AddValue("0b11").SetLength(5).SetLineChar(1,1),
 			},
 		},
 	}

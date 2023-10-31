@@ -17,7 +17,7 @@ func TestPolytype(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			polytype__polyBinders_Dot_dependTyped_r,
 		))
 	aToken := makeIdToken_test("a",1,1)

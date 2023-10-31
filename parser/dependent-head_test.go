@@ -18,7 +18,7 @@ func TestDependHead(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			dependHead__Mapall_varJudgement_r,
 			dependHead__dependHead_varJudgement_r,
 		))

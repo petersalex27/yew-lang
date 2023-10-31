@@ -17,7 +17,7 @@ func TestPatternMatch(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			patternMatch__expr_When_case_r,
 		))
 
@@ -103,7 +103,7 @@ func TestCase(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			case__case_pattern_Arrow_expr_r,
 			case__pattern_Arrow_expr_r,
 		))

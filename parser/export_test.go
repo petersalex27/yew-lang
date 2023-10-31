@@ -18,7 +18,7 @@ func TestExportList(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			export__exportHead_Id_r,
 			export__exportHead_TypeId_r,
 			export__exportHead_Symbol_r,

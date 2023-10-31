@@ -17,7 +17,7 @@ func TestData(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			data__patternC_r,
 			data__data_expr_r,
 			data__enclosed_r,

@@ -18,7 +18,7 @@ func TestTypeDecl(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			typeDecl__TypeId_r,
 			typeDecl__typeDecl_Id_r,
 		))

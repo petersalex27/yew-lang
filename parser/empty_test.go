@@ -15,7 +15,7 @@ func TestEmpty(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(empty__LeftParen_RightParen_r))
+		Finally(parser.Order(empty__LeftParen_RightParen_r))
 
 	lparen := ast.TokenNode(token.LeftParen.Make())
 	rparen := ast.TokenNode(token.RightParen.Make())

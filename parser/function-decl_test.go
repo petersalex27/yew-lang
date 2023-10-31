@@ -16,7 +16,7 @@ func TestFunctionDeclaration(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			functionDecl__Indent_funcName_r,
 		))
 

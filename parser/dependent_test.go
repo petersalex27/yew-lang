@@ -18,7 +18,7 @@ func TestDependtype(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			dependent__dependBinders_Dot_monotype_r,
 		))
 

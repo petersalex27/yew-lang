@@ -163,19 +163,19 @@ func TestAnalyzeSymbol(t *testing.T) {
 		{
 			[]string{`(+)`},
 			[]itoken.Token{
-				token.Infixed.Make().AddValue("+").SetLineChar(1, 1),
+				token.Infixed.Make().AddValue("+").SetLength(3).SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`(>>=)`},
 			[]itoken.Token{
-				token.Infixed.Make().AddValue(">>=").SetLineChar(1, 1),
+				token.Infixed.Make().AddValue(">>=").SetLength(5).SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`(mod)`},
 			[]itoken.Token{
-				token.Infixed.Make().AddValue("mod").SetLineChar(1, 1),
+				token.Infixed.Make().AddValue("mod").SetLength(5).SetLineChar(1, 1),
 			},
 		},
 	}

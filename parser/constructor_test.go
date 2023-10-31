@@ -17,7 +17,7 @@ func TestConstructor(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			constructor__TypeId_r,
 			constructor__typeDecl_r,
 			constructor__constructor_name_r,
@@ -90,7 +90,7 @@ func TestConstructor(t *testing.T) {
 			[]itoken.Token{},
 			test.src,
 			nil, nil,
-		).InitialStackPush(test.nodes...)
+		).InitialStackPush(test.nodes...)//.WithContext()
 
 		actual := p.Parse()
 		if p.HasErrors() {

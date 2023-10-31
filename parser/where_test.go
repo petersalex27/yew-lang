@@ -20,7 +20,7 @@ func TestWhere(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			whereExpr__expr_Where_function_r,
 		))
 

@@ -16,73 +16,73 @@ func TestAnalyzeChar(t *testing.T) {
 		{
 			[]string{`'a'`,},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue(`a`).SetLineChar(1,1),
+				token.CharValue.Make().AddValue(`a`).SetLength(3).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`' '`,},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue(` `).SetLineChar(1,1),
+				token.CharValue.Make().AddValue(` `).SetLength(3).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`'@'`,},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue(`@`).SetLineChar(1,1),
+				token.CharValue.Make().AddValue(`@`).SetLength(3).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`'\n'`,},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\n").SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\n").SetLength(4).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`'\t'`,},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\t").SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\t").SetLength(4).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`'\a'`,},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\a").SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\a").SetLength(4).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`'\b'`,},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\b").SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\b").SetLength(4).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`'\v'`,},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\v").SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\v").SetLength(4).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`'\f'`,},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\f").SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\f").SetLength(4).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`'\r'`,},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\r").SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\r").SetLength(4).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`'\''`,},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("'").SetLineChar(1,1),
+				token.CharValue.Make().AddValue("'").SetLength(4).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`'\\'`,},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\\").SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\\").SetLength(4).SetLineChar(1,1),
 			},
 		},
 	}

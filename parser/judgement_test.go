@@ -18,7 +18,7 @@ func TestJudgement(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			judgement__expr_Colon_type_r,
 			judgement__varJudgement_r,
 			judgement__enclosed_r,

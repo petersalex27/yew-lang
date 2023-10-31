@@ -16,31 +16,31 @@ func TestAnalyzeString(t *testing.T) {
 		{
 			[]string{`""`,},
 			[]itoken.Token{
-				token.StringValue.Make().AddValue(``).SetLineChar(1,1),
+				token.StringValue.Make().AddValue(``).SetLength(2).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`" "`,},
 			[]itoken.Token{
-				token.StringValue.Make().AddValue(` `).SetLineChar(1,1),
+				token.StringValue.Make().AddValue(` `).SetLength(3).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`"--"`,},
 			[]itoken.Token{
-				token.StringValue.Make().AddValue(`--`).SetLineChar(1,1),
+				token.StringValue.Make().AddValue(`--`).SetLength(4).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`"this is a string"`,},
 			[]itoken.Token{
-				token.StringValue.Make().AddValue(`this is a string`).SetLineChar(1,1),
+				token.StringValue.Make().AddValue(`this is a string`).SetLength(18).SetLineChar(1,1),
 			},
 		},
 		{
 			[]string{`"\n\t\a\b\v\f\r\"\\"`,},
 			[]itoken.Token{
-				token.StringValue.Make().AddValue("\n\t\a\b\v\f\r\"\\").SetLineChar(1,1),
+				token.StringValue.Make().AddValue("\n\t\a\b\v\f\r\"\\").SetLength(20).SetLineChar(1,1),
 			},
 		},
 	}

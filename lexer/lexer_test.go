@@ -17,6 +17,7 @@ func TestLexer(t *testing.T) {
 		{
 			[]string{`Maybe a = Just a | Nothing`},
 			[]itoken.Token{
+				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.TypeId.Make().AddValue(`Maybe`).SetLineChar(1, 1),
 				token.Id.Make().AddValue(`a`).SetLineChar(1, 7),
 				token.Assign.Make().AddValue(`=`).SetLineChar(1, 9),
@@ -29,48 +30,56 @@ func TestLexer(t *testing.T) {
 		{
 			[]string{`[`},
 			[]itoken.Token{
+				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.LeftBracket.Make().SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`{`},
 			[]itoken.Token{
+				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.LeftBrace.Make().SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`;`},
 			[]itoken.Token{
+				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.SemiColon.Make().SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`,`},
 			[]itoken.Token{
+				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.Comma.Make().SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`}`},
 			[]itoken.Token{
+				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.RightBrace.Make().SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`]`},
 			[]itoken.Token{
+				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.RightBracket.Make().SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`)`},
 			[]itoken.Token{
+				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.RightParen.Make().SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`:`},
 			[]itoken.Token{
+				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.Typing.Make().SetLineChar(1, 1),
 			},
 		},

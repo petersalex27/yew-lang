@@ -18,7 +18,7 @@ func TestTupleType(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			tupleType__Comma_monotype_RightParen_r,
 			tupleType__Comma_monotype_tupleType_r,
 		))

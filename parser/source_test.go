@@ -18,7 +18,7 @@ func TestSource(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			source__module_Where_definitions_r,
 			source_module_r,
 		))

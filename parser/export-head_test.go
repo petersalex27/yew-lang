@@ -18,7 +18,7 @@ func TestExportHead(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			exportHead__moduleDec_LeftParen_r,
 			exportHead__export_Comma_r,
 		))

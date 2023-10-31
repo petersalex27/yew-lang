@@ -20,7 +20,7 @@ func TestLet(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			letExpr__Let_function_In_expr_r,
 		))
 

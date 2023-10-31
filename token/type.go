@@ -103,6 +103,8 @@ func (t TokenType) Make() Token {
 	}
 	return Token{
 		ty:    t,
+		// this may not always be correct, but can be set to something else later
+		length: len(value),
 		value: value,
 	}
 }
@@ -117,5 +119,9 @@ func (t Token) MaybeAddValue(value string) Token {
 
 func (t Token) AddValue(value string) Token {
 	t.value = value
+	if t.length <= 0 { // length set?
+		// no, set it
+		t.length = len(value)
+	}
 	return t
 }

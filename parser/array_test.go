@@ -17,7 +17,7 @@ func TestArray(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			arrayValHead__LeftBracket_expr_r,
 			arrayValHead__arrayValHead_Comma_expr_r,
 			arrayValHead__litArrHead_Comma_expr_r,
@@ -122,7 +122,7 @@ func TestLiteralArray(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			litArrHead__LeftBracket_literal_r,
 			litArrHead__litArrHead_Comma_literal_r,
 

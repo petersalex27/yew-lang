@@ -6,6 +6,7 @@ import (
 
 type Token struct {
 	line_char
+	length int
 	ty    TokenType
 	value string
 }
@@ -24,8 +25,26 @@ func (t Token) GetName() string {
 func (t Token) SetLineChar(line, char int) token.Token {
 	return Token{
 		line_char: line_char{line, char},
+		length: t.length,
 		ty:        t.ty,
 		value:     t.value,
+	}
+}
+
+func (t Token) GetLength() int {
+	if t.length <= 0 {
+		return len(t.value)
+	}
+
+	return t.length
+}
+
+func (t Token) SetLength(length int) Token {
+	return Token{
+		line_char: t.line_char,
+		length: length,
+		ty: t.ty,
+		value: t.value,
 	}
 }
 

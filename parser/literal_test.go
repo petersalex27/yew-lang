@@ -17,7 +17,7 @@ func TestLiteral(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			literal__IntValue_r,
 			literal__CharValue_r,
 			literal__FloatValue_r,

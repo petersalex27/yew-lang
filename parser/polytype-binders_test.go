@@ -17,7 +17,7 @@ func TestPolyBinders(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			polyBinders__polyHead_r,
 			polyBinders__enclosed_r,
 		))

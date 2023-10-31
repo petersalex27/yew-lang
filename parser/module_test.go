@@ -18,7 +18,7 @@ func TestModule(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			module__moduleDec_r,
 			module__export_RightParen_r,
 		))

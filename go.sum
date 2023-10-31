@@ -25,10 +25,16 @@ github.com/petersalex27/yew-packages/fun v0.0.0-20231003031741-ea929e3ab360 h1:o
 github.com/petersalex27/yew-packages/fun v0.0.0-20231003031741-ea929e3ab360/go.mod h1:IUku/vaCvNChsy43bc2Ztgm4jGyYZUJKmtY2oUAecIY=
 github.com/petersalex27/yew-packages/lexer v0.0.0-20231005234018-86372fe4a5de h1:3S82OmW/yQQnV5erZp4u1bXZ1DfB9hHhIPEZCUfInZ0=
 github.com/petersalex27/yew-packages/lexer v0.0.0-20231005234018-86372fe4a5de/go.mod h1:D4JrE+0J0hQ8qc3GPINHw/xyuehtWn6FapJN6jI7IiM=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231030021721-504772a608ea h1:PC4TGgdizLAkY6CYUKiohs4KVtcJYLxtwvneCS07Ndk=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231030021721-504772a608ea/go.mod h1:D4JrE+0J0hQ8qc3GPINHw/xyuehtWn6FapJN6jI7IiM=
 github.com/petersalex27/yew-packages/nameable v0.0.0-20231003031741-ea929e3ab360 h1:2ZFRdZTBLBBCA06V5sFreXwiplyJ3PJwOUTC+N/TzL0=
 github.com/petersalex27/yew-packages/nameable v0.0.0-20231003031741-ea929e3ab360/go.mod h1:F9amyHu+dehoAn92BeuZhqJKzY90cut9FYYCeyP7p6M=
 github.com/petersalex27/yew-packages/parser v0.0.0-20231010022506-2e69eed1f223 h1:HB14Ef8UVqqaS1yWjGPY5OTSduN7KLS2lxrfqXN2+Kg=
 github.com/petersalex27/yew-packages/parser v0.0.0-20231010022506-2e69eed1f223/go.mod h1:r5uL+cTwk4owI9MkLEmhb9lLbI7nzKSupOI1I4xxRBM=
+github.com/petersalex27/yew-packages/parser v0.0.0-20231031015540-24a59fa3be45 h1:x8ST05BejC/2bpixF1demK3++as+cocRKLirRK50gr4=
+github.com/petersalex27/yew-packages/parser v0.0.0-20231031015540-24a59fa3be45/go.mod h1:r5uL+cTwk4owI9MkLEmhb9lLbI7nzKSupOI1I4xxRBM=
+github.com/petersalex27/yew-packages/parser v0.0.0-20231031021409-4c9227f1c059 h1:DhlXpMFby++G4E9m670c7IJhmsuxFmgMeJo2hxvqqh8=
+github.com/petersalex27/yew-packages/parser v0.0.0-20231031021409-4c9227f1c059/go.mod h1:r5uL+cTwk4owI9MkLEmhb9lLbI7nzKSupOI1I4xxRBM=
 github.com/petersalex27/yew-packages/source v0.0.0-20231005234018-86372fe4a5de h1:3g4E0QdbfQTsGpzyqYsSUoJ8qqJo1rD2BDGDM3QmiMg=
 github.com/petersalex27/yew-packages/source v0.0.0-20231005234018-86372fe4a5de/go.mod h1:Kqf+tQSWdIsH+ss0SWIZxUhsGGMAxe+zbLf9Iz8SgQU=
 github.com/petersalex27/yew-packages/stringable v0.0.0-20231003031741-ea929e3ab360 h1:Puvxt0KuP0EphqYLFuzlk90YcQEXctRvTxLS5TQVWR4=

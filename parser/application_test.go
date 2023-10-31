@@ -17,7 +17,7 @@ func TestApplication(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(application__expr_expr_r,))
+		Finally(parser.Order(application__expr_expr_r,))
 
 	litToken := makeToken_test(token.IntValue, "1", 1, 1)
 	idToken := makeIdToken_test("a", 1, 1)

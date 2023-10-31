@@ -18,7 +18,7 @@ func TestDependBinders(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
-		Finally(parser.RuleSet(
+		Finally(parser.Order(
 			dependBinders__dependHead_r,
 			dependBinders__enclosed_r,
 		))

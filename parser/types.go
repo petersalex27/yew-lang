@@ -17,16 +17,16 @@ const (
 	Indent = ast.Type(token.Indent)
 
 	// other
-	Wildcard  = ast.Type(token.Wildcard)
-	Comment   = ast.Type(token.Comment)
-	Annotation= ast.Type(token.Annotation)
-	Colon     = ast.Type(token.Typing)
-	Assign    = ast.Type(token.Assign)
-	Bar       = ast.Type(token.Bar)
-	Arrow     = ast.Type(token.Arrow)
-	Backslash = ast.Type(token.Backslash)
-	Dot       = ast.Type(token.Dot)
-	DotDot    = ast.Type(token.DotDot)
+	Wildcard        = ast.Type(token.Wildcard)
+	Comment         = ast.Type(token.Comment)
+	AnnotationToken = ast.Type(token.Annotation)
+	Colon           = ast.Type(token.Typing)
+	Assign          = ast.Type(token.Assign)
+	Bar             = ast.Type(token.Bar)
+	Arrow           = ast.Type(token.Arrow)
+	Backslash       = ast.Type(token.Backslash)
+	Dot             = ast.Type(token.Dot)
+	DotDot          = ast.Type(token.DotDot)
 
 	// grouping
 	LeftParen    = ast.Type(token.LeftParen)
@@ -81,6 +81,8 @@ const (
 	LetExpr
 	// z where x = y
 	WhereExpr
+	// --@MyAnnotation args and stuff
+	Annotation
 	// trait C a
 	TraitDeclaration
 	// trait C a where f: a -> a
