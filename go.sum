@@ -37,6 +37,10 @@ github.com/petersalex27/yew-packages/lexer v0.0.0-20231031093007-acf889ac9507 h1
 github.com/petersalex27/yew-packages/lexer v0.0.0-20231031093007-acf889ac9507/go.mod h1:D4JrE+0J0hQ8qc3GPINHw/xyuehtWn6FapJN6jI7IiM=
 github.com/petersalex27/yew-packages/lexer v0.0.0-20231031095200-67dc792c16b6 h1:7/jWfb1QqwDELjVUuUexCClclvPcTs+nnAJUcNftzyY=
 github.com/petersalex27/yew-packages/lexer v0.0.0-20231031095200-67dc792c16b6/go.mod h1:D4JrE+0J0hQ8qc3GPINHw/xyuehtWn6FapJN6jI7IiM=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231101070426-dc212abb8410 h1:Fo4WcH+f2OWPjsy2BZGjwXpVan8PQhvFOS23JFmx+Pg=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231101070426-dc212abb8410/go.mod h1:D4JrE+0J0hQ8qc3GPINHw/xyuehtWn6FapJN6jI7IiM=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231101070943-9dfcf8a43196 h1:eqgzzFczzFYRE1e01iQ7BKLKRbaXxOVv9eG0tpcr/cc=
+github.com/petersalex27/yew-packages/lexer v0.0.0-20231101070943-9dfcf8a43196/go.mod h1:D4JrE+0J0hQ8qc3GPINHw/xyuehtWn6FapJN6jI7IiM=
 github.com/petersalex27/yew-packages/nameable v0.0.0-20231003031741-ea929e3ab360 h1:2ZFRdZTBLBBCA06V5sFreXwiplyJ3PJwOUTC+N/TzL0=
 github.com/petersalex27/yew-packages/nameable v0.0.0-20231003031741-ea929e3ab360/go.mod h1:F9amyHu+dehoAn92BeuZhqJKzY90cut9FYYCeyP7p6M=
 github.com/petersalex27/yew-packages/parser v0.0.0-20231010022506-2e69eed1f223 h1:HB14Ef8UVqqaS1yWjGPY5OTSduN7KLS2lxrfqXN2+Kg=
@@ -59,6 +63,8 @@ github.com/petersalex27/yew-packages/util v0.0.0-20231027014743-8a336f2b97bc h1:
 github.com/petersalex27/yew-packages/util v0.0.0-20231027014743-8a336f2b97bc/go.mod h1:zDtG3xFP3nukNZ1tVun7j5q9FhLediwYFLlXC/zTu0c=
 github.com/petersalex27/yew-packages/util v0.0.0-20231028213157-d772f5bf828c h1:2KzOlwU6QFN18cLkjSSX/FmHOHeEJB39PzcbAGOjpgo=
 github.com/petersalex27/yew-packages/util v0.0.0-20231028213157-d772f5bf828c/go.mod h1:zDtG3xFP3nukNZ1tVun7j5q9FhLediwYFLlXC/zTu0c=
+github.com/petersalex27/yew-packages/util v0.0.0-20231101051618-fca6c86b05f0 h1:G0rf7D5JAGwM3WvpmMQpDPlB4fD+OPenzmtJ+kIHYig=
+github.com/petersalex27/yew-packages/util v0.0.0-20231101051618-fca6c86b05f0/go.mod h1:zDtG3xFP3nukNZ1tVun7j5q9FhLediwYFLlXC/zTu0c=
 golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.12.0 h1:CM0HF96J0hcLAwsHPJZjfdNzs0gftsLfgKt57wWHJ0o=

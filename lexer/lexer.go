@@ -117,21 +117,6 @@ func determineClass(lex *lexer.Lexer, c byte) (class symbolClass, e error) {
 
 var endMultiCommentRegex = regexp.MustCompile(`\*-`)
 
-/*
-func trimSpaceRight(s string) string {
-	if len(s) == 0 {
-		return s
-	}
-
-	i := len(s) - 1
-	for ; i >= 0; i-- {
-		if !unicode.IsSpace(rune(s[i])) {
-			break
-		}
-	}
-	return s[:i]
-}*/
-
 // reads and pushes respective token for single-line comments and single-line annotations.
 //
 // NOTE:
@@ -146,26 +131,35 @@ func trimSpaceRight(s string) string {
 func getSingleLineComment(lex *lexer.Lexer, lineAfterDashes string, lineNum, charNum int) source.Status {
 	var ty token.TokenType = token.Comment // type of token to be pushed
 
-	length := len(lineAfterDashes)+2 // +2 for "--"
+	// length of comment/annotation excluding leading `--`
+	length := len(lineAfterDashes)
+	// length of entire comment/annotation including leading `--`
+	totalLength := length + 2 // +2 for "--"
+
+	var trimmed string
 
 	// check first char of `line`; if it's '@' comment is an annotation
 	if length > 0 && lineAfterDashes[0] == '@' {
 		ty = token.Annotation
 		lineAfterDashes = lineAfterDashes[1:] // remove '@' from "comment"
+		// identity, don't let annotations get their content modified
+		trimmed = lineAfterDashes
+	} else {
+		// this must be done separate from annotations so their values aren't
+		// modified
+		trimmed = lex.Documentor.Run(lineAfterDashes)
 	}
 
-	// remove extra whitespace
-	// NOTE: the order of this statement and the previous conditional branch is
-	// important. It prevents `--<whitespace>@` from being considered an annotation
-	trimmed := strings.TrimSpace(lineAfterDashes)
-
-	tok := ty.Make().AddValue(trimmed).SetLength(length)
+	tok := ty.Make().AddValue(trimmed).SetLength(totalLength)
 	lex.PushToken(tok.SetLineChar(lineNum, charNum))
 
-	lex.SetLineChar(lineNum, length+charNum) // set to end of line
+	lex.SetLineChar(lineNum, totalLength+charNum) // set to end of line
 
 	return source.Ok
 }
+
+// just returns comment; use when annotations are found
+func identityProcessing(_ *lexer.Documentor, comment string) string { return comment }
 
 // reads and pushes respective token for multi-line comments and multi-line annotations
 //
@@ -184,14 +178,43 @@ func getMultiLineComment(lex *lexer.Lexer, line string, lineNum, charNum int) so
 	lineNum_0, charNum_0 := lineNum, charNum // initial line and char numbers
 	var comment string = ""                  // full comment
 	var next string = line                   // next line to analyze
+	// +2 to account for '-*'
+	firstLineOfCommentLength := +2
 
 	// check first char of `next`; if it's '@' comment is an annotation
 	if len(next) > 0 && next[0] == '@' {
 		ty = token.Annotation
 		next = next[1:] // remove '@' from "comment"
+
+		// THIS IS A VITAL IMPORTANT STEP!!
+		restore := lex.Documentor
+		defer func() { lex.Documentor = restore }()
+		lex.Documentor = lexer.MakeDocumentor(identityProcessing)
 	}
 
-	loc := endMultiCommentRegex.FindStringIndex(line) // check for end of comment
+	// check for end of comment
+	loc := endMultiCommentRegex.FindStringIndex(line)
+	// check if comment fits on one line
+	if loc != nil {
+		// get end location of comment
+		//
+		// length of comment is: end - (start - 1)
+		//  _________________length=15________
+		//	______________vvvvvvvvvvvvvvv_____
+		//	3 | blah blah -* blah blah *- blah
+		//	____^_________^_____________^_____
+		//  _______start 3:11______end 3:25___ 
+		//  => length = end - (start - 1) 
+		//            = 25 - (11 - 1) 
+		//            = 15
+		end, start := loc[1], charNum_0
+		// add two to account for leading '-*' not in `line` 
+		firstLineOfCommentLength = 2 + (end - (start - 1))
+	} else {
+		// set length of token to length of first line from '-*' to end of line
+ 		firstLineOfCommentLength = firstLineOfCommentLength + len(line)
+	}
+
 	// append input read to comment until end of comment is reached
 	for loc == nil {
 		lineNum = lineNum + 1
@@ -203,7 +226,8 @@ func getMultiLineComment(lex *lexer.Lexer, line string, lineNum, charNum int) so
 			return source.Eof
 		}
 
-		next = strings.TrimSpace(next)
+		// remove extra white space when appending comment
+		next = lex.Documentor.Run(next)
 		comment = comment + next
 		if len(next) > 0 {
 			comment = comment + " "
@@ -221,10 +245,21 @@ func getMultiLineComment(lex *lexer.Lexer, line string, lineNum, charNum int) so
 		// check for '*-'
 		loc = endMultiCommentRegex.FindStringIndex(line)
 	}
-	comment = comment + strings.TrimSpace(next[:loc[0]])
-	tok := ty.Make().AddValue(comment)
+
+	startIndexOfCommentClose := loc[0]
+	endCharNumOfCommentClose := loc[1]
+
+	// grab last line of comment up to (but not including) '*-'
+	commentFinalContent := next[:startIndexOfCommentClose]
+	finalContent := lex.Documentor.Run(commentFinalContent)
+	
+	// create an push comment token
+	comment = comment + finalContent
+	tok := ty.Make().AddValue(comment).SetLength(firstLineOfCommentLength)
 	lex.PushToken(tok.SetLineChar(lineNum_0, charNum_0))
-	lex.SetLineChar(lineNum, loc[1])
+
+	lex.SetLineChar(lineNum, endCharNumOfCommentClose)
+
 	return stat
 }
 
@@ -251,7 +286,8 @@ func analyzeComment(lex *lexer.Lexer) source.Status {
 	//		-* abc ..
 	// `line` is
 	//		line = " abc .."
-	line, _ := lex.RemainingLine()
+	var line string
+	line, _ = lex.RemainingLine()
 	if c == '-' { // single line comment
 		return getSingleLineComment(lex, line, lineNum, charNum)
 	} else if c == '*' { // multi line comment
@@ -938,12 +974,18 @@ func CastTokens(ts []itoken.Token) []token.Token {
 	return out
 }
 
+func defaultTrimRight(_ *lexer.Documentor, comment string) string {
+	return strings.TrimRight(comment, " \t")
+}
+
 func NewLexer(path string) *lexer.Lexer {
 	lex, e := lexer.Lex(path, lexerWhitespace)
 	if e != nil {
 		errors.PrintErrors(errors.MkSystemError(e.Error()))
 		return nil
 	}
+
+	lex.Documentor = lexer.MakeDocumentor(defaultTrimRight)
 	return lex
 }
 
@@ -963,6 +1005,9 @@ func NewStringLexer(stringFromPath, input string) *lexer.Lexer {
 		errors.PrintErrors(errors.MkSystemError(e.Error()))
 		return nil
 	}
+
+	lex.Documentor = lexer.MakeDocumentor(defaultTrimRight)
+
 	return lex
 }
 
