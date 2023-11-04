@@ -65,6 +65,8 @@ github.com/petersalex27/yew-packages/util v0.0.0-20231028213157-d772f5bf828c h1:
 github.com/petersalex27/yew-packages/util v0.0.0-20231028213157-d772f5bf828c/go.mod h1:zDtG3xFP3nukNZ1tVun7j5q9FhLediwYFLlXC/zTu0c=
 github.com/petersalex27/yew-packages/util v0.0.0-20231101051618-fca6c86b05f0 h1:G0rf7D5JAGwM3WvpmMQpDPlB4fD+OPenzmtJ+kIHYig=
 github.com/petersalex27/yew-packages/util v0.0.0-20231101051618-fca6c86b05f0/go.mod h1:zDtG3xFP3nukNZ1tVun7j5q9FhLediwYFLlXC/zTu0c=
+github.com/petersalex27/yew-packages/util v0.0.0-20231102213652-00000dbc092f h1:wMzNWz2Q6TnEqtaJJI7VNZTVGBn9QJw/+B5cd9WCL/c=
+github.com/petersalex27/yew-packages/util v0.0.0-20231102213652-00000dbc092f/go.mod h1:zDtG3xFP3nukNZ1tVun7j5q9FhLediwYFLlXC/zTu0c=
 golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.12.0 h1:CM0HF96J0hcLAwsHPJZjfdNzs0gftsLfgKt57wWHJ0o=

@@ -29,33 +29,34 @@ func TestModule(t *testing.T) {
 	//moduleName := ast.TokenNode(moduleNameToken)
 
 	myFuncToken := makeIdToken_test("myFunc", 1, 1)
+	myFuncExport := exportToken{false, myFuncToken}
 
 	//module := ast.TokenNode(token.Module.Make())
 	module := ModuleNode{
 		ModuleDefinition,
 		moduleNameToken,
-		[]token.Token{},
+		[]exportToken{},
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 
 	moduleWithExport := ModuleNode{
 		ModuleDefinition,
 		moduleNameToken,
-		[]token.Token{myFuncToken},
+		[]exportToken{ myFuncExport },
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 
 	moduleDec := ModuleNode{
 		ModuleDeclaration,
 		moduleNameToken,
-		[]token.Token{},
+		[]exportToken{},
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 
 	export := ModuleNode{
 		ExportList,
 		moduleNameToken,
-		[]token.Token{ myFuncToken },
+		[]exportToken{ myFuncExport },
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 

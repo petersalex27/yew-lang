@@ -5,7 +5,7 @@ import (
 
 	"github.com/petersalex27/yew-packages/lexer"
 	"github.com/petersalex27/yew-packages/source"
-	"github.com/petersalex27/yew-lang/util"
+	"github.com/petersalex27/yew-packages/util/testutil"
 )
 
 func TestAdvanceChar(t *testing.T) {
@@ -24,18 +24,26 @@ func TestAdvanceChar(t *testing.T) {
 	for i, test := range tests {
 		actual, stat := lex.AdvanceChar()
 		if !stat.Is(test.stat) {
-			t.Fatal(util.TestFail2("stat", test.stat, stat, i))
+			t.Fatal(
+				testutil.Testing("stat").
+				FailMessage(test.stat, stat, i))
 		}
 		if actual != test.expect {
-			t.Fatalf(util.TestFail2("byte", test.expect, actual, i))
+			t.Fatal(
+				testutil.Testing("byte").
+				FailMessage(test.expect, actual, i))
 		}
 		
 		line, char := lex.GetLineChar()
 		if test.line != line {
-			t.Fatal(util.TestFail2("line", test.line, line, i))
+			t.Fatal(
+				testutil.Testing("line").
+				FailMessage(test.line, line, i))
 		}
 		if test.char != char {
-			t.Fatalf(util.TestFail2("char", test.char, char, i))
+			t.Fatalf(
+				testutil.Testing("char").
+				FailMessage(test.char, char, i))
 		}
 	}
 }

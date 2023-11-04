@@ -16,7 +16,7 @@ type ModuleNode struct {
 	// ModuleDeclaration, ExportList, ExportHead, ModuleDefinition, or Source
 	ast.Type
 	name token.Token
-	exportList []token.Token
+	exportList []exportToken
 	DefinitionsNode
 }
 
@@ -58,7 +58,8 @@ func (mod ModuleNode) Equals(a ast.Ast) bool {
 	}
 
 	for i, item := range mod.exportList {
-		if !EqualsToken(item, mod2.exportList[i]) {
+		tok1, tok2 := item.token, mod2.exportList[i].token
+		if !EqualsToken(tok1, tok2) {
 			return false
 		}
 	}
@@ -72,7 +73,7 @@ func (mod ModuleNode) NodeType() ast.Type { return mod.Type }
 func (mod ModuleNode) InOrderTraversal(f func(itoken.Token)) {
 	f(mod.name)
 	for _, token := range mod.exportList {
-		f(token)
+		f(token.token)
 	}
 	mod.DefinitionsNode.InOrderTraversal(f)
 }

@@ -29,6 +29,7 @@ func TestSource(t *testing.T) {
 	//moduleName := ast.TokenNode(moduleNameToken)
 
 	myFuncToken := makeIdToken_test("myFunc", 1, 1)
+	myFuncExport := exportToken{false, myFuncToken}
 
 	intToken := makeTypeIdToken_test("Int", 1, 1)
 	intType := types.MakeConst(intToken)
@@ -55,21 +56,21 @@ func TestSource(t *testing.T) {
 	module := ModuleNode{
 		ModuleDefinition,
 		moduleNameToken,
-		[]token.Token{myFuncToken},
+		[]exportToken{myFuncExport},
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 
 	srcNoDefs := ModuleNode{
 		Source,
 		moduleNameToken,
-		[]token.Token{myFuncToken},
+		[]exportToken{myFuncExport},
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 
 	src := ModuleNode{
 		Source,
 		moduleNameToken,
-		[]token.Token{myFuncToken},
+		[]exportToken{myFuncExport},
 		defs,
 	}
 

@@ -14,7 +14,7 @@ require (
 	github.com/petersalex27/yew-packages/source v0.0.0-20231005234018-86372fe4a5de
 	github.com/petersalex27/yew-packages/token v0.0.0-20231003031741-ea929e3ab360
 	github.com/petersalex27/yew-packages/types v0.0.0-20231010022506-2e69eed1f223
-	github.com/petersalex27/yew-packages/util v0.0.0-20231101051618-fca6c86b05f0
+	github.com/petersalex27/yew-packages/util v0.0.0-20231102213652-00000dbc092f
 )
 
 // @v0.0.0-20231011161121-bff57e72ddea

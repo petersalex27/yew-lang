@@ -5,45 +5,56 @@ import (
 
 	"github.com/petersalex27/yew-lang/errors"
 	"github.com/petersalex27/yew-lang/token"
-	//"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	"github.com/petersalex27/yew-packages/source"
 	itoken "github.com/petersalex27/yew-packages/token"
-	//"github.com/petersalex27/yew-packages/types"
 	"github.com/petersalex27/yew-packages/util/testutil"
 )
 
-func TestModuleDec(t *testing.T) {
+func TestExportDone(t *testing.T) {
 	table := parser.
 		ForTypesThrough(_last_type_).
 		UseReductions().
 		Finally(parser.Order(
-			moduleDec__Indent_Module_Id_r,
+			exportDone__export_RightParen_r,
 		))
 
-	indent := ast.TokenNode(token.Indent.Make().AddValue(""))
+	// create handle[1]
+	rparen := ast.TokenNode(token.RightParen.Make())
+
+	// create export element for handle[1]
 	moduleNameToken := token.Id.Make().AddValue("main")
-	moduleName := ast.TokenNode(moduleNameToken)
+	myFuncToken := makeIdToken_test("myFunc", 1, 1)
+	myFuncExport := exportToken{false, myFuncToken}
 
-	module := ast.TokenNode(token.Module.Make())
-
-	moduleDec := ModuleNode{
-		ModuleDeclaration,
+	// create handle[0]
+	export := ModuleNode{
+		ExportList,
 		moduleNameToken,
-		[]exportToken{},
+		[]exportToken{myFuncExport},
+		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
+	}
+
+	// expected value
+	exportDone := ModuleNode{
+		ExportDone,
+		moduleNameToken,
+		[]exportToken{myFuncExport},
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 
 	tests := []struct {
+		description string
 		nodes  []ast.Ast
 		src    source.StaticSource
 		expect ast.AstRoot
 	}{
 		{
-			[]ast.Ast{indent, module, moduleName},
-			parser.MakeSource("test/parser/module", "module main"),
-			ast.AstRoot{moduleDec},
+			"test `exportDone ::= export ')'`",
+			[]ast.Ast{export, rparen},
+			parser.MakeSource("test/parser/export-done", "module main ( myFunc )"),
+			ast.AstRoot{exportDone},
 		},
 	}
 
@@ -60,11 +71,15 @@ func TestModuleDec(t *testing.T) {
 		if p.HasErrors() {
 			es := p.GetErrors()
 			errors.PrintErrors(es...)
-			t.Fatal(testutil.TestFail2("errors", nil, es, i))
+			t.Fatal(
+				testutil.Testing("errors", test.description).
+				FailMessage(nil, es, i))
 		}
 
 		if !actual.Equals(test.expect) {
-			t.Fatal(testutil.TestFail(test.expect, actual, i))
+			t.Fatal(
+				testutil.Testing("equality", test.description).
+				FailMessage(test.expect, actual, i))
 		}
 	}
 }

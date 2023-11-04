@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 )
@@ -20,7 +19,7 @@ func moduleDecReduction(nodes ...ast.Ast) ast.Ast {
 	return ModuleNode{
 		Type: ModuleDeclaration,
 		name: id,
-		exportList: []token.Token{},
+		exportList: []exportToken{},
 		DefinitionsNode: DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 }

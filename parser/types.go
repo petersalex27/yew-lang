@@ -125,16 +125,18 @@ const (
 	ImportList
 	// use import ( myModule, anotherModule, .. )
 	UseList
-	// qualified import ( myModule, anotherModule, .. )
+	// qualified import ( myModule, anotherModule )
 	QualifiedList
 	// use myModule in
 	Namespace
 	// module myModule
 	ModuleDeclaration
-	// module myModule ( myFunc, (%>), .. )
+	// module myModule ( myFunc, (%>) )
 	ModuleDefinition
-	// module myModule ( myFunc, (%>), ..
+	// module myModule ( myFunc, (%>),
 	ExportList
+	// module myModule ( myFunc, MyType )
+	ExportDone
 	// (\x -> x)
 	AnonymousFunction
 	// Just x -> x

@@ -1,4 +1,14 @@
-File to be completed later
+*NOTE: this file is a work in progress*
+
+## Design Goals
+There are three primary design goals for Yew. 
+
+Code written in Yew is ... 
+1. Reusable/Flexible
+2. Bug resistant
+3. Able to use cool, new programming language ideas
+
+## Project Structure
 
 - `./` : main module
   - `update.lua` : useful for when required modules' packages aren't being properly updated
@@ -17,5 +27,7 @@ File to be completed later
 - `./lexer` : module for lexical analysis (text-to-tokens)
 - `./lib` : standard library for Yew
 - `./parser` : module for parser
-- `./token` : module for tokens
+- `./token` : module for tokens, the output of the lexical analysis step
+- `./util`
+- `./ir` : module for translating abstract syntax trees to the intermediate representation (i.e., translation to LLVM-IR)
 - `./assets` : module for assets (yew icon image, for example)

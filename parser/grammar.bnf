@@ -1,17 +1,19 @@
 moduleHead    ::= INDENT 'module' ID
+exportDone    ::= export ')'
 exportHead    ::= moduleHead '('
                   | export ','
+                  | export TYPE_ID ','
+                  | export TYPE_ID '..' ','
 export        ::= exportHead ID
-                  | exportHead TYPE_ID
                   | exportHead SYMBOL
                   | exportHead INFIXED
-                  | exportHead          # only when L.A. is ')'
 module        ::= moduleHead
-                  | export ')'
+                  | exportDone
 source        ::= module 'where' definitions
                   | module
 trait         ::= traitDecl 'where' INDENT functionDef
-                  | trait functionDef
+                  | traitDecl 'where' functionDef @ INDENT # only when L.A. is INDENT
+                  | trait INDENT functionDef
 definitions   ::= INDENT function
                   | INDENT functionDef
                   | INDENT function definitions
@@ -69,11 +71,11 @@ data          ::= pattern
                   | '(' data ')'
 judgement     ::= expr ':' type
                   | '(' judgement ')'
-(INDENT) functionDecl ::= INDENT funcName
+functionDecl  ::= (INDENT) funcName
 functionHead  ::= functionDecl pattern
-                  | functionDecl                # only when L.A. is '=' or ':'
+                  | functionDecl @ '=' | ':'               # only when L.A. is '=' or ':'
 functionDef   ::= functionHead ':' type
-									| functionHead      					# only when L.A. is '='
+									| functionHead @ '='     					# only when L.A. is '='
 function      ::= functionDef '=' expr
 typeDecl      ::= TYPE_ID
                   | typeDecl ID
@@ -85,13 +87,13 @@ type          ::= polytype
                   | '(' type ')'
 polyHead      ::= 'forall' ID
                   | polyHead ID
-polyBinders   ::= polyHead                        # when l.a. is '.'
-                  | '(' polyBinders ')'           #   //
+polyBinders   ::= polyHead @ '.'                       # when l.a. is '.'
+                  | '(' polyBinders ')' @ '.'          #   //
 polytype      ::= polyBinders '.' dependentTyped
 dependentHead ::= 'mapall' varJudgement
                   | dependentHead varJudgement
-dependBinders ::= dependentHead                   # when l.a. is '.'
-                  | '(' dependBinders ')'         #   //
+dependBinders ::= dependentHead @ '.'                  # when l.a. is '.'
+                  | '(' dependBinders ')' @ '.'         #   //
 dependent     ::= dependBinders '.' monotype
 dependInst    ::= arrayHead ']'
 arrayHead     ::= '[' monotype

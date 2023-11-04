@@ -5,12 +5,10 @@ import (
 
 	"github.com/petersalex27/yew-lang/errors"
 	"github.com/petersalex27/yew-lang/token"
-	//"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	"github.com/petersalex27/yew-packages/source"
 	itoken "github.com/petersalex27/yew-packages/token"
-	//"github.com/petersalex27/yew-packages/types"
 	"github.com/petersalex27/yew-packages/util/testutil"
 )
 
@@ -20,10 +18,8 @@ func TestExportList(t *testing.T) {
 		UseReductions().
 		Finally(parser.Order(
 			export__exportHead_Id_r,
-			export__exportHead_TypeId_r,
 			export__exportHead_Symbol_r,
 			export__exportHead_Infixed_r,
-			export__exportHead_r,
 		))
 
 	//rparen := ast.TokenNode(token.RightParen.Make())
@@ -32,97 +28,102 @@ func TestExportList(t *testing.T) {
 	//moduleName := ast.TokenNode(moduleNameToken)
 
 	idToken := makeIdToken_test("id", 1, 1)
+	idExport := exportToken{false, idToken}
 	id := ast.TokenNode(idToken)
 
-	charToken := makeTypeIdToken_test("Char", 1, 1)
-	char := ast.TokenNode(charToken)
+	identToken := makeIdToken_test("ident", 1, 1)
+	identExport := exportToken{false, identToken}
+	ident := ast.TokenNode(identToken)
 
 	notToken := token.Symbol.Make().AddValue("!").SetLineChar(1,1).(token.Token)
+	notExport := exportToken{false, notToken}
 	not := ast.TokenNode(notToken)
 
 	bindToken := token.Infixed.Make().AddValue("(>>=)").SetLineChar(1,1).(token.Token)
+	bindExport := exportToken{false, bindToken}
 	bind := ast.TokenNode(bindToken)
 
 	exportHead := ModuleNode{
 		ExportHead,
 		moduleNameToken,
-		[]token.Token{},
+		[]exportToken{},
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 
 	exportHead2 := ModuleNode{
 		ExportHead,
 		moduleNameToken,
-		[]token.Token{idToken},
+		[]exportToken{idExport},
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 
 	exportId := ModuleNode{
 		ExportList,
 		moduleNameToken,
-		[]token.Token{idToken},
-		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
-	}
-
-	exportTypeId := ModuleNode{
-		ExportList,
-		moduleNameToken,
-		[]token.Token{charToken},
+		[]exportToken{idExport},
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 
 	exportSymbol := ModuleNode{
 		ExportList,
 		moduleNameToken,
-		[]token.Token{notToken},
+		[]exportToken{notExport},
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 
 	exportInfixed := ModuleNode{
 		ExportList,
 		moduleNameToken,
-		[]token.Token{bindToken},
+		[]exportToken{bindExport},
+		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
+	}
+
+	exportIdAndIdent := ModuleNode{
+		ExportList,
+		moduleNameToken,
+		[]exportToken{idExport, identExport},
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 
 	exportIdAndInfixed := ModuleNode{
 		ExportList,
 		moduleNameToken,
-		[]token.Token{idToken, bindToken},
+		[]exportToken{idExport, bindExport},
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 
 	tests := []struct {
+		description string
 		nodes  []ast.Ast
 		src    source.StaticSource
 		expect ast.AstRoot
 	}{
 		{
+			"test `export ::= exportHead ID`",
 			[]ast.Ast{exportHead, id},
 			parser.MakeSource("test/parser/export", "module main ( id"),
 			ast.AstRoot{exportId},
 		},
 		{
-			[]ast.Ast{exportHead, char},
-			parser.MakeSource("test/parser/export", "module main ( Char"),
-			ast.AstRoot{exportTypeId},
-		},
-		{
+			"test `export ::= exportHead SYMBOL`",
 			[]ast.Ast{exportHead, not},
 			parser.MakeSource("test/parser/export", "module main ( !"),
 			ast.AstRoot{exportSymbol},
 		},
 		{
+			"test `export ::= exportHead INFIXED`",
 			[]ast.Ast{exportHead, bind},
 			parser.MakeSource("test/parser/export", "module main ( (>>=)"),
 			ast.AstRoot{exportInfixed},
 		},
 		{
-			[]ast.Ast{exportHead2},
-			parser.MakeSource("test/parser/export", "module main ( id, )"),
-			ast.AstRoot{exportId},
+			"test export production w/ ID on module node w/ items already exported",
+			[]ast.Ast{exportHead2, ident},
+			parser.MakeSource("test/parser/export", "module main ( id, ident"),
+			ast.AstRoot{exportIdAndIdent},
 		},
 		{
+			"test export production w/ SYMBOL on module node w/ items already exported",
 			[]ast.Ast{exportHead2, bind},
 			parser.MakeSource("test/parser/export", "module main ( id, (>>=)"),
 			ast.AstRoot{exportIdAndInfixed},
@@ -142,11 +143,15 @@ func TestExportList(t *testing.T) {
 		if p.HasErrors() {
 			es := p.GetErrors()
 			errors.PrintErrors(es...)
-			t.Fatal(testutil.TestFail2("errors", nil, es, i))
+			t.Fatal(
+				testutil.Testing("errors", test.description).
+				FailMessage(nil, es, i))
 		}
 
 		if !actual.Equals(test.expect) {
-			t.Fatal(testutil.TestFail(test.expect, actual, i))
+			t.Fatal(
+				testutil.Testing("equality", test.description).
+				FailMessage(test.expect, actual, i))
 		}
 	}
 }
