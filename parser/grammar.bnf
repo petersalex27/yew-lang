@@ -60,7 +60,7 @@ funcName      ::= SYMBOL
                   | ID
 param         ::= ID
                   | THUNKED
-# updated
+# TODO: updated
 constructor   ::= TYPE_ID
                   | typeDecl
                   | constructor name
@@ -109,7 +109,8 @@ functionDef   ::= functionHead ':' type
 # TODO: new
 functionDefs  ::= ( indent(n) ) functionDef
                   | ( indent(n) ) functionDef INDENT(n) functionDefs
-function      ::= functionDef '=' expr
+# TODO: update
+function      ::= functionDef '=' indent(n) expr
 # TODO: new
 # think about this as making an expression composed of a sequence of functions
 functions     ::= ( indent(n) ) function

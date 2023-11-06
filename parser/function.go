@@ -51,8 +51,21 @@ func (f FunctionNode) deconstruct() FunctionNode {
 	return f
 }
 
-func functionReduction(nodes ...ast.Ast) ast.Ast {
-	const funcDefIndex, _, bodyIndex int = 0, 1, 2
+// =============================================================================
+// function production rule
+// =============================================================================
+
+// function <- functionDef '=' expr
+var function__functionDef_Assign_exprBlock_expr_r = parser. 
+	Get(functionProduction).
+	From(FunctionDefinition, Assign, IndentExprBlock, Expr)
+
+// =============================================================================
+// function production function
+// =============================================================================
+
+func functionProduction(nodes ...ast.Ast) ast.Ast {
+	const funcDefIndex, _, _, bodyIndex int = 0, 1, 2, 3
 	funcDef := nodes[funcDefIndex].(FunctionDefNode)
 	body := nodes[bodyIndex].(ExpressionNode).Expression
 	return FunctionNode{
@@ -60,11 +73,6 @@ func functionReduction(nodes ...ast.Ast) ast.Ast {
 		body: body,
 	}
 }
-
-// function <- functionDef '=' expr
-var function__functionDef_Assign_expr_r = parser. 
-	Get(functionReduction).
-	From(FunctionDefinition, Assign, Expr)
 
 func (f FunctionNode) Equals(a ast.Ast) bool {
 	f2, ok := a.(FunctionNode)
