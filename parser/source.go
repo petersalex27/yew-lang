@@ -6,24 +6,28 @@ import (
 )
 
 /*
-source        ::= module 'where' definitions
+source        ::= module 'where' indent(n) definitions
                   | module
 */
 
-// == source reduction rules ==================================================
+// =============================================================================
+// source production rules
+// =============================================================================
 
-var source__module_Where_definitions_r = parser. 
-	Get(defineModuleSourceReduction). 
-	From(ModuleDefinition, Where, Definitions)
+var source__module_Where_exprBlock_definitions_r = parser. 
+	Get(defineModuleSourceProduction). 
+	From(ModuleDefinition, Where, IndentExprBlock, Definitions)
 
 var source_module_r = parser. 
 	Get(rewriteModuleTypeReduction(Source)). 
 	From(ModuleDefinition)
 
-// == source reduction functions ==============================================
+// =============================================================================
+// source production functions
+// =============================================================================
 
-func defineModuleSourceReduction(nodes ...ast.Ast) ast.Ast {
-	const moduleIndex, _, defsIndex int = 0, 1, 2
+func defineModuleSourceProduction(nodes ...ast.Ast) ast.Ast {
+	const moduleIndex, _, _, defsIndex int = 0, 1, 2, 3
 	module := nodes[moduleIndex].(ModuleNode)
 	defs := nodes[defsIndex].(DefinitionsNode)
 	module.DefinitionsNode = defs

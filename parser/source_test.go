@@ -19,11 +19,12 @@ func TestSource(t *testing.T) {
 		ForTypesThrough(_last_type_).
 		UseReductions().
 		Finally(parser.Order(
-			source__module_Where_definitions_r,
+			source__module_Where_exprBlock_definitions_r,
 			source_module_r,
 		))
 
 	where := ast.TokenNode(token.Where.Make())
+	indent := ExprBlockStart(token.Indent.Make().AddValue(""))
 
 	moduleNameToken := token.Id.Make().AddValue("main")
 	//moduleName := ast.TokenNode(moduleNameToken)
@@ -75,12 +76,14 @@ func TestSource(t *testing.T) {
 	}
 
 	tests := []struct {
+		desc string
 		nodes  []ast.Ast
 		src    source.StaticSource
 		expect ast.AstRoot
 	}{
 		{
-			[]ast.Ast{module, where, defs},
+			"source ::= module 'where' indent(n) definitions",
+			[]ast.Ast{module, where, indent, defs},
 			parser.MakeSource("test/parser/source", 
 				"module main ( myFunc ) where",
 				"myFunc: Int -> Int",
@@ -89,8 +92,9 @@ func TestSource(t *testing.T) {
 			ast.AstRoot{src},
 		},
 		{
+			"source ::= module",
 			[]ast.Ast{module},
-			parser.MakeSource("test/parser/source", "module main ( )"),
+			parser.MakeSource("test/parser/source", "module main"),
 			ast.AstRoot{srcNoDefs},
 		},
 	}
@@ -108,11 +112,11 @@ func TestSource(t *testing.T) {
 		if p.HasErrors() {
 			es := p.GetErrors()
 			errors.PrintErrors(es...)
-			t.Fatal(testutil.TestFail2("errors", nil, es, i))
+			t.Fatal(testutil.Testing("errors",test.desc).FailMessage(nil, es, i))
 		}
 
 		if !actual.Equals(test.expect) {
-			t.Fatal(testutil.TestFail(test.expect, actual, i))
+			t.Fatal(testutil.Testing("equality",test.desc).FailMessage(test.expect, actual, i))
 		}
 	}
 }

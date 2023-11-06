@@ -29,7 +29,6 @@ export        ::= exportHead ID
                   | exportHead INFIXED
 module        ::= moduleHead
                   | exportDone
-# TODO: updated
 source        ::= module 'where' indent(n) definitions
                   | module
 # TODO: updated
