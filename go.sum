@@ -49,6 +49,8 @@ github.com/petersalex27/yew-packages/parser v0.0.0-20231031015540-24a59fa3be45 h
 github.com/petersalex27/yew-packages/parser v0.0.0-20231031015540-24a59fa3be45/go.mod h1:r5uL+cTwk4owI9MkLEmhb9lLbI7nzKSupOI1I4xxRBM=
 github.com/petersalex27/yew-packages/parser v0.0.0-20231031021409-4c9227f1c059 h1:DhlXpMFby++G4E9m670c7IJhmsuxFmgMeJo2hxvqqh8=
 github.com/petersalex27/yew-packages/parser v0.0.0-20231031021409-4c9227f1c059/go.mod h1:r5uL+cTwk4owI9MkLEmhb9lLbI7nzKSupOI1I4xxRBM=
+github.com/petersalex27/yew-packages/parser v0.0.0-20231104215504-b0b077579199 h1:kDYJbfLfRG22z/KHMPtufzQdqgs93EsxTQGMvY84Lv0=
+github.com/petersalex27/yew-packages/parser v0.0.0-20231104215504-b0b077579199/go.mod h1:r5uL+cTwk4owI9MkLEmhb9lLbI7nzKSupOI1I4xxRBM=
 github.com/petersalex27/yew-packages/source v0.0.0-20231005234018-86372fe4a5de h1:3g4E0QdbfQTsGpzyqYsSUoJ8qqJo1rD2BDGDM3QmiMg=
 github.com/petersalex27/yew-packages/source v0.0.0-20231005234018-86372fe4a5de/go.mod h1:Kqf+tQSWdIsH+ss0SWIZxUhsGGMAxe+zbLf9Iz8SgQU=
 github.com/petersalex27/yew-packages/stringable v0.0.0-20231003031741-ea929e3ab360 h1:Puvxt0KuP0EphqYLFuzlk90YcQEXctRvTxLS5TQVWR4=
@@ -67,6 +69,8 @@ github.com/petersalex27/yew-packages/util v0.0.0-20231101051618-fca6c86b05f0 h1:
 github.com/petersalex27/yew-packages/util v0.0.0-20231101051618-fca6c86b05f0/go.mod h1:zDtG3xFP3nukNZ1tVun7j5q9FhLediwYFLlXC/zTu0c=
 github.com/petersalex27/yew-packages/util v0.0.0-20231102213652-00000dbc092f h1:wMzNWz2Q6TnEqtaJJI7VNZTVGBn9QJw/+B5cd9WCL/c=
 github.com/petersalex27/yew-packages/util v0.0.0-20231102213652-00000dbc092f/go.mod h1:zDtG3xFP3nukNZ1tVun7j5q9FhLediwYFLlXC/zTu0c=
+github.com/petersalex27/yew-packages/util v0.0.0-20231105210912-9f22ce244cd5 h1:Nn+eQiedDBNZiO82WcFKPUIH6qWYvXFj4W9en+wx8OA=
+github.com/petersalex27/yew-packages/util v0.0.0-20231105210912-9f22ce244cd5/go.mod h1:zDtG3xFP3nukNZ1tVun7j5q9FhLediwYFLlXC/zTu0c=
 golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.12.0 h1:CM0HF96J0hcLAwsHPJZjfdNzs0gftsLfgKt57wWHJ0o=

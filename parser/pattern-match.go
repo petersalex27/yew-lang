@@ -1,11 +1,11 @@
 package parser
 
 import (
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/expr"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	itoken "github.com/petersalex27/yew-packages/token"
-	"github.com/petersalex27/yew-lang/token"
 )
 
 func astToCase(a ast.Ast) CaseNode { return a.(CaseNode) }
@@ -17,7 +17,7 @@ func (cs CaseNode) Equals(a ast.Ast) bool {
 	if !ok {
 		return false
 	}
-	
+
 	if len(cs) != len(cs2) {
 		return false
 	}
@@ -48,15 +48,15 @@ case          ::= case pattern '->' expr
 */
 
 // patternMatch <- expr 'when' case
-var patternMatch__expr_When_case_r = parser. 
-	Get(patternMatchReduction).From(Expr, When, Case)
+var patternMatch__expr_Match_case_r = parser.
+	Get(patternMatchReduction).From(Expr, Match, Case)
 
 // case <- case pattern '->' expr
-var case__case_pattern_Arrow_expr_r = parser. 
+var case__case_pattern_Arrow_expr_r = parser.
 	Get(caseJoinReduction).From(Case, Pattern, Arrow, Expr)
 
 // case <- pattern '->' expr
-var case__pattern_Arrow_expr_r = parser. 
+var case__pattern_Arrow_expr_r = parser.
 	Get(caseReduction).From(Pattern, Arrow, Expr)
 
 // for each case: collect vars declared in `data`, using them to bind
@@ -65,7 +65,7 @@ var case__pattern_Arrow_expr_r = parser.
 var arbitraryExpressionVariable = expr.Var(
 	token.Id.Make().
 		AddValue("_").
-		SetLineChar(1,1).(token.Token),
+		SetLineChar(1, 1).(token.Token),
 )
 
 func patternMatchReduction(nodes ...ast.Ast) ast.Ast {
@@ -82,16 +82,15 @@ func caseReduction(nodes ...ast.Ast) ast.Ast {
 	const patternIndex, _, exprIndex int = 0, 1, 2
 	pattern := nodes[patternIndex].(SomeExpression).Expression
 	expression := astToExpression(nodes[exprIndex]).Expression
-	var binders expr.BindersOnly[token.Token] = 
-		pattern.ExtractFreeVariables(arbitraryExpressionVariable)
+	var binders expr.BindersOnly[token.Token] = pattern.ExtractFreeVariables(arbitraryExpressionVariable)
 	expression.Bind(binders)
-	return CaseNode{binders.InCase(pattern, expression),}
+	return CaseNode{binders.InCase(pattern, expression)}
 }
 
 func caseJoinReduction(nodes ...ast.Ast) ast.Ast {
 	const caseIndex, rightCaseStartIndex, _, _ int = 0, 1, 2, 3
 
-	// right case from index 1, 2, and 3 (which is why index 2 and 3 need not 
+	// right case from index 1, 2, and 3 (which is why index 2 and 3 need not
 	// have associated const identifiers)
 	rightCase := caseReduction(nodes[rightCaseStartIndex:]...).(CaseNode)
 

@@ -28,6 +28,16 @@ const (
 	newKindVariable string = "newKindVariable"
 )
 
+// =============================================================================
+// error carrier type
+// =============================================================================
+
+// allows error to be sent back to caller and caller to send badItem
+type errorCarrier struct {
+	error
+	badItem any
+}
+
 // generates all available parser actions:
 //		getPath(pathDest *string)
 //		newTypeVariable(typeVariableDest *types.Variable[token.Token])

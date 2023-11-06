@@ -10,11 +10,11 @@ go 1.20
 require (
 	github.com/petersalex27/yew-packages/errors v0.0.0-20231003031741-ea929e3ab360
 	github.com/petersalex27/yew-packages/lexer v0.0.0-20231101070943-9dfcf8a43196
-	github.com/petersalex27/yew-packages/parser v0.0.0-20231031021409-4c9227f1c059
+	github.com/petersalex27/yew-packages/parser v0.0.0-20231104215504-b0b077579199
 	github.com/petersalex27/yew-packages/source v0.0.0-20231005234018-86372fe4a5de
 	github.com/petersalex27/yew-packages/token v0.0.0-20231003031741-ea929e3ab360
 	github.com/petersalex27/yew-packages/types v0.0.0-20231010022506-2e69eed1f223
-	github.com/petersalex27/yew-packages/util v0.0.0-20231102213652-00000dbc092f
+	github.com/petersalex27/yew-packages/util v0.0.0-20231105210912-9f22ce244cd5
 )
 
 // @v0.0.0-20231011161121-bff57e72ddea

@@ -2,8 +2,8 @@ module prelude (
   __array__,
   if, for,
   Int, Uint, Char, String, Bool, Float
-  (;)
-)
+  {;}
+) where
 
 Int = __int__
 Float = __float__
@@ -12,50 +12,67 @@ String = __string__
 Uint = __int__
 Bool = True | False
 
-[a; n: Uint] = 
-  []: [a; 0] | 
-  (::) a [a; n]: [a; n+1] 
 
-Branch a; (b: Bool) =
-  then a: Branch a; True @delimit
-  | else a: Branch a; False @delimit
 
-if cond true false: Bool -> (Branch a; True) -> (Branch a; False) -> ((Branch a; True) | (Branch a; False))
+-*@Doc 
+ * Array: an (@Code n)-element sequence of type (@Code a)
+**-
+[a; n: Uint] =
+  []: [a; 0]
+  | {::} a [a; n]: [a; n+1]
 
-if cond true false: cond -> (Branch a; cond) = cond when
-  True -> then x
-  Else 
-if: Bool -> (Branch a; True) -> (Branch a; False) -> a
-if cond true false 
 
-@lazy
-(&&) a b: Bool -> Bool -> Bool = 
-  if a then b else False
+-*@Doc
+* Ret
+*-
+if _ then _ else _: Bool -> a -> a -> a
+if c then t else f = 
+  match c in
+    True -> t
+    and False -> f
 
-@lazy
-(||) a b: Bool -> Bool -> Bool = 
-  if a then True else b
 
-! a: Bool -> Bool = 
-  if a then False else True
+_ && _: Bool -> Bool -> Bool
+a && b = if a then b else False
+
+_ || _: Bool -> Bool -> Bool
+a || b = if a then True else b
+
+! : Bool -> Bool
+! a = if a then False else True
 
 -- ignores result of first argument;
 -- this is useful for forcing an expression to evaluate
 -- without needing to use the value of it
-(;): _ -> a -> a
-(;) _ f = f
+_; _: a -> b -> b
+_; f = f
 
-for: Iterable f => (@action (@context a (f a)) (a -> ()))
--*
- * --param e: iteration variable
- * --param elems: iterable value
- * --param {} 
-*-
-for e in elems do action =
-  if hasNext elems then                  -- check iterator
-    let e, elems' = next elems in        -- iterate
-    let action' = (\x -> action x) in    -- create thunk
-    e = e';                              -- update state
-    action e;                            -- force thunk
-    for e in elems' do action'           -- tail recursive call
-  else ()                                -- base case
+-- let captures all things on the next tokens indentation line
+let
+x = 3
+y = 5
+
+-- also okay
+let
+  x = 3
+  y = 5
+
+-- also okay
+  let
+x = 3
+y = 4
+
+-- okay, continue based on token following 'in'
+let x = 3 in
+let x = 4 ..
+
+-- okay, continue based on token following 'in'
+match x in 
+  Thing -> ..
+
+-- okay, continue based on token following 'match'
+match
+x ..
+
+module main
+where

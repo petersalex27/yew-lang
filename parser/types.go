@@ -58,7 +58,7 @@ const (
 	Module = ast.Type(token.Module)
 
 	Import               = ast.Type(token.Import)
-	When                 = ast.Type(token.When)
+	Match                = ast.Type(token.Match)
 	From                 = ast.Type(token.From)
 	In                   = ast.Type(token.In)
 	Where                = ast.Type(token.Where)
@@ -197,5 +197,9 @@ const (
 	PolyHead
 	// forall a b
 	PolyBinders
+	//
+	IndentExprBlock
+	//
+	Error
 	_last_type_
 )

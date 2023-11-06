@@ -38,7 +38,7 @@ const (
 	Infixed
 	/*keywords*/ _keyword_start_ // do not use!
 	Let
-	When
+	Match
 	Trait
 	Import
 	Use
@@ -63,7 +63,7 @@ func (t TokenType) IsKeyword() bool {
 
 var builtinMap = map[TokenType]string{
 	Let:          "let",
-	When:         "when",
+	Match:        "match",
 	Trait:        "trait",
 	Import:       "import",
 	Use:          "use",
@@ -102,10 +102,10 @@ func (t TokenType) Make() Token {
 		value = ""
 	}
 	return Token{
-		ty:    t,
+		ty: t,
 		// this may not always be correct, but can be set to something else later
 		length: len(value),
-		value: value,
+		value:  value,
 	}
 }
 

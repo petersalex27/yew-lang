@@ -12,12 +12,12 @@ var keywords = map[string]token.TokenType{
 	"in":        token.In,
 	"let":       token.Let,
 	"mapall":    token.Mapall,
+	"match":     token.Match,
 	"module":    token.Module,
 	"of":        token.Of,
 	"trait":     token.Trait,
 	"qualified": token.Qualified,
 	"use":       token.Use,
-	"when":      token.When,
 	"where":     token.Where,
 }
 
@@ -44,10 +44,10 @@ var keywordTrie = map[byte]map[string]token.TokenType{
 	'f': {"family": token.Family, "forall": token.Forall, "from": token.From},
 	'i': {"import": token.Import, "in": token.In},
 	'l': {"let": token.Let},
-	'm': {"mapall": token.Mapall, "module": token.Module},
+	'm': {"mapall": token.Mapall, "match": token.Match, "module": token.Module},
 	'o': {"of": token.Of},
 	'q': {"qualified": token.Qualified},
 	't': {"trait": token.Trait},
 	'u': {"use": token.Use},
-	'w': {"when": token.When, "where": token.Where},
+	'w': {"where": token.Where},
 }

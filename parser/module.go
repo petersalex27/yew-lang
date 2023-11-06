@@ -9,7 +9,7 @@ import (
 
 /*
 module        ::= moduleHead
-                  | export ')'
+                  | exportDone
 */
 
 type ModuleNode struct {
@@ -26,9 +26,9 @@ var module__moduleDec_r = parser.
 	Get(rewriteModuleTypeReduction(ModuleDefinition)). 
 	From(ModuleDeclaration)
 
-var module__export_RightParen_r = parser. 
+var module__exportDone_r = parser. 
 	Get(rewriteModuleTypeReduction(ModuleDefinition)). 
-	From(ExportList, RightParen)
+	From(ExportDone)
 
 // == module reduction functions ==============================================
 

@@ -20,10 +20,8 @@ func TestModule(t *testing.T) {
 		UseReductions().
 		Finally(parser.Order(
 			module__moduleDec_r,
-			module__export_RightParen_r,
+			module__exportDone_r,
 		))
-
-	rparen := ast.TokenNode(token.RightParen.Make())
 
 	moduleNameToken := token.Id.Make().AddValue("main")
 	//moduleName := ast.TokenNode(moduleNameToken)
@@ -53,8 +51,8 @@ func TestModule(t *testing.T) {
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
 	}
 
-	export := ModuleNode{
-		ExportList,
+	exportDone := ModuleNode{
+		ExportDone,
 		moduleNameToken,
 		[]exportToken{ myFuncExport },
 		DefinitionsNode{[]FunctionNode{}, []FunctionDefNode{}},
@@ -93,7 +91,7 @@ func TestModule(t *testing.T) {
 			ast.AstRoot{module},
 		},
 		{
-			[]ast.Ast{export, rparen},
+			[]ast.Ast{exportDone},
 			parser.MakeSource("test/parser/module", "module main ( myFunc )"),
 			ast.AstRoot{moduleWithExport},
 		},

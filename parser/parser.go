@@ -12,6 +12,7 @@ import (
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	"github.com/petersalex27/yew-packages/source"
+	"github.com/petersalex27/yew-packages/util/stack"
 
 	//itoken "github.com/petersalex27/yew-packages/token"
 	itoken "github.com/petersalex27/yew-packages/token"
@@ -94,6 +95,7 @@ func newContext(path string) *Context {
 	p.exprCxt = expr.NewContext[token.Token]()
 	p.typeCxt = types.NewContext[token.Token]()
 	p.path = path
+	p.indentStack = *stack.NewStack[string](8)
 	//p.src = parser.MakeSource(path)
 	return p
 }
@@ -133,6 +135,7 @@ type Context struct {
 	exprMutex *sync.Mutex                 // expression mutex lock
 	typeCxt   *types.Context[token.Token] // type context
 	exprCxt   *expr.Context[token.Token]  // expression context
+	indentStack stack.Stack[string]				// indentation stack
 }
 
 // Sets context to nil and returns ticket to ticket vendor.
