@@ -105,12 +105,12 @@ functionDecl  ::= funcName
 functionHead  ::= functionDecl pattern
                   | functionDecl @ '=' | ':'               # only when L.A. is '=' or ':'
 functionDef   ::= functionHead ':' type
-									| functionHead @ '='     					# only when L.A. is '='
-# TODO: new
-functionDefs  ::= ( indent(n) ) functionDef
+									| functionHead @ '='
+functionDefs  ::= ( INDENT(n) ) functionDef INDENT(n) functionDefs
+                  | ( INDENT(n) ) functionDef
                   | ( indent(n) ) functionDef INDENT(n) functionDefs
+                  | ( indent(n) ) functionDef
 function      ::= functionDef '=' indent(n) expr
-# TODO: new
 # think about this as making an expression composed of a sequence of functions
 functions     ::= ( INDENT(n) ) function INDENT(n) functions
                   | ( INDENT(n) ) function

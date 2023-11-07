@@ -92,8 +92,6 @@ var indentMatchPrecondition_0_2 = indentMatchPreconditionGen(0, 2)
 // FunctionNodeInstances's ast.Ast implementation
 // =============================================================================
 
-
-
 func (f FunctionNodeInstances) Equals(a ast.Ast) bool {
 	f2, ok := a.(FunctionNodeInstances)
 	if !ok {

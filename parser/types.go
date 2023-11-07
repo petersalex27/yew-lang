@@ -111,6 +111,9 @@ const (
 	Source
 	// f x: Int -> Int
 	FunctionDefinition
+	// f x: Int -> Int
+	// g x: Int -> Int
+	FunctionDefinitions
 	// f x
 	FunctionHead
 	// f
