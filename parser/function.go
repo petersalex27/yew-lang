@@ -55,7 +55,7 @@ func (f FunctionNode) deconstruct() FunctionNode {
 // function production rule
 // =============================================================================
 
-// function <- functionDef '=' expr
+// function ::= functionDef '=' ( indent(n) ) expr
 var function__functionDef_Assign_exprBlock_expr_r = parser. 
 	Get(functionProduction).
 	From(FunctionDefinition, Assign, IndentExprBlock, Expr)

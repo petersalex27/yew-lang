@@ -109,12 +109,13 @@ functionDef   ::= functionHead ':' type
 # TODO: new
 functionDefs  ::= ( indent(n) ) functionDef
                   | ( indent(n) ) functionDef INDENT(n) functionDefs
-# TODO: update
 function      ::= functionDef '=' indent(n) expr
 # TODO: new
 # think about this as making an expression composed of a sequence of functions
-functions     ::= ( indent(n) ) function
+functions     ::= ( INDENT(n) ) function INDENT(n) functions
+                  | ( INDENT(n) ) function
                   | ( indent(n) ) function INDENT(n) functions
+                  | ( indent(n) ) function
 typeDecl      ::= TYPE_ID
                   | typeDecl ID
 # TODO: new

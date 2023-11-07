@@ -117,6 +117,9 @@ const (
 	FunctionDecl
 	// f x: Int -> Int = x
 	Function
+	// f x: Int -> Int = x
+	// g y: Int -> Int = y
+	FunctionInstances
 	// BinaryTree a = Leaf a | Brach (BinaryTree a) (BinaryTree a)
 	TypeDef
 	// BinaryTree a
