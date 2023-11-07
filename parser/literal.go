@@ -36,7 +36,7 @@ func literalConstReduction(nodes ...ast.Ast) ast.Ast {
 }
 
 func literalFromLiteralArrayReduction(nodes ...ast.Ast) ast.Ast {
-	e := nodes[0].(ArrayNode).getExpression().Expression
+	e := nodes[0].(ArrayNode).List
 	return LiteralNode{e}
 }
 

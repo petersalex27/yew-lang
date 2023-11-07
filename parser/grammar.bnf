@@ -64,7 +64,6 @@ funcName      ::= SYMBOL
                   | ID
 param         ::= ID
                   | THUNKED
-# TODO: updated
 constructor   ::= TYPE_ID
                   | typeDecl
                   | constructor name
@@ -77,9 +76,9 @@ expr          ::= val
                   | data
                   | funcName
                   | letExpr
+                  | whereExpr
                   | application
                   | pattern
-                  | whereExpr
                   | judgement
                   | '(' expr ')'
                   | ( '(' ) expr INDENT(_)

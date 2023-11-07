@@ -17,7 +17,7 @@ var varJudgement__Id_Colon_monotype_r = parser.
 	Get(varJudgementReduction).From(Id, Colon, Monotype)
 
 var varJudgement__enclosed_r = parser.
-	Get(parenEnclosedReduction).
+	Get(parenEnclosedProduction).
 	From(LeftParen, VarJudgement, RightParen)
 
 // == variable judgement reductions ===========================================

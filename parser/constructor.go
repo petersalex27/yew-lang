@@ -25,6 +25,10 @@ import (
 	itoken "github.com/petersalex27/yew-packages/token"
 )
 
+// =============================================================================
+// production rules
+// =============================================================================
+
 var constructor__TypeId_r = parser.
 	Get(constructorSingleProduction).From(TypeId)
 
@@ -38,10 +42,10 @@ var constructor__constructor_constructor_r = parser.
 	Get(constructorBinaryProduction).From(Constructor, Constructor)
 
 var constructor__enclosed_r = parser.
-	Get(parenEnclosedReduction).From(LeftParen, Constructor, RightParen)
+	Get(parenEnclosedProduction).From(LeftParen, Constructor, RightParen)
 
 var constructor__LeftParen_constructor_Indent_r = parser.
-	Get(constructorGrabInitialProduction).
+	Get(grabInitialProduction).
 	When(LeftParen).
 	From(Constructor, Indent)
 
@@ -54,13 +58,6 @@ var constructorSingleProduction = giveTypeToTokenProductionGen(Constructor)
 
 // takes two constructors and produces a single constructor
 var constructorBinaryProduction = simpleBinaryNodeRule(Constructor)
-
-// grabs a constructor node from the first element of nodes and discard the 
-// remaining nodes
-func constructorGrabInitialProduction(nodes ...ast.Ast) ast.Ast {
-	const constructorIndex, _ int = 0, 1
-	return nodes[constructorIndex]
-}
 
 // =============================================================================
 // utils

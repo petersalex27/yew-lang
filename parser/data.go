@@ -35,4 +35,4 @@ var data__data_expr_r = parser.
 	Get(dataAppendExprReduction).From(Data, Expr)
 
 var data__enclosed_r = parser.
-	Get(parenEnclosedReduction).From(LeftParen, Data, RightParen)
+	Get(parenEnclosedProduction).From(LeftParen, Data, RightParen)

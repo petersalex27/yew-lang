@@ -40,7 +40,7 @@ func TestVal(t *testing.T) {
 		{
 			[]ast.Ast{array},
 			parser.MakeSource("test/parser/val", "[1,1]"),
-			ast.AstRoot{SomeExpression{Val, array.getExpression().Expression}},
+			ast.AstRoot{SomeExpression{Val, array.List}},
 		},
 	}
 

@@ -16,7 +16,7 @@ var polyBinders__polyHead_r = parser.
 	Get(polyBindersFromPolyHeadReduction).From(PolyHead)
 
 var polyBinders__enclosed_r = parser.
-	Get(parenEnclosedReduction).From(LeftParen, PolyBinders, RightParen)
+	Get(parenEnclosedProduction).From(LeftParen, PolyBinders, RightParen)
 
 // == polytype binders reductions =============================================
 

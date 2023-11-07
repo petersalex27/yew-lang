@@ -30,7 +30,7 @@ var monotype__monotype_Arrow_monotype_r = parser.
 	From(Monotype, Arrow, Monotype)
 
 var monotype__enclosed_r = parser.
-	Get(parenEnclosedReduction).
+	Get(parenEnclosedProduction).
 	From(LeftParen, Monotype, RightParen)
 
 var monotype__TypeId_r = parser.

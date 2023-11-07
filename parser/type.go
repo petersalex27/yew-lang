@@ -36,7 +36,7 @@ var type__dependent_r = parser.
 
 // type <- '(' type ')'
 var type__enclosed_r = parser.
-	Get(parenEnclosedReduction).From(LeftParen, Type, RightParen)
+	Get(parenEnclosedProduction).From(LeftParen, Type, RightParen)
 
 type TypeNode struct {
 	ty ast.Type

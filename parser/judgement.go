@@ -25,7 +25,7 @@ var judgement__expr_Colon_type_r = parser.
 	From(Expr, Colon, Type)
 
 var judgement__enclosed_r = parser.
-	Get(parenEnclosedReduction).
+	Get(parenEnclosedProduction).
 	From(LeftParen, TypeJudgement, RightParen)
 
 var judgement__varJudgement_r = parser.

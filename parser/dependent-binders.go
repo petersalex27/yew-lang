@@ -19,7 +19,7 @@ var dependBinders__dependHead_r = parser.
 	Get(dependentBindersFromHeadReduction).From(DependHead)
 
 var dependBinders__enclosed_r = parser.
-	Get(parenEnclosedReduction).From(LeftParen, DependBinders, RightParen)
+	Get(parenEnclosedProduction).From(LeftParen, DependBinders, RightParen)
 
 // == dependent binders reductions ============================================
 

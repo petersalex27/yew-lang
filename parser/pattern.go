@@ -102,7 +102,7 @@ var pattern__pattern_pattern_r = parser.
 	Get(applyPatternsReduction).
 	From(Pattern, Pattern)
 
-var pattern__enclosed_r = parser.Get(parenEnclosedReduction).From(LeftParen, Pattern, RightParen)
+var pattern__enclosed_r = parser.Get(parenEnclosedProduction).From(LeftParen, Pattern, RightParen)
 
 func applyPatternsReduction(nodes ...ast.Ast) ast.Ast {
 	const leftIndex, rightIndex int = 0, 1
