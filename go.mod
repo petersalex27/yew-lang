@@ -22,7 +22,16 @@ require (
 require github.com/petersalex27/yew-packages/bridge v0.0.0-20231011161121-bff57e72ddea
 
 require (
+	github.com/mewmew/float v0.0.0-20201204173432-505706aa38fa // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	golang.org/x/mod v0.4.2 // indirect
+	golang.org/x/tools v0.1.4 // indirect
+	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+)
+
+require (
 	github.com/fatih/color v1.15.0 // indirect
+	github.com/llir/llvm v0.3.6
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/petersalex27/yew-packages/equality v0.0.0-20231003031741-ea929e3ab360 // indirect

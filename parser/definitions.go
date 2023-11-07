@@ -1,3 +1,27 @@
+// =============================================================================
+// Author-Date: Alex Peters - 2023
+//
+// Content:
+// rules and ast node (DefinitionsNode) related to collection blocks of
+// functions and function definitions
+//
+// Grammar Rules:
+//
+//	definitions ::= ( INDENT(n) ) functionDefs INDENT(n) definitions		# grp(1)
+//	                | ( INDENT(n) ) functionDefs INDENT(n) definitions  #  //
+//	                | ( indent(n) ) functions INDENT(n) definitions			# grp(2)
+//	                | ( indent(n) ) functionDefs INDENT(n) definitions	#  //
+//	                | ( INDENT(n) ) functions														# grp(3)
+//	                | ( INDENT(n) ) functionDefs												#  //
+//	                | ( indent(n) ) functions														# grp(4)
+//	                | ( indent(n) ) functionDefs												#  //
+//
+// Notes:
+// definitions's grammar alternatives can be broken into four groups:
+// (1) right-recursive, (2) terminal rules of right-recursive rules,
+// (3) initial-cases of right-recursive rules, and (4) singleton rules. They are
+// labeled accordingly above with `grp(n)` for group (n)
+// =============================================================================
 package parser
 
 import (
@@ -6,69 +30,131 @@ import (
 	itoken "github.com/petersalex27/yew-packages/token"
 )
 
-/*
-definitions   ::= INDENT function
-                  | INDENT functionDef
-                  | INDENT function definitions
-                  | INDENT functionDef definitions
-*/
-
+// represents a collection of definitions / instances
 type DefinitionsNode struct {
-	functions []FunctionNode
-	functionDefs []FunctionDefNode
+	functions    FunctionNodeInstances
+	functionDefs FunctionNodeDefs
 }
 
-// == reduction rules =========================================================
+// =============================================================================
+// definitions production rules
+// =============================================================================
 
-var definitions__Indent_function_r = parser.
-	Get(defFunctionReduction).From(Indent, Function)
+// one of the two right recursive defs rules
+//
+//	definitions ::= ( INDENT(n) ) functions INDENT(n) definitions
+var definitions__Indent_functions_Indent_definitions_r = parser.Precondition(
+	parser.
+		Get(defFunctionsPrependProduction).
+		When(Indent).
+		From(FunctionInstances, Indent, Definitions),
+	indentMatchPrecondition_0_2(Indent, Indent),
+)
 
-var definitions__Indent_funcDef_r = parser.
-	Get(defFuncDefReduction).From(Indent, FunctionDefinition)
+// one of the two right recursive defs rules
+//
+//	definitions ::= ( INDENT(n) ) functionDefs INDENT(n) definitions
+var definitions__Indent_functionDefs_Indent_definitions_r = parser.Precondition(
+	parser.
+		Get(defFuncDefsPrependProduction).
+		When(Indent).
+		From(FunctionDefinitions, Indent, Definitions),
+	indentMatchPrecondition_0_2(Indent, Indent),
+)
 
-var definitions__Indent_function_definitions_r = parser.
-	Get(defFunctionAppendReduction).From(Indent, Function, Definitions)
+// one of two rules that terminate right recursive rules
+//
+//	definitions ::= ( indent(n) ) functions INDENT(n) definitions
+var definitions__exprBlock_functions_Indent_definitions_r = parser.Precondition(
+	parser.
+		Get(defFunctionsPrependProduction).
+		When(IndentExprBlock).
+		From(FunctionInstances, Indent, Definitions),
+	indentMatchPrecondition_0_2(IndentExprBlock, Indent),
+)
 
-var definitions__Indent_funcDef_definitions_r = parser.
-	Get(defFuncDefAppendReduction).From(Indent, FunctionDefinition, Definitions)
+// one of two rules that terminate right recursive rules
+//
+//	definitions ::= ( indent(n) ) functionDefs INDENT(n) definitions
+var definitions__exprBlock_functionDefs_Indent_definitions_r = parser.Precondition(
+	parser.
+		Get(defFuncDefsPrependProduction).
+		When(IndentExprBlock).
+		From(FunctionDefinitions, Indent, Definitions),
+	indentMatchPrecondition_0_2(IndentExprBlock, Indent),
+)
 
-// == reductions ==============================================================
+// one of the two base cases for right recursive rules
+//
+//	definitions ::= ( INDENT(n) ) functions
+var definitions__Indent_functions_r = parser.
+	Get(defFunctionsSingleProduction).
+	When(Indent).
+	From(FunctionInstances)
 
-func defFunctionReduction(nodes ...ast.Ast) ast.Ast {
-	const _, funcIndex int = 0, 1
-	function := nodes[funcIndex].(FunctionNode)
+// one of the two base cases for right recursive rules
+//
+//	definitions ::= ( INDENT(n) ) functionDefs
+var definitions__Indent_functionDefs_r = parser.
+	Get(defFuncDefsSingleProduction).
+	When(Indent).
+	From(FunctionDefinitions)
+
+// only used when there is one sequence of functions in the expr block
+//
+//	definitions ::= ( indent(n) ) functions
+var definitions__exprBlock_functions_r = parser.
+	Get(defFunctionsSingleProduction).
+	When(IndentExprBlock).
+	From(FunctionInstances)
+
+// only used when there is on sequence of function defs in the expr block
+//
+//	definitions ::= ( indent(n) ) functionDefs
+var definitions__exprBlock_functionDefs_r = parser.
+	Get(defFuncDefsSingleProduction).
+	When(IndentExprBlock).
+	From(FunctionDefinitions)
+
+// =============================================================================
+// production functions
+// =============================================================================
+
+func defFunctionsSingleProduction(nodes ...ast.Ast) ast.Ast {
+	const funcsIndex int = 0
+	functions := nodes[funcsIndex].(FunctionNodeInstances)
 	return DefinitionsNode{
-		functions: []FunctionNode{function},
+		functions:    functions,
 		functionDefs: []FunctionDefNode{},
 	}
 }
 
-func defFuncDefReduction(nodes ...ast.Ast) ast.Ast {
-	const _, funcDefIndex int = 0, 1
-	funcDef := nodes[funcDefIndex].(FunctionDefNode)
+func defFuncDefsSingleProduction(nodes ...ast.Ast) ast.Ast {
+	const funcDefsIndex int = 0
+	funcDefs := nodes[funcDefsIndex].(FunctionNodeDefs)
 	return DefinitionsNode{
-		functions: []FunctionNode{},
-		functionDefs: []FunctionDefNode{funcDef},
+		functions:    []FunctionNode{},
+		functionDefs: funcDefs,
 	}
 }
 
-func defFunctionAppendReduction(nodes ...ast.Ast) ast.Ast {
-	const _, funcIndex, defsIndex int = 0, 1, 2
+func defFunctionsPrependProduction(nodes ...ast.Ast) ast.Ast {
+	const funcsIndex, _, defsIndex int = 0, 1, 2
+	functions := nodes[funcsIndex].(FunctionNodeInstances)
 	defs := nodes[defsIndex].(DefinitionsNode)
-	function := nodes[funcIndex].(FunctionNode)
 	return DefinitionsNode{
-		functions: append(defs.functions, function),
+		functions:    append(functions, defs.functions...),
 		functionDefs: defs.functionDefs,
 	}
 }
 
-func defFuncDefAppendReduction(nodes ...ast.Ast) ast.Ast {
-	const _, funcDefIndex, defsIndex int = 0, 1, 2
+func defFuncDefsPrependProduction(nodes ...ast.Ast) ast.Ast {
+	const funcDefsIndex, _, defsIndex int = 0, 1, 2
+	funcDefs := nodes[funcDefsIndex].(FunctionNodeDefs)
 	defs := nodes[defsIndex].(DefinitionsNode)
-	funcDef := nodes[funcDefIndex].(FunctionDefNode)
 	return DefinitionsNode{
-		functions: defs.functions,
-		functionDefs: append(defs.functionDefs, funcDef),
+		functions:    defs.functions,
+		functionDefs: append(funcDefs, defs.functionDefs...),
 	}
 }
 
@@ -80,36 +166,14 @@ func (defs DefinitionsNode) Equals(a ast.Ast) bool {
 		return false
 	}
 
-	ok = len(defs.functionDefs) == len(defs2.functionDefs) &&
-		len(defs.functions) == len(defs2.functions) 
-	if !ok {
-		return false
-	}
-
-	for i, function := range defs.functions {
-		if !function.Equals(defs2.functions[i]) {
-			return false
-		}
-	}
-
-	for i, funcDef := range defs.functionDefs {
-		if !funcDef.Equals(defs2.functionDefs[i]) {
-			return false
-		}
-	}
-
-	return true
+	return defs.functionDefs.Equals(defs2.functionDefs) &&
+		defs.functions.Equals(defs2.functions)
 }
 
 // returns Definitions
 func (defs DefinitionsNode) NodeType() ast.Type { return Definitions }
 
 func (defs DefinitionsNode) InOrderTraversal(f func(itoken.Token)) {
-	for _, function := range defs.functions {
-		function.InOrderTraversal(f)
-	}
-
-	for _, funcDef := range defs.functionDefs {
-		funcDef.InOrderTraversal(f)
-	}
+	defs.functions.InOrderTraversal(f)
+	defs.functionDefs.InOrderTraversal(f)
 }

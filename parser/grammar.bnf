@@ -33,10 +33,14 @@ source        ::= module 'where' indent(n) definitions
                   | module
 # TODO: updated
 trait         ::= traitDecl 'where' indent(n) functionDefs
-# definitions is a block
-# TODO: comp. changed grammar for this production
-definitions   ::= functions
-                  | functionDefs
+definitions   ::= ( INDENT(n) ) functions INDENT(n) definitions
+                  | ( INDENT(n) ) functionDefs INDENT(n) definitions
+                  | ( indent(n) ) functions INDENT(n) definitions
+                  | ( indent(n) ) functionDefs INDENT(n) definitions
+                  | ( INDENT(n) ) functions
+                  | ( INDENT(n) ) functionDefs
+                  | ( indent(n) ) functions
+                  | ( indent(n) ) functionDefs
 literal       ::= INT_VALUE 
                   | CHAR_VALUE 
                   | STRING_VALUE 
