@@ -19,7 +19,7 @@ type Node struct {
 // given an ast type `ty`, generate the following reduction:
 //
 //	Node{ty, someToken} ::= ast.Token{someToken}
-func giveTypeToTokenReductionGen(ty ast.Type) func(nodes ...ast.Ast) ast.Ast {
+func giveTypeToTokenProductionGen(ty ast.Type) func(nodes ...ast.Ast) ast.Ast {
 	return func(nodes ...ast.Ast) ast.Ast {
 		return Node{ty, GetToken(nodes[0])}
 	}

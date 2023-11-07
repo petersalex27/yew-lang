@@ -4,13 +4,13 @@ import (
 	//"fmt"
 	"testing"
 
+	"github.com/petersalex27/yew-lang/errors"
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/parser"
 	"github.com/petersalex27/yew-packages/parser/ast"
 	"github.com/petersalex27/yew-packages/source"
 	itoken "github.com/petersalex27/yew-packages/token"
 	"github.com/petersalex27/yew-packages/util/testutil"
-	"github.com/petersalex27/yew-lang/errors"
-	"github.com/petersalex27/yew-lang/token"
 )
 
 func TestConstructor(t *testing.T) {
@@ -23,28 +23,34 @@ func TestConstructor(t *testing.T) {
 			constructor__constructor_name_r,
 			constructor__constructor_constructor_r,
 			constructor__enclosed_r,
+			constructor__LeftParen_constructor_Indent_r,
 		))
 
 	typeNameToken := makeTypeIdToken_test("Name", 1, 1)
 	typeName2Token := makeTypeIdToken_test("Name2", 1, 1)
 	thingToken := makeIdToken_test("thing", 1, 1)
+	indent := ast.TokenNode(makeToken_test(token.Indent, "", 1, 1))
 
 	tests := []struct {
+		desc string
 		nodes  []ast.Ast
 		src    source.StaticSource
 		expect ast.AstRoot
 	}{
 		{
+			"constructor ::= TYPE_ID",
 			[]ast.Ast{ast.TokenNode(typeNameToken)},
 			parser.MakeSource("test/parser/constructor", "Name"),
 			ast.AstRoot{Node{Constructor, typeNameToken}},
 		},
 		{
+			"constructor ::= typeDecl",
 			[]ast.Ast{BinaryNode{TypeDecl, BinaryNode{TypeDecl, Node{Name, typeNameToken}, Node{Name, thingToken}}, Node{Name, thingToken}}},
 			parser.MakeSource("test/parser/constructor", "Name thing thing"),
 			ast.AstRoot{BinaryNode{Constructor, BinaryNode{Constructor, Node{Name, typeNameToken}, Node{Name, thingToken}}, Node{Name, thingToken}}},
 		},
 		{
+			"constructor ::= constructor name",
 			[]ast.Ast{
 				Node{Constructor, typeNameToken},
 				Node{Name, thingToken},
@@ -59,6 +65,7 @@ func TestConstructor(t *testing.T) {
 			},
 		},
 		{
+			"constructor ::= constructor constructor",
 			[]ast.Ast{
 				Node{Constructor, typeNameToken},
 				Node{Constructor, typeName2Token},
@@ -73,6 +80,7 @@ func TestConstructor(t *testing.T) {
 			},
 		},
 		{
+			"constructor ::= '(' constructor ')'",
 			[]ast.Ast{
 				ast.TokenNode(token.LeftParen.Make()),
 				Node{Constructor, typeNameToken},
@@ -80,6 +88,23 @@ func TestConstructor(t *testing.T) {
 			},
 			parser.MakeSource("test/parser/constructor", "( Name )"),
 			ast.AstRoot{Node{Constructor, typeNameToken}},
+		},
+		{
+			"constructor ::= '(' constructor ')'",
+			[]ast.Ast{
+				ast.TokenNode(token.LeftParen.Make()),
+				Node{Constructor, typeNameToken},
+				indent,
+			},
+			parser.MakeSource(
+				"test/parser/constructor", 
+				"( Name",
+				"",
+			),
+			ast.AstRoot{
+				ast.TokenNode(token.LeftParen.Make()), 
+				Node{Constructor, typeNameToken},
+			},
 		},
 	}
 
@@ -90,7 +115,7 @@ func TestConstructor(t *testing.T) {
 			[]itoken.Token{},
 			test.src,
 			nil, nil,
-		).InitialStackPush(test.nodes...)//.WithContext()
+		).InitialStackPush(test.nodes...) //.WithContext()
 
 		actual := p.Parse()
 		if p.HasErrors() {

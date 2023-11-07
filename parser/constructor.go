@@ -1,3 +1,20 @@
+// =============================================================================
+// Author-Date: Alex Peters - 2023
+//
+// Content:
+// constructor production rules and functions
+//
+// Grammar:
+//
+//	constructor ::= TYPE_ID
+//									| typeDecl
+//									| constructor name
+//									| constructor constructor
+//									| '(' constructor ')'
+//									| ( '(' ) constructor INDENT(_)
+//
+// Notes: -
+// =============================================================================
 package parser
 
 import (
@@ -7,6 +24,47 @@ import (
 	"github.com/petersalex27/yew-packages/parser/ast"
 	itoken "github.com/petersalex27/yew-packages/token"
 )
+
+var constructor__TypeId_r = parser.
+	Get(constructorSingleProduction).From(TypeId)
+
+var constructor__typeDecl_r = parser.
+	Get(typeDeclToConstructor).From(TypeDecl)
+
+var constructor__constructor_name_r = parser.
+	Get(constructorBinaryProduction).From(Constructor, Name)
+
+var constructor__constructor_constructor_r = parser.
+	Get(constructorBinaryProduction).From(Constructor, Constructor)
+
+var constructor__enclosed_r = parser.
+	Get(parenEnclosedReduction).From(LeftParen, Constructor, RightParen)
+
+var constructor__LeftParen_constructor_Indent_r = parser.
+	Get(constructorGrabInitialProduction).
+	When(LeftParen).
+	From(Constructor, Indent)
+
+// =============================================================================
+// production functions
+// =============================================================================
+
+// turns a token into a constructor
+var constructorSingleProduction = giveTypeToTokenProductionGen(Constructor)
+
+// takes two constructors and produces a single constructor
+var constructorBinaryProduction = simpleBinaryNodeRule(Constructor)
+
+// grabs a constructor node from the first element of nodes and discard the 
+// remaining nodes
+func constructorGrabInitialProduction(nodes ...ast.Ast) ast.Ast {
+	const constructorIndex, _ int = 0, 1
+	return nodes[constructorIndex]
+}
+
+// =============================================================================
+// utils
+// =============================================================================
 
 func constructorCast(node ast.Ast) BinaryRecursiveNode {
 	return node.(BinaryRecursiveNode)
@@ -29,35 +87,8 @@ func constructorToExpression(constructorNode ast.Ast) expr.Expression[token.Toke
 	return *exprPtr
 }
 
-var constructorSingleReduction = giveTypeToTokenReductionGen(Constructor)
-
-var constructorBinaryReduction = simpleBinaryNodeRule(Constructor)
-
 var getConstructor = getBinaryRecursiveNode
-
-/*
-constructor   ::= TYPE_ID
-									| typeDecl
-                  | constructor name
-                  | constructor constructor
-                  | '(' constructor ')'
-*/
-
-var constructor__TypeId_r = parser.
-	Get(constructorSingleReduction).From(TypeId)
 
 func typeDeclToConstructor(nodes ...ast.Ast) ast.Ast {
 	return getConstructor(nodes[0]).UpdateType(TypeDecl, Constructor)
 }
-
-var constructor__typeDecl_r = parser.
-	Get(typeDeclToConstructor).From(TypeDecl)
-
-var constructor__constructor_name_r = parser.
-	Get(constructorBinaryReduction).From(Constructor, Name)
-
-var constructor__constructor_constructor_r = parser.
-	Get(constructorBinaryReduction).From(Constructor, Constructor)
-
-var constructor__enclosed_r = parser.
-	Get(parenEnclosedReduction).From(LeftParen, Constructor, RightParen)

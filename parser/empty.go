@@ -7,5 +7,5 @@ import (
 // == empty node reduction rules ==============================================
 
 var empty__LeftParen_RightParen_r = parser.
-	Get(giveTypeToTokenReductionGen(Empty)).
+	Get(giveTypeToTokenProductionGen(Empty)).
 	From(LeftParen, RightParen)

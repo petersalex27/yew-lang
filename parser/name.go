@@ -12,11 +12,11 @@ func _nodeAsToken(node ast.Ast) token.Token {
 
 var funcNameAsToken, nameAsToken, paramAsToken = _nodeAsToken, _nodeAsToken, _nodeAsToken
 
-var nameReduction = giveTypeToTokenReductionGen(Name)
+var nameReduction = giveTypeToTokenProductionGen(Name)
 
-var paramReduction = giveTypeToTokenReductionGen(Param)
+var paramReduction = giveTypeToTokenProductionGen(Param)
 
-var funcNameReduction = giveTypeToTokenReductionGen(FuncName)
+var funcNameReduction = giveTypeToTokenProductionGen(FuncName)
 
 // == name reduction rules ====================================================
 

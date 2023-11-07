@@ -20,7 +20,7 @@ typeDef       ::= typeDecl '=' constructor
 */
 
 var typeDecl__TypeId_r = parser.
-	Get(giveTypeToTokenReductionGen(TypeDecl)).
+	Get(giveTypeToTokenProductionGen(TypeDecl)).
 	From(TypeId)
 
 // creates a tree structure like:
@@ -35,7 +35,7 @@ var typeDecl__TypeId_r = parser.
 // structure
 var typeDecl__typeDecl_Id_r = parser.
 	Get(func(nodes ...ast.Ast) ast.Ast {
-		return simpleBinaryNodeRule(TypeDecl)(nodes[0], giveTypeToTokenReductionGen(Name)(nodes[1]))
+		return simpleBinaryNodeRule(TypeDecl)(nodes[0], giveTypeToTokenProductionGen(Name)(nodes[1]))
 	}).From(TypeDecl, Id)
 
 // unrolls tree structue and splits the contant head from the free type variables
