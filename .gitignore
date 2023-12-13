@@ -2,3 +2,5 @@ boxdrawing.md
 /lib
 README-WIP.md
 /resume
+/parser/grammar_old.bnf
+/parser/test-files

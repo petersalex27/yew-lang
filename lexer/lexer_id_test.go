@@ -3,10 +3,10 @@ package lexer
 import (
 	"testing"
 
-	"github.com/petersalex27/yew-packages/lexer"
-	itoken "github.com/petersalex27/yew-packages/token"
 	"github.com/petersalex27/yew-lang/errors"
 	"github.com/petersalex27/yew-lang/token"
+	"github.com/petersalex27/yew-packages/lexer"
+	itoken "github.com/petersalex27/yew-packages/token"
 )
 
 func TestAnalyzeId(t *testing.T) {
@@ -35,19 +35,13 @@ func TestAnalyzeId(t *testing.T) {
 		{
 			[]string{`a_`},
 			[]itoken.Token{
-				token.Id.Make().AddValue(`a_`).SetLineChar(1, 1),
-			},
-		},
-		{
-			[]string{`a__`},
-			[]itoken.Token{
-				token.Id.Make().AddValue(`a__`).SetLineChar(1, 1),
+				token.Infixed.Make().AddValue(`a_`).SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`a_a`},
 			[]itoken.Token{
-				token.Id.Make().AddValue(`a_a`).SetLineChar(1, 1),
+				token.Infixed.Make().AddValue(`a_a`).SetLineChar(1, 1),
 			},
 		},
 		{
@@ -68,6 +62,18 @@ func TestAnalyzeId(t *testing.T) {
 				token.Id.Make().AddValue(`a'a`).SetLineChar(1, 1),
 			},
 		},
+		{
+			[]string{`let`},
+			[]itoken.Token{
+				token.Let.Make().SetLineChar(1, 1),
+			},
+		},
+		{
+			[]string{`let_in_`},
+			[]itoken.Token{
+				token.Infixed.Make().AddValue(`let_in_`).SetLineChar(1, 1),
+			},
+		},
 	}
 
 	for i, test := range tests {
@@ -85,17 +91,17 @@ func TestAnalyzeId(t *testing.T) {
 			t.Fatalf("failed test #%d: analyzeIdentifier(lex).NotOk() == true\n", i+1)
 		}
 
-		actuals := lex.GetTokens()
+		actual := lex.GetTokens()
 
-		if len(test.expect) != len(actuals) {
-			t.Fatalf("failed test #%d: expected len(actuals)==%d but got len(actuals)==%d\n", i+1,
-				len(test.expect), len(actuals))
+		if len(test.expect) != len(actual) {
+			t.Fatalf("failed test #%d: expected len(actual)==%d but got len(actual)==%d\n", i+1,
+				len(test.expect), len(actual))
 		}
 
 		for j, tok := range test.expect {
-			if !tokensEqual(tok, actuals[j]) {
+			if !tokensEqual(tok, actual[j]) {
 				t.Fatalf("failed test #%d.%d:\nexpected:\n%v\nactual:\n%v\n", i+1, j+1,
-					tok, actuals[j])
+					tok, actual[j])
 			}
 		}
 	}
@@ -127,19 +133,19 @@ func TestAnalyzeTypeId(t *testing.T) {
 		{
 			[]string{`A_`},
 			[]itoken.Token{
-				token.TypeId.Make().AddValue(`A_`).SetLineChar(1, 1),
+				token.TypeId.Make().AddValue(`A`).SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`A__`},
 			[]itoken.Token{
-				token.TypeId.Make().AddValue(`A__`).SetLineChar(1, 1),
+				token.TypeId.Make().AddValue(`A`).SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`A_a`},
 			[]itoken.Token{
-				token.TypeId.Make().AddValue(`A_a`).SetLineChar(1, 1),
+				token.TypeId.Make().AddValue(`A`).SetLineChar(1, 1),
 			},
 		},
 		{
@@ -177,17 +183,17 @@ func TestAnalyzeTypeId(t *testing.T) {
 			t.Fatalf("failed test #%d: analyzeIdentifier(lex).NotOk() == true\n", i+1)
 		}
 
-		actuals := lex.GetTokens()
+		actual := lex.GetTokens()
 
-		if len(test.expect) != len(actuals) {
-			t.Fatalf("failed test #%d: expected len(actuals)==%d but got len(actuals)==%d\n", i+1,
-				len(test.expect), len(actuals))
+		if len(test.expect) != len(actual) {
+			t.Fatalf("failed test #%d: expected len(actual)==%d but got len(actual)==%d\n", i+1,
+				len(test.expect), len(actual))
 		}
 
 		for j, tok := range test.expect {
-			if !tokensEqual(tok, actuals[j]) {
+			if !tokensEqual(tok, actual[j]) {
 				t.Fatalf("failed test #%d.%d:\nexpected:\n%v\nactual:\n%v\n", i+1, j+1,
-					tok, actuals[j])
+					tok, actual[j])
 			}
 		}
 	}

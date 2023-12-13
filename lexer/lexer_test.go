@@ -17,7 +17,6 @@ func TestLexer(t *testing.T) {
 		{
 			[]string{`Maybe a = Just a | Nothing`},
 			[]itoken.Token{
-				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.TypeId.Make().AddValue(`Maybe`).SetLineChar(1, 1),
 				token.Id.Make().AddValue(`a`).SetLineChar(1, 7),
 				token.Assign.Make().AddValue(`=`).SetLineChar(1, 9),
@@ -30,56 +29,42 @@ func TestLexer(t *testing.T) {
 		{
 			[]string{`[`},
 			[]itoken.Token{
-				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.LeftBracket.Make().SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`{`},
 			[]itoken.Token{
-				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.LeftBrace.Make().SetLineChar(1, 1),
-			},
-		},
-		{
-			[]string{`;`},
-			[]itoken.Token{
-				token.Indent.Make().AddValue("").SetLineChar(1, 1),
-				token.SemiColon.Make().SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`,`},
 			[]itoken.Token{
-				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.Comma.Make().SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`}`},
 			[]itoken.Token{
-				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.RightBrace.Make().SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`]`},
 			[]itoken.Token{
-				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.RightBracket.Make().SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`)`},
 			[]itoken.Token{
-				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.RightParen.Make().SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`:`},
 			[]itoken.Token{
-				token.Indent.Make().AddValue("").SetLineChar(1, 1),
 				token.Typing.Make().SetLineChar(1, 1),
 			},
 		},
@@ -89,22 +74,22 @@ func TestLexer(t *testing.T) {
 		lex := lexer.NewLexer(lexerWhitespace, 0, 0, 1)
 		lex.SetSource(test.source)
 		lex.SetPath("./test-lex-run.yew")
-		actuals, es := RunLexer(lex)
+		actual, es := RunLexer(lex)
 
 		if len(es) != 0 {
 			errors.PrintErrors(lex.GetErrors()...)
 			t.Fatalf("failed test #%d: see above errors\n", i+1)
 		}
 
-		if len(test.expect) != len(actuals) {
-			t.Fatalf("failed test #%d: expected len(actuals)==%d but got len(actuals)==%d\n", i+1,
-				len(test.expect), len(actuals))
+		if len(test.expect) != len(actual) {
+			t.Fatalf("failed test #%d: expected len(actual)==%d but got len(actual)==%d\n", i+1,
+				len(test.expect), len(actual))
 		}
 
 		for j, tok := range test.expect {
-			if !tokensEqual(tok, actuals[j]) {
+			if !tokensEqual(tok, actual[j]) {
 				t.Fatalf("failed test #%d.%d:\nexpected:\n%v\nactual:\n%v\n", i+1, j+1,
-					tok, actuals[j])
+					tok, actual[j])
 			}
 		}
 	}

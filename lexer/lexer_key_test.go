@@ -23,8 +23,8 @@ func TestKey(t *testing.T) {
 			[]itoken.Token{token.Derives.Make().SetLineChar(1, 1)},
 		},
 		{
-			[]string{`do`},
-			[]itoken.Token{token.Do.Make().SetLineChar(1, 1)},
+			[]string{`alias`},
+			[]itoken.Token{token.Alias.Make().SetLineChar(1, 1)},
 		},
 		{
 			[]string{`family`},
@@ -51,8 +51,8 @@ func TestKey(t *testing.T) {
 			[]itoken.Token{token.Let.Make().SetLineChar(1, 1)},
 		},
 		{
-			[]string{`mapall`},
-			[]itoken.Token{token.Mapall.Make().SetLineChar(1, 1)},
+			[]string{`mapval`},
+			[]itoken.Token{token.Mapval.Make().SetLineChar(1, 1)},
 		},
 		{
 			[]string{`module`},
@@ -78,6 +78,62 @@ func TestKey(t *testing.T) {
 			[]string{`where`},
 			[]itoken.Token{token.Where.Make().SetLineChar(1, 1)},
 		},
+		{
+			[]string{`(`},
+			[]itoken.Token{token.LeftParen.Make().SetLineChar(1, 1)},
+		},
+		{
+			[]string{`)`},
+			[]itoken.Token{token.RightParen.Make().SetLineChar(1, 1)},
+		},
+		{
+			[]string{`{`},
+			[]itoken.Token{token.LeftBrace.Make().SetLineChar(1, 1)},
+		},
+		{
+			[]string{`}`},
+			[]itoken.Token{token.RightBrace.Make().SetLineChar(1, 1)},
+		},
+		{
+			[]string{`[`},
+			[]itoken.Token{token.LeftBracket.Make().SetLineChar(1, 1)},
+		},
+		{
+			[]string{`]`},
+			[]itoken.Token{token.RightBracket.Make().SetLineChar(1, 1)},
+		},
+		{
+			[]string{`,`},
+			[]itoken.Token{token.Comma.Make().SetLineChar(1, 1)},
+		},
+		{
+			[]string{`:`},
+			[]itoken.Token{token.Typing.Make().SetLineChar(1, 1)},
+		},
+		{
+			[]string{`=`},
+			[]itoken.Token{token.Assign.Make().SetLineChar(1, 1)},
+		},
+		{
+			[]string{`|`},
+			[]itoken.Token{token.Bar.Make().SetLineChar(1, 1)},
+		},
+		{
+			[]string{`\`},
+			[]itoken.Token{token.Backslash.Make().SetLineChar(1, 1)},
+		},
+		{
+			[]string{`->`},
+			[]itoken.Token{token.Arrow.Make().SetLineChar(1, 1)},
+		},
+		{
+			[]string{`..`},
+			[]itoken.Token{token.DotDot.Make().SetLineChar(1, 1)},
+		},
+		{
+			[]string{`.`},
+			[]itoken.Token{token.Dot.Make().SetLineChar(1, 1)},
+		},
 	}
 
 	// validate that all keywords are present
@@ -90,7 +146,7 @@ func TestKey(t *testing.T) {
 		lex := lexer.NewLexer(lexerWhitespace, 0, 0, 1)
 		lex.SetSource(test.source)
 		lex.SetPath("./test-lex-id.yew")
-		stat := analyzeIdentifier(lex)
+		stat := analyzeSymbol(lex)
 
 		if es := lex.GetErrors(); len(es) != 0 {
 			errors.PrintErrors(lex.GetErrors()...)
@@ -101,17 +157,17 @@ func TestKey(t *testing.T) {
 			t.Fatalf("failed test #%d: analyzeIdentifier(lex).NotOk() == true\n", i+1)
 		}
 
-		actuals := lex.GetTokens()
+		actual := lex.GetTokens()
 
-		if len(test.expect) != len(actuals) {
-			t.Fatalf("failed test #%d: expected len(actuals)==%d but got len(actuals)==%d\n", i+1,
-				len(test.expect), len(actuals))
+		if len(test.expect) != len(actual) {
+			t.Fatalf("failed test #%d: expected len(actual)==%d but got len(actual)==%d\n", i+1,
+				len(test.expect), len(actual))
 		}
 
 		for j, tok := range test.expect {
-			if !tokensEqual(tok, actuals[j]) {
+			if !tokensEqual(tok, actual[j]) {
 				t.Fatalf("failed test #%d.%d:\nexpected:\n%v\nactual:\n%v\n", i+1, j+1,
-					tok, actuals[j])
+					tok, actual[j])
 			}
 		}
 	}

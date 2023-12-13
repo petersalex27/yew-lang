@@ -2,87 +2,88 @@ package lexer
 
 import (
 	"testing"
+
+	"github.com/petersalex27/yew-lang/errors"
+	"github.com/petersalex27/yew-lang/token"
 	"github.com/petersalex27/yew-packages/lexer"
 	itoken "github.com/petersalex27/yew-packages/token"
-	"github.com/petersalex27/yew-lang/token"
-	"github.com/petersalex27/yew-lang/errors"
 )
 
 func TestAnalyzeChar(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		source []string
 		expect []itoken.Token
 	}{
 		{
-			[]string{`'a'`,},
+			[]string{`'a'`},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue(`a`).SetLength(3).SetLineChar(1,1),
+				token.CharValue.Make().AddValue(`a`).SetLength(3).SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`' '`,},
+			[]string{`' '`},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue(` `).SetLength(3).SetLineChar(1,1),
+				token.CharValue.Make().AddValue(` `).SetLength(3).SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`'@'`,},
+			[]string{`'@'`},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue(`@`).SetLength(3).SetLineChar(1,1),
+				token.CharValue.Make().AddValue(`@`).SetLength(3).SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`'\n'`,},
+			[]string{`'\n'`},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\n").SetLength(4).SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\n").SetLength(4).SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`'\t'`,},
+			[]string{`'\t'`},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\t").SetLength(4).SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\t").SetLength(4).SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`'\a'`,},
+			[]string{`'\a'`},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\a").SetLength(4).SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\a").SetLength(4).SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`'\b'`,},
+			[]string{`'\b'`},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\b").SetLength(4).SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\b").SetLength(4).SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`'\v'`,},
+			[]string{`'\v'`},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\v").SetLength(4).SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\v").SetLength(4).SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`'\f'`,},
+			[]string{`'\f'`},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\f").SetLength(4).SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\f").SetLength(4).SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`'\r'`,},
+			[]string{`'\r'`},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\r").SetLength(4).SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\r").SetLength(4).SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`'\''`,},
+			[]string{`'\''`},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("'").SetLength(4).SetLineChar(1,1),
+				token.CharValue.Make().AddValue("'").SetLength(4).SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`'\\'`,},
+			[]string{`'\\'`},
 			[]itoken.Token{
-				token.CharValue.Make().AddValue("\\").SetLength(4).SetLineChar(1,1),
+				token.CharValue.Make().AddValue("\\").SetLength(4).SetLineChar(1, 1),
 			},
 		},
 	}
@@ -97,22 +98,22 @@ func TestAnalyzeChar(t *testing.T) {
 			errors.PrintErrors(lex.GetErrors()...)
 			t.Fatalf("failed test #%d: see above errors\n", i+1)
 		}
-		
+
 		if stat.NotOk() {
 			t.Fatalf("failed test #%d: analyzeChar(lex).NotOk() == true\n", i+1)
 		}
 
-		actuals := lex.GetTokens()
+		actual := lex.GetTokens()
 
-		if len(test.expect) != len(actuals) {
-			t.Fatalf("failed test #%d: expected len(actuals)==%d but got len(actuals)==%d\n", i+1,
-				len(test.expect), len(actuals))
+		if len(test.expect) != len(actual) {
+			t.Fatalf("failed test #%d: expected len(actual)==%d but got len(actual)==%d\n", i+1,
+				len(test.expect), len(actual))
 		}
 
 		for j, tok := range test.expect {
-			if !tokensEqual(tok, actuals[j]) {
+			if !tokensEqual(tok, actual[j]) {
 				t.Fatalf("failed test #%d.%d: expected:\n%v\nactual:\n%v\n", i+1, j+1,
-					tok, actuals[j])
+					tok, actual[j])
 			}
 		}
 	}

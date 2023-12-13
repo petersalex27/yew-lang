@@ -1,1 +1,0 @@
-mapall (n: Uint) . Array a; n

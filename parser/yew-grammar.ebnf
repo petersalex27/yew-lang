@@ -1,0 +1,66 @@
+module              ::= [ annotation ] 'module' ID [ export_list 'where' defs ]
+export_list         ::= '(' [ export_names ] ')'
+name                ::= ID 
+                        | SYMBOL 
+                        | INFIXED
+exportable          ::= name 
+                        | export_type
+export_names        ::= '..' 
+                        | exportable { ',' exportable } [ ',' ]
+export_types        ::= TYPE_ID [ '(' [ exportable_cons ] ')' ]
+exportable_cons     ::= '..'
+                        | TYPE_ID { ',' TYPE_ID } [ ',' ]
+importable          ::= [ 'qualified' ] ID [ 'from' STRING ] [ 'where' ID '=' ID ] [ 'in' ]
+tail_import         ::= importable 'in'
+imports             ::= [ 'import' { importable } tail_import ]
+type_name_inner     ::= TYPE_ID
+                        | ID
+                        | TYPE_ID { type_name }
+                        | ID { type_name }
+type_name           ::= type_name_inner 
+                        | '(' type_name_inner ')'
+constructor_def     ::= TYPE_ID { type_name }
+                        | '(' TYPE_ID { type_name } ')'
+type_def            ::= TYPE_ID { ID } '=' constructor_def { '|' constructor_def }
+dependee            ::= type_name | '(' ID ':' type_name ')'
+dependent_dec       ::= TYPE_ID { ID } ':' dependee [ '->' dependee ]
+dependent_def       ::= TYPE_ID { ID } '=' constructor_def ':' type_name { '|' constructor_def ':' type_name }
+alias_def           ::= 'alias' TYPE_ID '=' TYPE_ID { type_name }
+                        | 'alias' TYPE_ID '=' '(' TYPE_ID { type_name } ')'
+function_dec        ::= name ':' type_name [ '->' type_name ]
+bind_def            ::= name { pattern } '=' expression
+function_def        ::= [ function_dec ] bind_def
+data_inner          ::= TYPE_ID { expression }
+data                ::= '(' data_inner ')'
+                        | data_inner
+pattern_inner       ::= name
+                        | '_'
+                        | INT_VALUE
+                        | CHAR_VALUE
+                        | STRING_VALUE
+                        | FLOAT_VALUE
+                        | pattern pattern
+                        | TYPE_ID { pattern }
+pattern_mid         ::= pattern_inner
+                        | '(' pattern_inner ')'
+pattern             ::= pattern_mid
+                        | '(' pattern ',' pattern { ',' pattern } [ ',' ] ')'
+tuple               ::= '(' expression ',' expression { ',' expression } [ ',' ] ')'
+case                ::= pattern '->' expression
+expression          ::= expression expression
+                        | '(' expression ')'
+                        | 'let' { bind_def } bind_def 'in' expression
+                        | 'match' expression 'in' case { case }
+                        | name
+                        | INT_VALUE
+                        | CHAR_VALUE
+                        | STRING_VALUE
+                        | FLOAT_VALUE
+                        | tuple
+                        | pattern
+                        | data
+def                 ::= type_def
+                        | alias_def
+                        | dependent_dec dependent_def
+                        | function_def
+defs                ::= def { def }

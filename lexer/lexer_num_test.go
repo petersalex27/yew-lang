@@ -151,17 +151,17 @@ func TestAnalyzeNumber(t *testing.T) {
 			t.Fatalf("failed test #%d: analyzeNumber(lex).NotOk() == true\n", i+1)
 		}
 
-		actuals := lex.GetTokens()
+		actual := lex.GetTokens()
 
-		if len(test.expect) != len(actuals) {
-			t.Fatalf("failed test #%d: expected len(actuals)==%d but got len(actuals)==%d\n", i+1,
-				len(test.expect), len(actuals))
+		if len(test.expect) != len(actual) {
+			t.Fatalf("failed test #%d: expected len(actual)==%d but got len(actual)==%d\n", i+1,
+				len(test.expect), len(actual))
 		}
 
 		for j, tok := range test.expect {
-			if !tokensEqual(tok, actuals[j]) {
+			if !tokensEqual(tok, actual[j]) {
 				t.Fatalf("failed test #%d.%d: expected:\n%v\nactual:\n%v\n", i+1, j+1,
-					tok, actuals[j])
+					tok, actual[j])
 			}
 		}
 	}

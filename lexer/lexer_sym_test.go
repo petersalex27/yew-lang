@@ -33,12 +33,6 @@ func TestAnalyzeBuiltinSymbols(t *testing.T) {
 			},
 		},
 		{
-			[]string{`;`},
-			[]itoken.Token{
-				token.SemiColon.Make().SetLineChar(1, 1),
-			},
-		},
-		{
 			[]string{`,`},
 			[]itoken.Token{
 				token.Comma.Make().SetLineChar(1, 1),
@@ -121,17 +115,17 @@ func TestAnalyzeBuiltinSymbols(t *testing.T) {
 			t.Fatalf("failed test #%d: analyzeSymbol(lex).NotOk() == true\n", i+1)
 		}
 
-		actuals := lex.GetTokens()
+		actual := lex.GetTokens()
 
-		if len(test.expect) != len(actuals) {
-			t.Fatalf("failed test #%d: expected len(actuals)==%d but got len(actuals)==%d\n", i+1,
-				len(test.expect), len(actuals))
+		if len(test.expect) != len(actual) {
+			t.Fatalf("failed test #%d: expected len(actual)==%d but got len(actual)==%d\n", i+1,
+				len(test.expect), len(actual))
 		}
 
 		for j, tok := range test.expect {
-			if !tokensEqual(tok, actuals[j]) {
+			if !tokensEqual(tok, actual[j]) {
 				t.Fatalf("failed test #%d.%d: expected:\n%v\nactual:\n%v\n", i+1, j+1,
-					tok, actuals[j])
+					tok, actual[j])
 			}
 		}
 	}
@@ -145,37 +139,37 @@ func TestAnalyzeSymbol(t *testing.T) {
 		{
 			[]string{`+`},
 			[]itoken.Token{
-				token.Symbol.Make().AddValue("+").SetLineChar(1, 1),
+				token.Id.Make().AddValue("+").SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`+{`},
 			[]itoken.Token{
-				token.Symbol.Make().AddValue("+").SetLineChar(1, 1),
+				token.Id.Make().AddValue("+").SetLineChar(1, 1),
 			},
 		},
 		{
 			[]string{`+=`},
 			[]itoken.Token{
-				token.Symbol.Make().AddValue("+=").SetLineChar(1, 1),
+				token.Id.Make().AddValue("+=").SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`(+)`},
+			[]string{`_+_`},
 			[]itoken.Token{
-				token.Infixed.Make().AddValue("+").SetLength(3).SetLineChar(1, 1),
+				token.Infixed.Make().AddValue("_+_").SetLength(3).SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`(>>=)`},
+			[]string{`_>>=_`},
 			[]itoken.Token{
-				token.Infixed.Make().AddValue(">>=").SetLength(5).SetLineChar(1, 1),
+				token.Infixed.Make().AddValue("_>>=_").SetLength(5).SetLineChar(1, 1),
 			},
 		},
 		{
-			[]string{`(mod)`},
+			[]string{`_mod_`},
 			[]itoken.Token{
-				token.Infixed.Make().AddValue("mod").SetLength(5).SetLineChar(1, 1),
+				token.Infixed.Make().AddValue("_mod_").SetLength(5).SetLineChar(1, 1),
 			},
 		},
 	}

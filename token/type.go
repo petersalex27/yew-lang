@@ -9,7 +9,7 @@ const (
 	CharValue
 	FloatValue
 	// spacing
-	Indent
+	Newline
 	// other
 	Wildcard
 	Comment
@@ -29,14 +29,12 @@ const (
 	LeftBrace
 	RightBrace
 	// separators
-	SemiColon
 	Comma
 	// names
-	Symbol
 	Id
 	TypeId
 	Infixed
-	/*keywords*/ _keyword_start_ // do not use!
+	// alphabetic keywords
 	Let
 	Match
 	Trait
@@ -46,33 +44,39 @@ const (
 	Forall
 	From
 	In
-	Mapall
+	Mapval
 	Where
 	Module
 	Qualified
 	Of
 	Derives
-	Do
-	/*end of keywords*/ _keyword_end_ // do not use!
-	LAST_TYPE__                       // for use with ast node type
+	Alias
+	LAST_TYPE__ // for use with ast node type
 )
 
-func (t TokenType) IsKeyword() bool {
-	return t > _keyword_start_ && t < _keyword_end_
+func (t TokenType) IsConstant() bool {
+	_, found := constantTokenMap[t]
+	return found
 }
 
-var builtinMap = map[TokenType]string{
+// map of constant tokens.
+//
+// Let, for example, is a constant token--there is only one string that can be tokenized for it.
+//
+// On the other hand, IntValue is not a constant token--there are many strings that can be tokenized
+// for it.
+var constantTokenMap = map[TokenType]string{
 	Let:          "let",
 	Match:        "match",
 	Trait:        "trait",
 	Import:       "import",
 	Use:          "use",
 	Forall:       "forall",
-	Mapall:       "mapall",
+	Mapval:       "mapval",
 	Where:        "where",
 	Module:       "module",
 	Derives:      "derives",
-	Do:           "do",
+	Alias:        "alias",
 	Family:       "family",
 	Qualified:    "qualified",
 	From:         "from",
@@ -85,7 +89,6 @@ var builtinMap = map[TokenType]string{
 	RightBracket: "]",
 	LeftBrace:    "{",
 	RightBrace:   "}",
-	SemiColon:    ";",
 	Comma:        ",",
 	Typing:       ":",
 	Assign:       "=",
@@ -96,11 +99,20 @@ var builtinMap = map[TokenType]string{
 	DotDot:       `..`,
 }
 
-func (t TokenType) Make() Token {
-	value, found := builtinMap[t]
+// If `t` is a constant token, a string representation of it is returned; otherwise, an empty string
+// is returned.
+func getBuiltinTokenValue(t TokenType) string {
+	value, found := constantTokenMap[t]
 	if !found {
 		value = ""
 	}
+	return value
+}
+
+// Make makes a token with a type from its token type. As a special case when the token type is of a
+// keyword, the length and value fields of Token will be assigned correct values
+func (t TokenType) Make() Token {
+	value := getBuiltinTokenValue(t)
 	return Token{
 		ty: t,
 		// this may not always be correct, but can be set to something else later
@@ -111,12 +123,14 @@ func (t TokenType) Make() Token {
 
 // only adds value when token is not keyword, else just returns token
 func (t Token) MaybeAddValue(value string) Token {
-	if t.ty.IsKeyword() {
+	if t.ty.IsConstant() {
 		return t
 	}
 	return t.AddValue(value)
 }
 
+// AddValue gives a token a value even if it already has one. AddValue also sets the length field of
+// receiver `t` to length(value).
 func (t Token) AddValue(value string) Token {
 	t.value = value
 	if t.length <= 0 { // length set?

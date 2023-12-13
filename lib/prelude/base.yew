@@ -1,41 +1,44 @@
-module prelude (
-  __array__,
-  if, for,
-  Int, Uint, Char, String, Bool, Float
-  {;}
-) where
+import 
+  _Int_
+  _Float_
+  _Char_
+  _String_
+  _Uint_
+  _Array_
+in module Prelude {
+  Array ..,
+  Int, Uint, Char, String, Bool, Float,
+} where
 
-Int = __int__
-Float = __float__
-Char = __char__
-String = __string__
-Uint = __int__
+Int = _Int_
+Float = _Float_
+Char = _Char_
+String = _String_
+Uint = _Uint_
 Bool = True | False
-
-
 
 -*@Doc 
  * Array: an (@Code n)-element sequence of type (@Code a)
 **-
 [a; n: Uint] =
-  []: [a; 0]
-  | {::} a [a; n]: [a; n+1]
+  [_]: [a; 0]
+  | (_::_) a [a; n]: [a; n+1]
 
 
 -*@Doc
 * Ret
 *-
-if _ then _ else _: Bool -> a -> a -> a
-if c then t else f = 
+(if _ then _ else _): Bool -> a -> a -> a
+(if _ then _ else _) c t f = 
   match c in
     True -> t
-    and False -> f
+    False -> f
 
 
-_ && _: Bool -> Bool -> Bool
+(_ && _): Bool -> Bool -> Bool
 a && b = if a then b else False
 
-_ || _: Bool -> Bool -> Bool
+(_ || _): Bool -> Bool -> Bool
 a || b = if a then True else b
 
 ! : Bool -> Bool
@@ -44,7 +47,7 @@ a || b = if a then True else b
 -- ignores result of first argument;
 -- this is useful for forcing an expression to evaluate
 -- without needing to use the value of it
-_; _: a -> b -> b
+(_; _): a -> b -> b
 _; f = f
 
 -- let captures all things on the next tokens indentation line

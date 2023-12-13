@@ -103,15 +103,15 @@ func TestSingleLineComment(t *testing.T) {
 			t.Fatal(msg)
 		}
 
-		actuals := lex.GetTokens()
+		actual := lex.GetTokens()
 
-		if len(test.expect) != len(actuals) {
-			t.Fatal(test.description.FailMessage(len(test.expect), len(actuals), i))
+		if len(test.expect) != len(actual) {
+			t.Fatal(test.description.FailMessage(len(test.expect), len(actual), i))
 		}
 
 		for j, tok := range test.expect {
-			if !tokensEqual(tok, actuals[j]) {
-				t.Fatalf(test.description.FailMessage(tok, actuals[j], i, j))
+			if !tokensEqual(tok, actual[j]) {
+				t.Fatalf(test.description.FailMessage(tok, actual[j], i, j))
 			}
 		}
 	}
@@ -228,15 +228,15 @@ func TestMultiLineComment(t *testing.T) {
 			t.Fatal(msg)
 		}
 
-		actuals := lex.GetTokens()
+		actual := lex.GetTokens()
 
-		if len(test.expect) != len(actuals) {
-			t.Fatal(test.description.FailMessage(len(test.expect), len(actuals), i))
+		if len(test.expect) != len(actual) {
+			t.Fatal(test.description.FailMessage(len(test.expect), len(actual), i))
 		}
 
 		for j, tok := range test.expect {
-			if !tokensEqual(tok, actuals[j]) {
-				t.Fatalf(test.description.FailMessage(tok, actuals[j], i, j))
+			if !tokensEqual(tok, actual[j]) {
+				t.Fatalf(test.description.FailMessage(tok, actual[j], i, j))
 			}
 		}
 	}

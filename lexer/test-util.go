@@ -6,16 +6,11 @@ import (
 )
 
 func tokensEqual(a, b itoken.Token) bool {
-	lineA, charA := a.GetLineChar()
-	lineB, charB := b.GetLineChar()
-	lenA, lenB := 0, 0
-	if a2, ok := a.(token.Token); ok {
-		if b2, ok := b.(token.Token); ok {
-			lenA, lenB = a2.GetLength(), b2.GetLength()
-		}
+	a2, aOk := a.(token.Token)
+	b2, bOk := b.(token.Token)
+	if !(aOk && bOk) {
+		return false
 	}
-	return a.GetValue() == b.GetValue() && 
-		a.GetType() == b.GetType() &&
-		lineA == lineB && charA == charB &&
-		lenA == lenB
+	
+	return a2.GetLength() == b2.GetLength() && token.TokenEquals(a2, b2)
 }
